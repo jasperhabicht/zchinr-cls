@@ -16,9 +16,14 @@
 \ProcessKeyOptions [ zchinr / global ]
 \LoadClass [ a4paper , twoside , 10pt ] { report }
 
+\msg_new:nnn { zchinr } { no-color-profile } {
+  \msg_warning_text:n { zhinr } \iow_newline:
+  Color ~ profile ~ not ~ defined ~ in ~ preamble.
+}
+
 \bool_new:N \l_zchinr_pagination_bool
 
-\tl_new:N \l_zchinr_color_profile_id_tl
+\tl_new:N \l_zchinr_color_profile_name_tl
 \tl_new:N \l_zchinr_color_profile_info_tl
 \tl_new:N \l_zchinr_color_profile_path_tl
 
@@ -53,19 +58,13 @@
 \tl_new:N \l_zchinr_local_doi_tl
 \tl_new:N \l_zchinr_local_licence_tl
 
-\keys_define:nn { zchir / color profile } {
-  id   .tl_set:N   = \l_zchinr_color_profile_id_tl ,
-  id   .default:n  = { Custom } ,
-  info .tl_set:N   = \l_zchinr_color_profile_info_tl ,
-  info .default:n  = { none } ,
-  path .tl_set:N   = \l_zchinr_color_profile_path_tl 
-}
-
-\NewDocumentCommand { \zchinrcolorprofile } { m } {
-  \keys_set:nn { zchinr / color profile } {#1}
-}
-
 \keys_define:nn { zchinr / setup } { 
+  color ~ profile          .code:n     = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
+  color ~ profile / name   .tl_set:N   = \l_zchinr_color_profile_name_tl ,
+  color ~ profile / name   .default:n  = { Custom } ,
+  color ~ profile / info   .tl_set:N   = \l_zchinr_color_profile_info_tl ,
+  color ~ profile / info   .default:n  = { none } ,
+  color ~ profile / path   .tl_set:N   = \l_zchinr_color_profile_path_tl ,
   title ~ distance         .dim_set:N   = \l_zchinr_title_distance_dim ,
   title ~ distance         .initial:n   = { 35mm } ,
   pagination               .bool_set:N  = \l_zchinr_pagination_bool ,
@@ -122,13 +121,13 @@
   reset                    .code:n      = {
     \keys_set:nn { zchinr / setup / article } {
       author = { } ,
-      author ~ short = { } ,
-      author ~ copy = { } , 
+      author ~ short = { \l_zchinr_article_author_tl } ,
+      author ~ copy = { \l_zchinr_article_author_tl } , 
       author ~ note = { } ,
       title = { } ,
-      title ~ pdf = { } ,
+      title ~ pdf = { \l_zchinr_article_title_tl } ,
       title ~ alt = { } ,
-      title ~ short = { } ,
+      title ~ short = { \l_zchinr_article_title_tl } ,
       abstract = { } , 
       abstract ~ alt = { } , 
       two ~ columns = false ,
@@ -241,7 +240,7 @@
       /GTS_PDFXConformance ~ (PDF/X-1a:2001)
     >>}
     \str_if_empty:NTF { \l_zchinr_color_profile_path_tl } {
-      \ClassWarning{zchinr}{No ~ color ~ profile ~ defined.}
+      \msg_warning:nn { zchinr } { no-color-profile }  
     } {
       \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_tl) ~ <<
         /N ~ 4^^J/Alternate/DeviceCMYK
@@ -524,7 +523,7 @@
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
     \noindent\rule{\textwidth}{1pt}
     \par\vskip 2mm
-    \int_if_even:nTF { \l_zchinr_article_page_first_int } {
+    \int_if_even:nTF { \thepage } {
       \noindent\parbox[t]{\textwidth}{
         \raggedleft\huge\scshape\bfseries\l_zchinr_article_category_tl 
       }\par
