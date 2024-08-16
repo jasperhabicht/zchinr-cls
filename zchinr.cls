@@ -168,6 +168,9 @@
 \setCJKmainfont{Noto ~ Serif ~ CJK ~ SC}
 \setCJKsansfont{Noto ~ Sans ~ CJK ~ SC}
 
+\RequirePackage{unicode-math}
+\setmathfont{TeX ~ Gyre ~ Pagella ~ Math}
+
 \NewDocumentCommand{\zhs}{ m }{\textup{#1}}
 \NewDocumentCommand{\zht}{ m }{\textup{#1}}
 
@@ -330,17 +333,17 @@
 \newpagestyle{zchinrtitle}{
   \sethead{}{}{}
   \setfoot
-    {\parbox{0.4\textwidth}{
+    {{\parbox[b]{0.4\textwidth}{\raggedright
       \l_zchinr_local_issn_tl \c_colon_str{} ~ \l_zchinr_issue_issn_tl \\
       \l_zchinr_local_doi_tl \c_colon_str{} ~ 
         \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
-    }}
+    }}}
     {\l__zchinr_header_mark_page_tl}
-    {\parbox{0.4\textwidth}{\raggedleft
+    {{\parbox[b]{0.4\textwidth}{\raggedleft
       \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_tl \\ 
       \l_zchinr_local_licence_tl \c_colon_str{} ~ 
         \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
-    }}
+    }}}
 }
 
 \newpagestyle{zchirempty}{
@@ -349,9 +352,9 @@
 }
 
 % Style section titles. 
-\titleformat{\section}{\bfseries\fontsize{11}{13}\selectfont}{}{0pt}{}
-\titleformat{\subsection}{\bfseries\fontsize{11}{13}\selectfont}{}{0pt}{}
-\titleformat{\subsubsection}{\bfseries\fontsize{11}{13}\selectfont}{}{0pt}{}
+\titleformat{\section}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
 \titlespacing*{\section}{0pt}{5pt plus 1pt}{5pt plus 1pt}
 \titlespacing*{\subsection}{0pt}{5pt plus 1pt}{5pt plus 1pt}
 \titlespacing*{\subsubsection}{0pt}{5pt plus 1pt}{5pt plus 1pt}
@@ -383,6 +386,11 @@
 % Create listing environment for references. 
 \newlist{references}{enumerate}{1}
 \setlist[references]{label*=[\arabic*]}
+
+% Style URLs.
+\urlstyle{same}
+\DeclareUrlCommand\Hurl{\def\UrlLeft{<\,}\def\UrlRight{\,>}}
+\tl_put_right:Nn \UrlBreaks {\do\^\do\_}
 
 % Create command for automatically linked e-mail addresses. 
 \NewDocumentCommand { \email } { m } {
@@ -440,16 +448,10 @@
   \end{longtable}
 }
 
-% Create subcontents environment.
-\NewDocumentEnvironment { subcontents } { } {
-  \list{}{\leftmargin=40mm \rightmargin=25mm}
-  \item\relax
-} {
-  \endlist
-}
-
 % Create commands for TOC. 
-\NewDocumentCommand { \tocsection } { m }{\bigskip\noindent{\Large\scshape\bfseries #1}}
+\NewDocumentCommand { \zchinrtocentry } { m }{
+  \bigskip\noindent{\Large\scshape\bfseries #1}
+}
 
 \newlist{toc}{itemize}{1}
 \setlist[toc]{leftmargin=15mm, label*={}}
@@ -461,6 +463,14 @@
   \noindent
 } {
   \end{minipage}
+}
+
+% Create subcontents environment.
+\NewDocumentEnvironment { subcontents } { } {
+  \list{}{\leftmargin=35mm \rightmargin=20mm}
+  \item\relax
+} {
+  \endlist
 }
 
 \NewDocumentCommand { \zchinrprinttitle } { } {
@@ -492,7 +502,7 @@
     }
   }
 
-  \renewcommand*{\thefootnote}{\ensuremath{*}}
+  \renewcommand*{\thefootnote}{\char"002A}
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \twocolumn[
       \__zchir_article_title:
@@ -515,7 +525,7 @@
 \cs_new:Npn \__zchir_article_author: {
   \l_zchinr_article_author_tl
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
-    \, \footnotemark[0]
+    \, \footnotemark
   }
 }
 
@@ -525,14 +535,15 @@
     \par\vskip 2mm
     \int_if_even:nTF { \thepage } {
       \noindent\parbox[t]{\textwidth}{
-        \raggedleft\huge\scshape\bfseries\l_zchinr_article_category_tl 
+        \raggedright\huge\scshape\bfseries\l_zchinr_article_category_tl
       }\par
     } {
       \noindent\parbox[t]{\textwidth}{
-        \raggedright\huge\scshape\bfseries\l_zchinr_article_category_tl
+        \raggedleft\huge\scshape\bfseries\l_zchinr_article_category_tl 
       }\par
     }
     \noindent\rule{\textwidth}{1pt}
+    \addtocounter{footnote}{-1}
     \par\vskip 7mm
   }
 
@@ -542,16 +553,16 @@
   }
 
   \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
-    \raggedright\huge\l_zchinr_article_title_tl
+    \raggedright{\huge\l_zchinr_article_title_tl}
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
       \par\bigskip
-      \fontsize{11}{13}\selectfont\itshape \__zchir_article_author:
+      {\fontsize{11}{13}\selectfont\itshape \__zchir_article_author: }
     }
   }
   \par\vskip 4mm\bigskip
 
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { abstract } {
-    \noindent{\itshape\bfseries\fontsize{11}{13}\selectfont\l_zchinr_local_abstract_tl }
+    \noindent{\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl }
     \par\vskip 8pt
     \str_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
       \noindent\begin{abstract}
@@ -575,6 +586,16 @@
       \printcontents{l}{1}{}
     \end{subcontents}
     \par\vskip 12mm
+  }
+}
+
+\NewDocumentCommand { \inputpart } { s m } {
+  \IfBooleanTF{#1}{
+    \bool_if:NT \l__zchnr_standalone_bool {
+      \input{#2}
+    }
+  }{
+    \input{#2}
   }
 }
 
