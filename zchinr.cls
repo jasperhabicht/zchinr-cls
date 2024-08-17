@@ -1,3 +1,15 @@
+% File: zchinr.cls 
+% Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+% 
+% This file is part of the `zchinr' package (The Work in LPPL)
+% and all files in that bundle must be distributed together.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
 \ProvidesExplClass{zchinr}
   {2024/08/14} {2.0} {Document class for ZChinR}
 
@@ -591,7 +603,7 @@
 
 \NewDocumentCommand { \inputpart } { s m } {
   \IfBooleanTF{#1}{
-    \bool_if:NT \l__zchnr_standalone_bool {
+    \bool_if:NF \l__zchnr_standalone_bool {
       \input{#2}
     }
   }{

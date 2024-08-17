@@ -5,6 +5,19 @@
 % ==========
 % This document class provides basic layout options for articles printed in ZChinR. 
 
+% File: zchinr_old.cls 
+% Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+% 
+% This file is part of the `zchinr' package (The Work in LPPL)
+% and all files in that bundle must be distributed together.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+
 % ==========
 
 \def\@clsfiledate{2024/08/13}
