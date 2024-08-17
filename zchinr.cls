@@ -33,7 +33,10 @@
   Color ~ profile ~ not ~ defined ~ in ~ preamble.
 }
 
-\bool_new:N \l_zchinr_pagination_bool
+\msg_new:nnn { zchinr } { pagination-unknown } {
+  \msg_warning_text:n { zhinr } \iow_newline:
+  Ignoring ~ unknown ~ pagination ~ setting.
+}
 
 \tl_new:N \l_zchinr_color_profile_name_tl
 \tl_new:N \l_zchinr_color_profile_info_tl
@@ -43,6 +46,7 @@
 \tl_new:N \l_zchinr_issue_number_tl
 \tl_new:N \l_zchinr_issue_issn_tl
 
+\tl_new:N \l_zchinr_article_first_page_tl
 \tl_new:N \l_zchinr_article_doi_tl
 \tl_new:N \l_zchinr_article_licence_tl
 \tl_new:N \l_zchinr_article_licence_url_tl
@@ -57,8 +61,7 @@
 \tl_new:N \l_zchinr_article_abstract_tl
 \tl_new:N \l_zchinr_article_abstract_alt_tl
 \tl_new:N \l_zchinr_article_category_tl
-\int_new:N \l_zchinr_article_page_first_int
-\int_new:N \l_zchinr_article_page_last_int
+\str_new:N \l_zchinr_article_pagination_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
 \clist_new:N \l_zchinr_article_title_style_clist
 
@@ -79,9 +82,6 @@
   color ~ profile / path   .tl_set:N   = \l_zchinr_color_profile_path_tl ,
   title ~ distance         .dim_set:N   = \l_zchinr_title_distance_dim ,
   title ~ distance         .initial:n   = { 35mm } ,
-  pagination               .bool_set:N  = \l_zchinr_pagination_bool ,
-  pagination               .default:n   = { true } ,
-  pagination               .initial:n   = { true } ,
   localization             .code:n      = { \keys_set:nn { zchinr / setup / localization } {#1} } ,
   localization / zchinr    .tl_set:N    = \l_zchinr_local_zchinr_tl ,
   localization / zchinr    .initial:n   = { ZChinR } ,
@@ -99,16 +99,14 @@
   issue / issn             .tl_set:N    = \l_zchinr_issue_issn_tl ,
   issue / issn             .initial:n   = { 1613-5768, ~ online ~ 2366-7125 } ,
   article                  .code:n      = { \keys_set:nn { zchinr / setup / article } {#1} } ,
+  article / pagination     .str_set:N   = \l_zchinr_article_pagination_str ,
+  article / pagination     .initial:n   = { arabic } , % arabic , roman , none
+  article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl , 
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
   article / licence        .initial:n   = { CC ~ BY ~ 4.0 } ,
   article / licence ~ url  .tl_set:N    = \l_zchinr_article_licence_url_tl ,
   article / licence ~ url  .initial:n   = { https://creativecommons.org/licenses/by/4.0/ } ,
-  article / pages          .code:n      = { \__zchinr_pages_split:n {#1} } , 
-  article / page ~ first   .int_set:N   = \l_zchinr_page_first_int , 
-  article / page ~ first   .initial:n   = { 1 } , 
-  article / page ~ last    .int_set:N   = \l_zchinr_page_last_int , 
-  article / page ~ last    .initial:n   = { 1 } , 
   article / author         .tl_set:N    = \l_zchinr_article_author_tl , 
   article / author ~ short .tl_set:N    = \l_zchinr_article_author_short_tl , 
   article / author ~ short .initial:n   = { \l_zchinr_article_author_tl } , 
@@ -132,6 +130,10 @@
   article / title ~ style  .initial:n   = { } , % category , author , abstract
   reset                    .code:n      = {
     \keys_set:nn { zchinr / setup / article } {
+      pagination = { arabic } ,
+      first ~ page = { } ,
+      licence = { CC ~ BY ~ 4.0 } ,
+      licence ~ url = { https://creativecommons.org/licenses/by/4.0/ } ,
       author = { } ,
       author ~ short = { \l_zchinr_article_author_tl } ,
       author ~ copy = { \l_zchinr_article_author_tl } , 
@@ -146,15 +148,6 @@
       title ~ style = { }
     }
   }
-}
-
-\cs_new:Npn \__zchinr_pages_split:n #1 {
-  \__zchinr_pages_split_aux:w #1 \q_stop
-}
-
-\cs_new:Npn \__zchinr_pages_split_aux:w #1 - #2 \q_stop {
-  \tl_set:Nn \l_zchinr_page_first_int {#1}
-  \tl_set:Nn \l_zchinr_page_last_int {#2}
 }
 
 \NewDocumentCommand { \zchinrsetup } { m } {
@@ -255,7 +248,7 @@
       /GTS_PDFXConformance ~ (PDF/X-1a:2001)
     >>}
     \str_if_empty:NTF { \l_zchinr_color_profile_path_tl } {
-      \msg_warning:nn { zchinr } { no-color-profile }  
+      \msg_warning:nn { zchinr } { no-color-profile } 
     } {
       \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_tl) ~ <<
         /N ~ 4^^J/Alternate/DeviceCMYK
@@ -490,13 +483,25 @@
   \thispagestyle{zchinrtitle}
   \setcounter{footnote}{0}
   \startcontents
-  
-  \bool_if:NTF \l_zchinr_pagination_bool {
-    \tl_set:Nn \l__zchinr_header_mark_page_tl { \thepage }
-  } {
-    \tl_set:Nn \l__zchinr_header_mark_page_tl { }
+
+  \tl_if_empty:NF \l_zchinr_article_first_page_tl {
+    \setcounter{page}{ \l_zchinr_article_first_page_tl }
   }
-  
+
+  \str_case_e:nnF { \l_zchinr_article_pagination_str } {
+    { none } {
+      \tl_set:Nn \l__zchinr_header_mark_page_tl { }
+    }
+    { roman } {
+      \tl_set:Nn \l__zchinr_header_mark_page_tl { \roman{page} }
+    }
+    { arabic } {
+      \tl_set:Nn \l__zchinr_header_mark_page_tl { \arabic{page} } 
+    }
+  } {
+    \msg_warning:nn { zchinr } { pagination-unknown } 
+  }
+
   \tl_if_empty:NTF \l_zchinr_article_title_short_tl {
     \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_category_tl
     \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl  
@@ -529,6 +534,7 @@
   }
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
+    \addtocounter{footnote}{-1}
   }
   \renewcommand*{\thefootnote}{\arabic{footnote}}
   \@afterindentfalse\@afterheading
@@ -543,9 +549,9 @@
 
 \cs_new:Npn \__zchir_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
-    \noindent\rule{\textwidth}{1pt}
-    \par\vskip 2mm
-    \int_if_even:nTF { \thepage } {
+    %\noindent\rule{\textwidth}{1pt}
+    %\par\vskip 2mm
+    \int_if_even:nTF { \value{page} } {
       \noindent\parbox[t]{\textwidth}{
         \raggedright\huge\scshape\bfseries\l_zchinr_article_category_tl
       }\par
@@ -555,8 +561,7 @@
       }\par
     }
     \noindent\rule{\textwidth}{1pt}
-    \addtocounter{footnote}{-1}
-    \par\vskip 7mm
+    \par\vskip 5mm
   }
 
   \bool_if:NF \l__zchinr_standalone_bool {
