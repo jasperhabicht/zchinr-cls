@@ -158,7 +158,12 @@
 \tl_new:N \l__zchinr_header_mark_odd_tl
 \tl_new:N \l__zchinr_header_mark_page_tl
 
+\dim_new:N \l__zchinr_tabindent_dim
 \dim_new:N \l__zchinr_balance_skip_dim
+
+\cs_new:Npn \__zchinr_halfquad: { 
+  \hskip .5em \relax
+}
 
 \RequirePackage[english, german]{babel}
 
@@ -370,22 +375,22 @@
 \titlespacing*{\subparagraph}{0pt}{5pt plus 1pt}{1em plus 5pt minus 10pt}
 
 \titlecontents{section}[0pt]{}{\hspace*{-15pt}}{}
-  {\quad\titlerule*[5pt]{.}\contentspage}
+  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subsection}[15pt]{}{\hspace*{-15pt}}{}
-  {\quad\titlerule*[5pt]{.}\contentspage}
+  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subsubsection}[30pt]{}{\hspace*{-15pt}}{}
-  {\quad\titlerule*[5pt]{.}\contentspage}
+  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{paragraph}[45pt]{}{\hspace*{-15pt}}{}
-  {\quad\titlerule*[5pt]{.}\contentspage}
+  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subparagraph}[60pt]{}{\hspace*{-15pt}}{}
-  {\quad\titlerule*[5pt]{.}\contentspage}
+  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 
 % Style footnotes.
-\RenewDocumentCommand { \@makefntext } { +m } {
+\cs_set:Npn \@makefntext #1 {
   \parbox[t]{2em}{\@thefnmark}
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
-\RenewDocumentCommand { \footnoterule } { } { }
+\tl_set:Nn \footnoterule {}
 \setlength{\skip\footins}{15pt plus 5pt minus 5pt}
 
 % Create listing environment for references. 
@@ -404,10 +409,16 @@
 
 % Create documentation environment. 
 \NewDocumentEnvironment { documentation } { } {
-  \renewcommand{\arraystretch}{1.25}
+  \tl_set:Nn \arraystretch { 1.25 }
   \noindent\begin{longtable}{
-    @{} >{\hskip 2em} p{54mm}
-    @{\hskip 7mm} >{\hskip 15pt} p{\dimexpr\textwidth - 54mm - 7mm}
+    @{} 
+      >{ \dim_set:Nn \l__zchinr_tabindent_dim { 2em } 
+        \hskip \l__zchinr_tabindent_dim } 
+      p{54mm}
+    @{\hskip 7mm} 
+      >{ \dim_set:Nn \l__zchinr_tabindent_dim { 15pt } 
+        \hskip \l__zchinr_tabindent_dim } 
+      p{\dimexpr\textwidth - 54mm - 7mm}
     @{}
   }
 } {
@@ -419,18 +430,21 @@
     \phantomsection
     \addcontentsline{toc}{#4}{\IfNoValueTF{#5}{#3}{#5}}
   }
-  \vspace{-\baselineskip}
-  \begin{center}
+  \hskip -\l__zchinr_tabindent_dim 
+  \parbox{\linewidth}{
+    \vskip 10pt\par
     \str_if_eq:nnT {#1} { l } { \raggedright }
     \str_if_eq:nnT {#1} { r } { \raggedleft }
-    \str_if_eq:nnF {#2} { n } { \bfseries } #3
-  \end{center}
+    \str_if_eq:nnF {#2} { n } { \bfseries } 
+    #3
+    \vskip 10pt\par
+  }
 }
 
 % Create addresses environment.
 \NewDocumentEnvironment { addresses } { } {
   \setlength{\arrayrulewidth}{1pt}
-  \renewcommand{\arraystretch}{1.75}
+  \tl_set:Nn \arraystretch { 1.75 }
   \noindent\begin{longtable}{
     @{} p{80.75mm}
     @{\hskip 7mm} p{\dimexpr\textwidth - 88.75mm - 7mm}
@@ -442,7 +456,7 @@
 
 % Create imprint environment.
 \NewDocumentEnvironment { imprint } { } {
-  \renewcommand{\arraystretch}{1.25}
+  \tl_set:Nn \arraystretch { 1.25 }
   \noindent\begin{longtable}{
     @{} p{30mm}
     @{\hskip 7mm} p{\dimexpr\textwidth - 30mm - 7mm - 4mm - 35mm}
@@ -519,7 +533,7 @@
     }
   }
 
-  \renewcommand*{\thefootnote}{\char"002A}
+  \tl_set:Nn \thefootnote { \char"002A }
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \twocolumn[
       \__zchir_article_title:
@@ -536,7 +550,7 @@
     \footnotetext{\l_zchinr_article_author_note_tl}
     \addtocounter{footnote}{-1}
   }
-  \renewcommand*{\thefootnote}{\arabic{footnote}}
+  \tl_set:Nn \thefootnote { \arabic{footnote} }
   \@afterindentfalse\@afterheading
 }
 
@@ -549,19 +563,16 @@
 
 \cs_new:Npn \__zchir_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
-    %\noindent\rule{\textwidth}{1pt}
-    %\par\vskip 2mm
-    \int_if_even:nTF { \value{page} } {
-      \noindent\parbox[t]{\textwidth}{
-        \raggedright\huge\scshape\bfseries\l_zchinr_article_category_tl
-      }\par
-    } {
-      \noindent\parbox[t]{\textwidth}{
-        \raggedleft\huge\scshape\bfseries\l_zchinr_article_category_tl 
-      }\par
-    }
-    \noindent\rule{\textwidth}{1pt}
-    \par\vskip 5mm
+    \noindent{
+      \int_if_even:nTF { \value{page} } {
+        \raggedright
+      } {
+        \raggedleft
+      }
+      \Large\scshape\bfseries \text_uppercase:n { \l_zchinr_article_category_tl }
+    } \__zchinr_halfquad:
+    \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
+    \par\vskip 7mm
   }
 
   \bool_if:NF \l__zchinr_standalone_bool {
