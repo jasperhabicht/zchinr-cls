@@ -26,7 +26,7 @@
     author note  = {PhD in law.},
     abstract     = {Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheuren Ungeziefer verwandelt.},
     abstract alt = {When Gregor Samsa woke up one morning from restless dreams, he found himself in his bed transformed into a monstrous vermin.},
-    title style  = {category, author, abstract, contents},
+    title style  = {category, title , author, abstract, contents},
     category     = {Aufsätze},
     two columns
   }
@@ -75,7 +75,7 @@ Und er sah zur Weckuhr hinüber, die auf dem Kasten tickte. ,,Himmlischer Vater!
     title alt    = {English Title},
     author       = {Vorname Name},
     author short = {Name},
-    title style  = {category, author},
+    title style  = {category, title , author},
     category     = {Kurze Beiträge},
     pagination   = {none},
     two columns
@@ -99,7 +99,7 @@ Als Gregor Samsa\footnote{\zhs{促进和规范数据跨境流动规定} (wörtli
     title alt    = {English Title},
     author       = {Vorname Name},
     author short = {Name},
-    title style  = {category},
+    title style  = {category , title},
     category     = {Dokumentationen}
   }
 }
@@ -108,16 +108,75 @@ Als Gregor Samsa\footnote{\zhs{促进和规范数据跨境流动规定} (wörtli
 
 \begin{documentation}
 
+\documentationheader[l]{\zhs{某个规定}} & \documentationheader[l]{Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte} \\
+
 \zhs{\textbf{第一条}　某个规定。} & \textbf{§~1} Als Gregor Samsa\footnote{\zhs{促进和规范数据跨境流动规定} (wörtlich: Bestimmungen zur Förderung und Normierung des grenzüberschreitenden Umlaufs von Daten) vom 22.3.2024, chinesisch-deutsch in diesem Heft, S.~159~ff.} eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt. \\
 
 \zhs{\textbf{第一条}　某个规定。} & Foo \\
-
-\tablehead{\zhs{\textbf{第一条}　某个规定。}} & Bar \\
 
 \zhs{\textbf{第一条}　某个规定。} & Baz \\
 
 \zhs{\textbf{第一条}　某个规定。} & Baz \\
 
 \end{documentation}
+
+
+\zchinrsetup{
+  reset, 
+  article = {
+    title style  = {category},
+    category     = {Rezensionen},
+    two columns
+  }
+}
+
+\zchinrprinttitle
+
+\section{Franz Kafka, Die Verwandlung.}
+
+\emph{Knut Benjamin Pißler}
+
+\bigskip
+
+Als Gregor Samsa\footnote{\zhs{促进和规范数据跨境流动规定} (wörtlich: Bestimmungen zur Förderung und Normierung des grenzüberschreitenden Umlaufs von Daten) vom 22.3.2024, chinesisch-deutsch in diesem Heft, S.~159~ff.} eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt. Er lag auf seinem panzerartig harten Rücken und sah, wenn er den Kopf ein wenig hob, seinen gewölbten, braunen, von bogenförmigen Versteifungen geteilten Bauch, auf dessen Höhe sich die Bettdecke, zum gänzlichen Niedergleiten bereit, kaum noch erhalten konnte. Seine vielen, im Vergleich zu seinem sonstigen Umfang kläglich dünnen Beine flimmerten ihm hilflos vor den Augen.
+
+
+\zchinrsetup{
+  reset, 
+  article = {
+    title        = {Adressen},
+    title style  = {category},
+    category     = {Adressen}
+  }
+}
+
+\zchinrprinttitle
+
+\addressessection{Beijing} 
+
+\begin{addresses}
+  \addressesheader{Baker \& McKenzie}[section] & \addressesheader{\zhs{贝壳·麦坚时国际律师事务所北京代表处}} \\
+  Suite 3401, China World Tower 2 \newline 
+  China World Trade Center \newline
+  No. 1, Jianguomenwai Avenue \newline 
+  100004 Beijing, VR China & 
+  \zhs{国贸大厦 2 座 3401 室} \newline 
+  \zhs{中国国际贸易中心} \newline 
+  \zhs{建国门外大街 1 号} \newline
+  \zhs{100004 北京, 中华人民共和国} \\
+  \addressesspan{Tel.: +86 10 6535 3800 \addressessep Fax: +86 10 6505 2309, +86 10 6505 0378 \newline 
+  E-Mail: \email{christian.atzler@bakermckenzie.com} \newline
+  Ansprechpartner: \emph{Christian Atzler}} \\
+  %  
+  \addressesheader{Brandi Dröge Piltz Heuer \& Gronemeyer} & \\
+  Suite 706/2, Jian Wai SOHO \newline
+  No. 39, East 3rd Ring Road, Chaoyang District  \newline
+  100022 Beijing, VR China & 
+  \zhs{建外 SOHO 2 号楼 706 室} \newline
+  \zhs{朝阳区东三环中路 39 号} \newline
+  \zhs{100022 北京, 中华人民共和国} \\
+  \addressesspan{Tel.: +86 10 5869 5751 \addressessep E-Mail: \email{wigginghaus@bdphg.de} \newline
+  Ansprechpartner: \emph{Dr. Nils Wigginghaus}} \\
+\end{addresses}
 
 \end{document}

@@ -127,7 +127,7 @@
   article / two ~ columns  .default:n   = { true } ,
   article / two ~ columns  .initial:n   = { false } ,
   article / title ~ style  .clist_set:N = \l_zchinr_article_title_style_clist , 
-  article / title ~ style  .initial:n   = { } , % category , author , abstract
+  article / title ~ style  .initial:n   = { title } , % category , title , author , abstract
   reset                    .code:n      = {
     \keys_set:nn { zchinr / setup / article } {
       pagination = { arabic } ,
@@ -145,7 +145,7 @@
       abstract = { } , 
       abstract ~ alt = { } , 
       two ~ columns = false ,
-      title ~ style = { }
+      title ~ style = { title }
     }
   }
 }
@@ -163,6 +163,10 @@
 
 \cs_new:Npn \__zchinr_halfquad: { 
   \hskip .5em \relax
+}
+
+\cs_new:Npn \__zchinr_hfillrule: {
+  \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
 }
 
 \RequirePackage[english, german]{babel}
@@ -286,6 +290,14 @@
   }
 }
 
+\RequirePackage{afterpage}
+\RequirePackage{array}
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{titletoc}
+\RequirePackage[pagestyles]{titlesec}
+
 \frenchspacing
 \clubpenalty=10000
 \widowpenalty=10000
@@ -294,13 +306,7 @@
 \setlength{\parindent}{15pt}
 \setlength{\parskip}{2pt plus 1pt minus 1pt}
 
-\RequirePackage{afterpage}
-\RequirePackage{array}
-\RequirePackage{longtable}
-\RequirePackage{booktabs}
-\RequirePackage{enumitem}
-\RequirePackage{titletoc}
-\RequirePackage[pagestyles]{titlesec}
+\setlength{\arrayrulewidth}{.75pt}
 
 % Style figure and table captions.
 \RequirePackage[
@@ -415,43 +421,68 @@
       >{ \dim_set:Nn \l__zchinr_tabindent_dim { 2em } 
         \hskip \l__zchinr_tabindent_dim } 
       p{54mm}
-    @{\hskip 7mm} 
+    @{\hskip\columnsep} 
       >{ \dim_set:Nn \l__zchinr_tabindent_dim { 15pt } 
         \hskip \l__zchinr_tabindent_dim } 
-      p{\dimexpr\textwidth - 54mm - 7mm}
+      p{\dimexpr\textwidth - 54mm - \columnsep}
     @{}
   }
 } {
   \end{longtable}
 }
 
-\NewDocumentCommand { \tablehead } { O{c} O{} m o o } {
+\NewDocumentCommand { \documentationheader } { O{c} O{} m o o } {
+  \leavevmode
   \IfNoValueF{#4}{
     \phantomsection
     \addcontentsline{toc}{#4}{\IfNoValueTF{#5}{#3}{#5}}
   }
   \hskip -\l__zchinr_tabindent_dim 
-  \parbox{\linewidth}{
-    \vskip 10pt\par
-    \str_if_eq:nnT {#1} { l } { \raggedright }
-    \str_if_eq:nnT {#1} { r } { \raggedleft }
-    \str_if_eq:nnF {#2} { n } { \bfseries } 
-    #3
-    \vskip 10pt\par
-  }
+  \rule{0pt}{\dimexpr\baselineskip+5pt}
+  \str_if_eq:nnT {#1} { c } { \centering }
+  \str_if_eq:nnT {#1} { l } { \raggedright }
+  \str_if_eq:nnT {#1} { r } { \raggedleft }
+  \str_if_eq:nnF {#2} { n } { \bfseries } 
+  \arraybackslash #3 
+  \rule[-10pt]{0pt}{0pt}
 }
 
 % Create addresses environment.
 \NewDocumentEnvironment { addresses } { } {
-  \setlength{\arrayrulewidth}{1pt}
   \tl_set:Nn \arraystretch { 1.75 }
   \noindent\begin{longtable}{
-    @{} p{80.75mm}
-    @{\hskip 7mm} p{\dimexpr\textwidth - 88.75mm - 7mm}
+    @{} 
+      p{\dimexpr.5\textwidth - .5\columnsep}
+    @{\hskip\columnsep} 
+      p{\dimexpr.5\textwidth - .5\columnsep}
     @{}
   }
 } {
   \end{longtable}
+}
+
+\NewDocumentCommand { \addressessection } { m o } {
+  \phantomsection
+  \addcontentsline{toc}{section}{\IfNoValueTF{#2}{#1}{#2}}
+  \noindent{\huge #1}
+}
+
+\NewDocumentCommand { \addressesheader } { m o o } {
+  \leavevmode
+  \IfNoValueF{#2}{
+    \phantomsection
+    \addcontentsline{toc}{#2}{\IfNoValueTF{#3}{#1}{#3}}
+  }
+  \rule{0pt}{\dimexpr\baselineskip+15pt}
+  \raggedright\bfseries\arraybackslash #1
+}
+
+\NewExpandableDocumentCommand { \addressesspan } { m } {
+  \multicolumn{2}{@{}p{\textwidth}@{}}{#1}
+}
+
+\NewDocumentCommand { \addressessep } { m } {
+  \char"00B7{}
 }
 
 % Create imprint environment.
@@ -459,8 +490,8 @@
   \tl_set:Nn \arraystretch { 1.25 }
   \noindent\begin{longtable}{
     @{} p{30mm}
-    @{\hskip 7mm} p{\dimexpr\textwidth - 30mm - 7mm - 4mm - 35mm}
-    @{\hskip 4mm} >{\raggedleft\arraybackslash} p{35mm}
+    @{\hskip\columnsep} p{\dimexpr\textwidth - 30mm - 35mm - 1.5\columnsep}
+    @{\hskip .5\columnsep} >{\raggedleft\arraybackslash} p{35mm}
     @{}
   }
 } {
@@ -468,8 +499,9 @@
 }
 
 % Create commands for TOC. 
-\NewDocumentCommand { \zchinrtocentry } { m }{
-  \bigskip\noindent{\Large\scshape\bfseries #1}
+\NewDocumentCommand { \tocentry } { m }{
+  \bigskip
+  \noindent{\Large\scshape\bfseries \text_lowercase:n {#1} }
 }
 
 \newlist{toc}{itemize}{1}
@@ -494,9 +526,9 @@
 
 \NewDocumentCommand { \zchinrprinttitle } { } {
   \clearpage
-  \thispagestyle{zchinrtitle}
   \setcounter{footnote}{0}
   \startcontents
+  \thispagestyle{zchinrtitle}
 
   \tl_if_empty:NF \l_zchinr_article_first_page_tl {
     \setcounter{page}{ \l_zchinr_article_first_page_tl }
@@ -569,9 +601,8 @@
       } {
         \raggedleft
       }
-      \Large\scshape\bfseries \text_uppercase:n { \l_zchinr_article_category_tl }
-    } \__zchinr_halfquad:
-    \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
+      \LARGE\scshape\bfseries \text_lowercase:n { \l_zchinr_article_category_tl }
+    } \__zchinr_halfquad: \__zchinr_hfillrule:
     \par\vskip 7mm
   }
 
@@ -580,14 +611,16 @@
     \addcontentsline{toc}{chapter}{\l_zchinr_article_title_tl}
   }
 
-  \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
-    \raggedright{\huge\l_zchinr_article_title_tl}
-    \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
-      \par\bigskip
-      {\fontsize{11}{13}\selectfont\itshape \__zchir_article_author: }
+  \clist_if_in:NnT \l_zchinr_article_title_style_clist { title } {
+    \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
+      \raggedright{\huge\l_zchinr_article_title_tl}
+      \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
+        \par\bigskip
+        {\fontsize{11}{13}\selectfont\itshape \__zchir_article_author: }
+      }
     }
+    \par\vskip 4mm\bigskip
   }
-  \par\vskip 4mm\bigskip
 
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { abstract } {
     \noindent{\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl }
