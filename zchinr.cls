@@ -38,6 +38,11 @@
   Ignoring ~ unknown ~ pagination ~ setting.
 }
 
+\msg_new:nnn { zchinr } { toc-style-unknown } {
+  \msg_warning_text:n { zhinr } \iow_newline:
+  Ignoring ~ unknown ~ toc ~ style ~ setting.
+}
+
 \tl_new:N \l_zchinr_color_profile_name_tl
 \tl_new:N \l_zchinr_color_profile_info_tl
 \tl_new:N \l_zchinr_color_profile_path_tl
@@ -52,17 +57,22 @@
 \tl_new:N \l_zchinr_article_licence_url_tl
 \tl_new:N \l_zchinr_article_author_tl
 \tl_new:N \l_zchinr_article_author_short_tl
+\tl_new:N \l_zchinr_article_author_toc_tl
 \tl_new:N \l_zchinr_article_author_copy_tl
 \tl_new:N \l_zchinr_article_author_note_tl
 \tl_new:N \l_zchinr_article_title_tl
 \tl_new:N \l_zchinr_article_title_pdf_tl
 \tl_new:N \l_zchinr_article_title_alt_tl
 \tl_new:N \l_zchinr_article_title_short_tl
+\tl_new:N \l_zchinr_article_title_toc_tl
 \tl_new:N \l_zchinr_article_abstract_tl
 \tl_new:N \l_zchinr_article_abstract_alt_tl
 \tl_new:N \l_zchinr_article_category_tl
+\tl_new:N \l_zchinr_article_toc_style_tl
 \str_new:N \l_zchinr_article_pagination_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
+\bool_new:N \l_zchinr_article_page_break_bool
+\bool_new:N \l_zchinr_article_small_title_bool
 \clist_new:N \l_zchinr_article_title_style_clist
 
 \dim_new:N \l_zchinr_title_distance_dim
@@ -110,6 +120,8 @@
   article / author         .tl_set:N    = \l_zchinr_article_author_tl , 
   article / author ~ short .tl_set:N    = \l_zchinr_article_author_short_tl , 
   article / author ~ short .initial:n   = { \l_zchinr_article_author_tl } , 
+  article / author ~ toc   .tl_set:N    = \l_zchinr_article_author_toc_tl , 
+  article / author ~ toc   .initial:n   = { \l_zchinr_article_author_tl } , 
   article / author ~ copy  .tl_set:N    = \l_zchinr_article_author_copy_tl , 
   article / author ~ copy  .initial:n   = { \l_zchinr_article_author_tl } , 
   article / author ~ note  .tl_set:N    = \l_zchinr_article_author_note_tl , 
@@ -119,6 +131,8 @@
   article / title ~ alt    .tl_set:N    = \l_zchinr_article_title_alt_tl , 
   article / title ~ short  .tl_set:N    = \l_zchinr_article_title_short_tl , 
   article / title ~ short  .initial:n   = { \l_zchinr_article_title_tl } ,
+  article / title ~ toc    .tl_set:N    = \l_zchinr_article_title_toc_tl , 
+  article / title ~ toc    .initial:n   = { \l_zchinr_article_title_tl } ,
   article / abstract       .tl_set:N    = \l_zchinr_article_abstract_tl , 
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
   article / category       .tl_set:N    = \l_zchinr_article_category_tl , 
@@ -126,8 +140,16 @@
   article / two ~ columns  .bool_set:N  = \l_zchinr_article_twocolumn_bool , 
   article / two ~ columns  .default:n   = { true } ,
   article / two ~ columns  .initial:n   = { false } ,
+  article / page ~ break   .bool_set:N  = \l_zchinr_article_page_break_bool , 
+  article / page ~ break   .default:n   = { true } ,
+  article / page ~ break   .initial:n   = { true } ,
+  article / small ~ title  .bool_set:N  = \l_zchinr_article_small_title_bool , 
+  article / small ~ title  .default:n   = { true } ,
+  article / small ~ title  .initial:n   = { false } ,
   article / title ~ style  .clist_set:N = \l_zchinr_article_title_style_clist , 
-  article / title ~ style  .initial:n   = { title } , % category , title , author , abstract
+  article / title ~ style  .initial:n   = { title } , % category , title , author , abstract , phantom
+  article / toc ~ style    .tl_set:N    = \l_zchinr_article_toc_style_tl , 
+  article / toc ~ style    .initial:n   = { author ~ first } , % author first , author last , no author
   reset                    .code:n      = {
     \keys_set:nn { zchinr / setup / article } {
       pagination = { arabic } ,
@@ -136,16 +158,21 @@
       licence ~ url = { https://creativecommons.org/licenses/by/4.0/ } ,
       author = { } ,
       author ~ short = { \l_zchinr_article_author_tl } ,
+      author ~ toc = { \l_zchinr_article_author_tl } ,
       author ~ copy = { \l_zchinr_article_author_tl } , 
       author ~ note = { } ,
       title = { } ,
       title ~ pdf = { \l_zchinr_article_title_tl } ,
       title ~ alt = { } ,
       title ~ short = { \l_zchinr_article_title_tl } ,
+      title ~ toc = { \l_zchinr_article_title_tl } ,
       abstract = { } , 
       abstract ~ alt = { } , 
-      two ~ columns = false ,
-      title ~ style = { title }
+      two ~ columns = { false } ,
+      page ~ break = { true } ,
+      small ~ title = { false } ,
+      title ~ style = { title } ,
+      toc ~ style = { author ~ first }
     }
   }
 }
@@ -158,8 +185,9 @@
 \tl_new:N \l__zchinr_header_mark_odd_tl
 \tl_new:N \l__zchinr_header_mark_page_tl
 
+\tl_new:N \l__zchinr_toc_entry_tl
+
 \dim_new:N \l__zchinr_tabindent_dim
-\dim_new:N \l__zchinr_balance_skip_dim
 
 \cs_new:Npn \__zchinr_halfquad: { 
   \hskip .5em \relax
@@ -391,6 +419,9 @@
 \titlecontents{subparagraph}[60pt]{}{\hspace*{-15pt}}{}
   { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 
+\titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}[\bigskip]
+\titlecontents{chapter}[15pt]{}{}{}{\hfill\contentspage}
+
 % Style footnotes.
 \cs_set:Npn \@makefntext #1 {
   \parbox[t]{2em}{\@thefnmark}
@@ -463,7 +494,7 @@
 
 \NewDocumentCommand { \addressessection } { m o } {
   \phantomsection
-  \addcontentsline{toc}{section}{\IfNoValueTF{#2}{#1}{#2}}
+  \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
   \noindent{\huge #1}
 }
 
@@ -504,6 +535,12 @@
   \noindent{\Large\scshape\bfseries \text_lowercase:n {#1} }
 }
 
+% Create commands for TOC. 
+\NewDocumentCommand { \printissuetoc } { } {
+  \startcontents
+  \printcontents{}{-1}[0]{}
+}
+
 \newlist{toc}{itemize}{1}
 \setlist[toc]{leftmargin=15mm, label*={}}
 
@@ -524,10 +561,14 @@
   \endlist
 }
 
-\NewDocumentCommand { \zchinrprinttitle } { } {
-  \clearpage
-  \setcounter{footnote}{0}
-  \startcontents
+\NewDocumentCommand { \printtitle } { } {
+  \bool_if:NTF \l_zchinr_article_page_break_bool {
+    \clearpage
+    \setcounter{footnote}{0}
+    \startcontents[zchinrsub]
+  } {
+    \bigskip
+  }
   \thispagestyle{zchinrtitle}
 
   \tl_if_empty:NF \l_zchinr_article_first_page_tl {
@@ -565,18 +606,49 @@
     }
   }
 
-  \tl_set:Nn \thefootnote { \char"002A }
-  \bool_if:NTF \l_zchinr_article_twocolumn_bool {
-    \twocolumn[
-      \__zchir_article_title:
-    ]
-    \sloppy\flushbottom
-    \enlargethispage{-10mm}
-    \afterpage{\enlargethispage{-10mm}}
+  \tl_clear:N \l__zchinr_toc_entry_tl
+  \str_case_e:nnF { \l_zchinr_article_toc_style_tl } {
+    { author ~ first } {
+      \tl_set:Nn \l__zchinr_toc_entry_tl { 
+        { \itshape \l_zchinr_article_author_toc_tl , } ~ 
+          \l_zchinr_article_title_toc_tl
+      }
+    }
+    { author ~ last } {
+      \tl_set:Nn \l__zchinr_toc_entry_tl { 
+        \l_zchinr_article_title_toc_tl \newline 
+          { \itshape ( \l_zchinr_article_author_toc_tl ) }
+      }
+    }
+    { no ~ author } {
+      \tl_set:Nn \l__zchinr_toc_entry_tl { 
+        \l_zchinr_article_title_toc_tl 
+      }
+    }
   } {
-    \onecolumn
+    \msg_warning:nn { zchinr } { toc-style-unknown }
+  }
+
+  \tl_set:Nn \thefootnote { \char"002A }
+  \bool_if:NTF \l_zchinr_article_page_break_bool {
+    \bool_if:NTF \l_zchinr_article_twocolumn_bool {
+      \twocolumn[
+        \__zchir_article_title:
+      ]
+      \sloppy\flushbottom
+      \enlargethispage{-10mm}
+      \afterpage{\enlargethispage{-10mm}}
+    } {
+      \onecolumn
+      \__zchir_article_title:
+      \enlargethispage{-10mm}
+    }
+  } {
     \__zchir_article_title:
     \enlargethispage{-10mm}
+    \bool_if:NT \l_zchinr_article_twocolumn_bool {
+      \afterpage{\enlargethispage{-10mm}}
+    }  
   }
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
@@ -595,6 +667,13 @@
 
 \cs_new:Npn \__zchir_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
+    \bool_if:NF \l__zchinr_standalone_bool {
+      \phantomsection
+      \addcontentsline{toc}{part}{
+        \texorpdfstring{ \text_lowercase:n { \l_zchinr_article_category_tl } }
+          {\l_zchinr_article_category_tl}
+      }
+    }
     \noindent{
       \int_if_even:nTF { \value{page} } {
         \raggedright
@@ -605,25 +684,40 @@
     } \__zchinr_halfquad: \__zchinr_hfillrule:
     \par\vskip 7mm
   }
-
-  \bool_if:NF \l__zchinr_standalone_bool {
-    \phantomsection
-    \addcontentsline{toc}{chapter}{\l_zchinr_article_title_tl}
-  }
-
-  \clist_if_in:NnT \l_zchinr_article_title_style_clist { title } {
-    \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
-      \raggedright{\huge\l_zchinr_article_title_tl}
-      \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
-        \par\bigskip
-        {\fontsize{11}{13}\selectfont\itshape \__zchir_article_author: }
+  
+  \clist_if_in:NnTF \l_zchinr_article_title_style_clist { title } {
+    \bool_if:NF \l__zchinr_standalone_bool {
+      \phantomsection
+      \addcontentsline{toc}{chapter}{
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
       }
     }
-    \par\vskip 4mm\bigskip
+    \bool_if:NTF \l_zchinr_article_small_title_bool {
+      \noindent{\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl}
+      \par\bigskip\nopagebreak
+      \noindent{\itshape \__zchir_article_author: }
+      \par\bigskip\nopagebreak
+    } {
+      \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
+        \raggedright{\huge\l_zchinr_article_title_tl}
+        \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
+          \par\bigskip
+          {\fontsize{11}{13}\selectfont\itshape \__zchir_article_author: }
+        }
+      }
+      \par\vskip 4mm\bigskip
+    }
+  } {
+    \clist_if_in:NnT \l_zchinr_article_title_style_clist { phantom } {
+      \phantomsection
+      \addcontentsline{toc}{chapter}{
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
+      }
+    }
   }
 
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { abstract } {
-    \noindent{\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl }
+    \noindent{\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl}
     \par\vskip 8pt
     \str_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
       \noindent\begin{abstract}
@@ -644,7 +738,7 @@
 
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { contents } {
     \begin{subcontents}
-      \printcontents{l}{1}{}
+      \printcontents[zchinrsub]{}{1}{}
     \end{subcontents}
     \par\vskip 12mm
   }
