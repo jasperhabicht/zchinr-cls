@@ -1,5 +1,5 @@
-/test.aux
-/test.log
-/test.out
-/test.ptc
-/test.synctex.gz
+/*.aux
+/*.log
+/*.out
+/*.ptc
+/*.synctex.gz

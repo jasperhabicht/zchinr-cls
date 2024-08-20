@@ -94,6 +94,8 @@
 
 \tl_new:N \l__zchinr_toc_entry_tl
 
+\tl_new:N \l__zchinr_fnmark_tl
+
 \dim_new:N \l__zchinr_tabindent_dim
 
 \keys_define:nn { zchinr / setup } { 
@@ -170,7 +172,7 @@
   article / toc ~ style    .str_set:N   = \l_zchinr_article_toc_style_str , 
   article / toc ~ style    .initial:n   = { author ~ first } , % author first , author last , no author
   reset                    .code:n      = {
-    \keys_set:nn { zchinr / setup / article } {
+   \keys_set:nn { zchinr / setup / article } {
       pagination = { arabic } ,
       first ~ page = { } ,
       doi = { } ,
@@ -351,6 +353,9 @@
 
 \setlength{\arrayrulewidth}{.75pt}
 
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{0pt}
+
 % Style figure and table captions.
 \RequirePackage[
   labelfont=bf,
@@ -423,6 +428,9 @@
 \titlespacing*{\paragraph}{0pt}{5pt plus 1pt}{1em plus 5pt minus 10pt}
 \titlespacing*{\subparagraph}{0pt}{5pt plus 1pt}{1em plus 5pt minus 10pt}
 
+\titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}[\bigskip]
+\titlecontents{chapter}[15pt]{\vskip 5pt}{}{}{\hfill\contentspage}
+
 \titlecontents{section}[0pt]{}{\hspace*{-15pt}}{}
   { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subsection}[15pt]{}{\hspace*{-15pt}}{}
@@ -434,12 +442,12 @@
 \titlecontents{subparagraph}[60pt]{}{\hspace*{-15pt}}{}
   { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 
-\titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}[\bigskip]
-\titlecontents{chapter}[15pt]{}{}{}{\hfill\contentspage}
-
 % Style footnotes.
+\tl_set:Nn \l__zchinr_fnmark_tl {
+  \@thefnmark
+}
 \cs_set:Npn \@makefntext #1 {
-  \parbox[t]{2em}{\@thefnmark}
+  \parbox[t]{2em}{ \l__zchinr_fnmark_tl }
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
 \tl_set:Nn \footnoterule {}
@@ -505,12 +513,13 @@
   }
 } {
   \end{longtable}
+  \bigskip
 }
 
 \NewDocumentCommand { \addressessection } { m o } {
   \phantomsection
   \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
-  \noindent{\huge #1}
+  \noindent{\Large #1}\par
 }
 
 \NewDocumentCommand { \addressesheader } { m o o } {
@@ -536,12 +545,14 @@
   \tl_set:Nn \arraystretch { 1.75 }
   \noindent\begin{longtable}{
     @{} 
+      >{\raggedright} 
       p{30mm}
     @{\hskip\columnsep} 
-      p{\dimexpr\textwidth - 30mm - 35mm - 1.5\columnsep}
+      >{\raggedright} 
+      p{\dimexpr\textwidth - 30mm - 37.5mm - 1.5\columnsep}
     @{\hskip .5\columnsep} 
       >{\raggedleft\let\newline\\\arraybackslash} 
-      p{35mm}
+      p{37.5mm}
     @{}
   }
 } {
@@ -652,13 +663,19 @@
     \msg_warning:nn { zchinr } { toc-style-unknown }
   }
 
-  \tl_set:Nn \thefootnote { \char"002A }
+  \tl_set:Nn \thefootnote { \fnsymbol{footnote} }
+  \tl_set:Nn \l__zchinr_fnmark_tl {
+    \textsuperscript{\@thefnmark}
+  }
   \__zchinr_article_title_block:
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
     \addtocounter{footnote}{-1}
   }
   \tl_set:Nn \thefootnote { \arabic{footnote} }
+  \tl_set:Nn \l__zchinr_fnmark_tl {
+    \@thefnmark
+  }
   \@afterindentfalse\@afterheading
 }
 
