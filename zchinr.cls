@@ -13,14 +13,14 @@
 \ProvidesExplClass{zchinr}
   {2024/08/14} {2.0} {Document class for ZChinR}
 
-\bool_new:N \l__zchinr_prepress_bool
-\bool_new:N \l__zchinr_standalone_bool
+\bool_new:N \l_zchinr_prepress_bool
+\bool_new:N \l_zchinr_standalone_bool
 
 \keys_define:nn { zchinr / global } { 
-  prepress   .bool_set:N = \l__zchinr_prepress_bool ,
+  prepress   .bool_set:N = \l_zchinr_prepress_bool ,
   prepress   .default:n  = { true } ,
   prepress   .initial:n  = { false } ,
-  standalone .bool_set:N = \l__zchinr_standalone_bool ,
+  standalone .bool_set:N = \l_zchinr_standalone_bool ,
   standalone .default:n  = { true } ,
   standalone .initial:n  = { false } 
 }
@@ -272,7 +272,7 @@
   \end{picture}
 }
 
-\bool_if:NT \l__zchinr_prepress_bool {
+\bool_if:NT \l_zchinr_prepress_bool {
   \geometry{
     layout=a4paper,
     paperwidth=230mm,
@@ -281,7 +281,7 @@
     layoutvoffset=10mm
   }
 
-  \AddToHook{shipout/background}{
+  \AddToHook{shipout/foreground}{
     \put(10mm,-10mm){\__zchinr_cropmark_nw:}
     \put(\paperwidth-10mm,-10mm){\__zchinr_cropmark_ne:}
     \put(10mm,10mm-\paperheight){\__zchinr_cropmark_sw:}
@@ -304,7 +304,7 @@
     \str_if_empty:NTF \l_zchinr_color_profile_path_str {
       \msg_warning:nn { zchinr } { no-color-profile } 
     } {
-      \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_tl) ~ <<
+      \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_str) ~ <<
         /N ~ 4^^J/Alternate/DeviceCMYK
       >>}
     }
@@ -326,7 +326,7 @@
           /Type ~ /OutputIntent
           /S ~ /GTS_PDFX
           /DestOutputProfile ~ @cmykdata
-          /OutputConditionIdentifier ~ (\l_zchinr_color_profile_id_tl)
+          /OutputConditionIdentifier ~ (\l_zchinr_color_profile_name_tl)
           /Info ~ (\l_zchinr_color_profile_info_tl)
           /RegistryName ~ (http://www.color.org/)
         >>]
@@ -364,7 +364,7 @@
 
 % Set up hyperreferences
 \PassOptionsToPackage{hyphens}{url}
-\bool_if:NTF \l__zchinr_prepress_bool {
+\bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
   \RequirePackage{datetime}
   \AtBeginDocument{
@@ -687,7 +687,7 @@
 }
 
 \cs_new:Npn \__zchinr_article_category: {
-  \bool_if:NF \l__zchinr_standalone_bool {
+  \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{part}{
       \texorpdfstring{ \text_lowercase:n { \l_zchinr_article_category_tl } }
@@ -706,7 +706,7 @@
 }
 
 \cs_new:Npn \__zchinr_article_title_large: {
-  \bool_if:NF \l__zchinr_standalone_bool {
+  \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{chapter}{
       \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
@@ -723,7 +723,7 @@
 }
 
 \cs_new:Npn \__zchinr_article_title_small: {
-  \bool_if:NF \l__zchinr_standalone_bool {
+  \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{chapter}{
       \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
@@ -812,7 +812,7 @@
 
 \NewDocumentCommand { \inputpart } { s m } {
   \IfBooleanTF{#1}{
-    \bool_if:NF \l__zchnr_standalone_bool {
+    \bool_if:NF \l_zchnr_standalone_bool {
       \input{#2}
     }
   }{
