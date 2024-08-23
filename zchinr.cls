@@ -243,33 +243,60 @@
 ]{geometry}
 \setlength{\columnsep}{7.5mm}
 
+\RequirePackage{l3draw}
 \cs_new:Npn \__zchinr_cropmark_nw: {
-  \begin{picture}(0,0)
-    \thinlines\unitlength1pt\linethickness{0.25pt}
-    \put(-6,0){\line(-1,0){20}}
-    \put(0,6){\line(0,1){20}}
-  \end{picture}
+  \draw_begin:
+    \bool_set_false:N \l_draw_bb_update_bool
+    \draw_linewidth:n { .25pt }
+    \draw_transform_shift:n { 10mm , -10mm }
+    \draw_path_moveto:n { -5pt , 0pt }
+    \draw_path_lineto:n { -20pt , 0pt }
+    \draw_path_moveto:n { 0 , 5pt }
+    \draw_path_lineto:n { 0 , 20pt }
+    \draw_path_use:n { stroke }
+  \draw_end:
 }
 \cs_new:Npn \__zchinr_cropmark_ne: {
-  \begin{picture}(0,0)
-    \thinlines\unitlength1pt\linethickness{0.25pt}
-    \put(6,0){\line(1,0){20}}
-    \put(0,6){\line(0,1){20}}
-  \end{picture}
+  \draw_begin:
+    \bool_set_false:N \l_draw_bb_update_bool
+    \draw_linewidth:n { .25pt }
+    \draw_transform_shift:n { \paperwidth - 10mm , -10mm }
+    \draw_path_moveto:n { 5pt , 0pt }
+    \draw_path_lineto:n { 20pt , 0pt }
+    \draw_path_moveto:n { 0 , 5pt }
+    \draw_path_lineto:n { 0 , 20pt }
+    \draw_path_use:n { stroke }
+  \draw_end:
 }
 \cs_new:Npn \__zchinr_cropmark_sw: {
-  \begin{picture}(0,0)
-    \thinlines\unitlength1pt\linethickness{0.25pt}
-    \put(-6,0){\line(-1,0){20}}
-    \put(0,-6){\line(0,-1){20}}
-  \end{picture}
+  \draw_begin:
+    \bool_set_false:N \l_draw_bb_update_bool
+    \draw_linewidth:n { .25pt }
+    \draw_transform_shift:n { 10mm , 10mm - \paperheight }
+    \draw_path_moveto:n { -5pt , 0pt }
+    \draw_path_lineto:n { -20pt , 0pt }
+    \draw_path_moveto:n { 0 , -5pt }
+    \draw_path_lineto:n { 0 , -20pt }
+    \draw_path_use:n { stroke }
+  \draw_end:
 }
 \cs_new:Npn \__zchinr_cropmark_se: {
-  \begin{picture}(0,0)
-    \thinlines\unitlength1pt\linethickness{0.25pt}
-    \put(6,0){\line(1,0){20}}
-    \put(0,-6){\line(0,-1){20}}
-  \end{picture}
+  \draw_begin:
+    \bool_set_false:N \l_draw_bb_update_bool
+    \draw_linewidth:n { .25pt }
+    \draw_transform_shift:n { \paperwidth - 10mm , 10mm - \paperheight }
+    \draw_path_moveto:n { 5pt , 0pt }
+    \draw_path_lineto:n { 20pt , 0pt }
+    \draw_path_moveto:n { 0 , -5pt }
+    \draw_path_lineto:n { 0 , -20pt }
+    \draw_path_use:n { stroke }
+  \draw_end:
+}
+
+\bool_if:NTF \l_zchinr_prepress_bool {
+  \color_set:nnn { zchinrblue } { cmyk } { 1 , .5 , 0 , .5 }
+} {
+  \color_set:nnn { zchinrblue } { rgb } { 0 , .25 , .5 }
 }
 
 \bool_if:NT \l_zchinr_prepress_bool {
@@ -282,10 +309,10 @@
   }
 
   \AddToHook{shipout/foreground}{
-    \put(10mm,-10mm){\__zchinr_cropmark_nw:}
-    \put(\paperwidth-10mm,-10mm){\__zchinr_cropmark_ne:}
-    \put(10mm,10mm-\paperheight){\__zchinr_cropmark_sw:}
-    \put(\paperwidth-10mm,10mm-\paperheight){\__zchinr_cropmark_se:}
+    \__zchinr_cropmark_nw:
+    \__zchinr_cropmark_ne:
+    \__zchinr_cropmark_sw:
+    \__zchinr_cropmark_se:
 
     \special{pdf:put ~ @thispage ~ <<
       /MediaBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
@@ -818,6 +845,47 @@
   }{
     \input{#2}
   }
+}
+
+\NewDocumentEnvironment { drawabsolute } { m +b } {
+  \AddToHookNext{shipout/background}{
+    \nullfont
+    \draw_begin:
+      \bool_set_false:N \l_draw_bb_update_bool
+      \bool_if:NT \l_zchinr_prepress_bool {
+        \draw_transform_shift:n { #1 }
+      }
+      #2
+    \draw_end:
+  }
+  \thispagestyle{zchinrempty}
+  \null
+  \clearpage
+} { }
+
+\NewDocumentCommand { \drawrectangle } { o m m } { 
+  \draw_scope_begin:
+    \color_select:n { #1 }
+    \draw_path_rectangle:nn { #2 } { #3 }
+    \draw_path_use:n { fill }
+  \draw_scope_end:
+}
+
+\NewDocumentCommand { \drawcoffin } { o m m O{hc} O{vc} +m } { 
+  \draw_scope_begin:
+    \color_select:n { #1 }
+    \vcoffin_set:Nnn \l_tmpa_coffin { #3 } { #6 }
+    \draw_transform_shift:n { #2 }
+    \draw_coffin_use:Nnn \l_tmpa_coffin { #4 } { #5 }
+  \draw_scope_end:
+}
+
+\NewDocumentCommand { \drawinput } { o m m } { 
+  \draw_scope_begin:
+    \color_select:n { #1 }
+    \draw_transform_shift:n { #2 }
+    \input{#3}
+  \draw_scope_end:
 }
 
 % EOF

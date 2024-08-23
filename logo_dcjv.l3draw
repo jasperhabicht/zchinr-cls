@@ -12,7 +12,7 @@
 % 
 \ExplSyntaxOn
 \draw_scope_begin:
-  \draw_transform_scale:n { 0.1 }
+  \draw_transform_scale:n { .08 }
   \draw_transform_shift:n { -623.3400,-633.3520 }
   \draw_evenodd_rule:
   \draw_path_moveto:n { 1246.6800,633.3520 }
