@@ -99,5 +99,5 @@
   \draw_path_curveto:nnn { 373.7500,848.3520 } { 356.4800,881.0390 } { 339.0200,913.5780 } 
   \draw_path_curveto:nnn { 340.6600,914.9880 } { 342.3010,916.3590 } { 343.9800,917.7620 }
   \draw_path_close:
-  \draw_path_use:n { fill }
+  \draw_path_use_clear:n { fill }
 \draw_scope_end:

@@ -1,0 +1,29 @@
+% File: open_access.l3draw 
+% Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+% 
+% This file is part of the `zchinr' package (The Work in LPPL)
+% and all files in that bundle must be distributed together.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+\ExplSyntaxOn
+\draw_scope_begin:
+  \draw_evenodd_rule:
+  \draw_path_circle:nn { 0 , 0 } { 1 }
+  \draw_path_use_clear:n { fill }
+  \draw_path_circle:nn { 0 , 0 } { 3 }
+  \draw_path_circle:nn { 0 , 0 } { 2 }
+  \draw_path_use_clear:n { fill }
+  \draw_path_moveto:n { 2.75 , 0 } 
+  \draw_path_lineto:n { 2.75 , 3.5 }
+  \draw_path_arc:nnn { 0 } { 180 } { 2.75 }
+  \draw_path_lineto:n { -1.75 , 3.5 }
+  \draw_path_arc:nnn { 180 } { 0 } { 1.75 }
+  \draw_path_lineto:n { 1.75 , 2 }
+  \draw_path_close:
+  \draw_path_use_clear:n { fill }
+\draw_scope_end:
