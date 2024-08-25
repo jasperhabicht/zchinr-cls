@@ -56,6 +56,9 @@
 \tl_new:N \l_zchinr_issue_number_tl
 \tl_new:N \l_zchinr_issue_issn_tl
 
+\tl_new:N \l_zchinr_default_licence_tl
+\tl_new:N \l_zchinr_default_licence_url_tl
+
 \tl_new:N \l_zchinr_article_first_page_tl
 \tl_new:N \l_zchinr_article_doi_tl
 \tl_new:N \l_zchinr_article_licence_tl
@@ -118,6 +121,10 @@
   localization / doi       .initial:n   = { DOI } ,
   localization / licence   .tl_set:N    = \l_zchinr_local_licence_tl ,
   localization / licence   .initial:n   = { Lizenz } ,
+  default / licence        .tl_set:N    = \l_zchinr_default_licence_tl ,
+  default / licence        .initial:n   = { CC ~ BY ~ 4.0 } ,
+  default / licence ~ url  .tl_set:N    = \l_zchinr_default_licence_url_tl ,
+  default / licence ~ url  .initial:n   = { https://creativecommons.org/licenses/by/4.0/ } ,
   issue                    .code:n      = { \keys_set:nn { zchinr / setup / issue } {#1} } ,
   issue / year             .tl_set:N    = \l_zchinr_issue_year_tl , 
   issue / number           .tl_set:N    = \l_zchinr_issue_number_tl , 
@@ -130,9 +137,9 @@
   article / first ~ page   .initial:n   = { } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
-  article / licence        .initial:n   = { CC ~ BY ~ 4.0 } ,
+  article / licence        .initial:n   = { \l_zchinr_default_licence_tl } ,
   article / licence ~ url  .tl_set:N    = \l_zchinr_article_licence_url_tl ,
-  article / licence ~ url  .initial:n   = { https://creativecommons.org/licenses/by/4.0/ } ,
+  article / licence ~ url  .initial:n   = { l_zchinr_default_licence_url_tl } ,
   article / author         .tl_set:N    = \l_zchinr_article_author_tl , 
   article / author         .initial:n   = { } , 
   article / author ~ short .tl_set:N    = \l_zchinr_article_author_short_tl , 
@@ -176,8 +183,8 @@
       pagination = { arabic } ,
       first ~ page = { } ,
       doi = { } ,
-      licence = { CC ~ BY ~ 4.0 } ,
-      licence ~ url = { https://creativecommons.org/licenses/by/4.0/ } ,
+      licence = { \l_zchinr_default_licence_tl } ,
+      licence ~ url = { \l_zchinr_default_licence_url_tl } ,
       author = { } ,
       author ~ short = { \l_zchinr_article_author_tl } ,
       author ~ toc = { \l_zchinr_article_author_tl } ,
@@ -886,6 +893,13 @@
     \draw_transform_shift:n { #2 }
     \input{#3}
   \draw_scope_end:
+}
+
+\NewDocumentCommand { \drawoasymbol } { } { 
+  \draw_begin:
+    \draw_baseline:n { -.175em }
+    \input{open_access.l3draw}
+  \draw_end:
 }
 
 % EOF
