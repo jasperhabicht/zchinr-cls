@@ -240,6 +240,8 @@
 \NewDocumentCommand{\zhs}{ m }{\textup{#1}}
 \NewDocumentCommand{\zht}{ m }{\textup{#1}}
 
+\RequirePackage{microtype}
+
 \RequirePackage[
   inner=25mm,
   outer=30mm,
@@ -580,10 +582,10 @@
   \noindent\begin{longtable}{
     @{} 
       >{\raggedright} 
-      p{30mm}
+      p{32.5mm}
     @{\hskip\columnsep} 
       >{\raggedright} 
-      p{\dimexpr\textwidth - 30mm - 37.5mm - 1.5\columnsep}
+      p{\dimexpr\textwidth - 32.5mm - 37.5mm - 1.5\columnsep}
     @{\hskip .5\columnsep} 
       >{\raggedleft\let\newline\\\arraybackslash} 
       p{37.5mm}
@@ -594,7 +596,7 @@
 }
 
 \NewExpandableDocumentCommand { \imprintspan } { m } {
-  \multicolumn{2}{@{}p{\dimexpr\textwidth - 30mm - .5\columnsep}@{}}{#1}
+  \multicolumn{2}{@{}p{\dimexpr\textwidth - 32.5mm - \columnsep}@{}}{#1}
 }
 
 % Create commands for TOC. 
@@ -895,10 +897,25 @@
   \draw_scope_end:
 }
 
-\NewDocumentCommand { \drawoasymbol } { } { 
+\NewDocumentCommand { \oasymbol } { } { 
   \draw_begin:
     \draw_baseline:n { -.175em }
-    \input{open_access.l3draw}
+    \draw_scope_begin:
+      \draw_evenodd_rule:
+      \draw_path_circle:nn { 0 , 0 } { 1 }
+      \draw_path_use_clear:n { fill }
+      \draw_path_circle:nn { 0 , 0 } { 3 }
+      \draw_path_circle:nn { 0 , 0 } { 2 }
+      \draw_path_use_clear:n { fill }
+      \draw_path_moveto:n { 2.75 , 0 } 
+      \draw_path_lineto:n { 2.75 , 3.5 }
+      \draw_path_arc:nnn { 0 } { 180 } { 2.75 }
+      \draw_path_lineto:n { -1.75 , 3.5 }
+      \draw_path_arc:nnn { 180 } { 0 } { 1.75 }
+      \draw_path_lineto:n { 1.75 , 2 }
+      \draw_path_close:
+      \draw_path_use_clear:n { fill }
+    \draw_scope_end:
   \draw_end:
 }
 
