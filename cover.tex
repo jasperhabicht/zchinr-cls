@@ -9,6 +9,7 @@
   },
   issue = {
     year   = 2025,
+    volume = 23,
     number = 1
   }
 }
@@ -17,11 +18,7 @@
 
 %%%%%
 
-\newcommand{\ZChinRFrontIssue}{1/2025}
-
-\newcommand{\ZChinRFrontVolume}{32}
-
-\newcommand{\ZChinRFrontPages}{1--100}
+\newcommand{\ZChinRFrontPages}{\currentissuefirstpage--\currentissuelastpage}
 
 \newcommand{\ZChinRFrontContents}{%
   \emph{Franz Kafka,} Die Verwandlung%
@@ -60,17 +57,17 @@
     \bigskip
     
     und dem Max-Planck-Institut \\ 
-    ausländisches und \\ 
+    für ausländisches und \\ 
     internationales Privatrecht
   }
 
   \drawinput[zchinrblue]{210mm-35mm,-297mm+35mm}{logo_dcjv.l3draw}%
   \drawcoffin[zchinrblue]{20mm,-297mm+30mm}{80mm}[l][t]{%
     \sffamily\fontsize{20}{24}\selectfont\bfseries%
-    Heft \ZChinRFrontIssue
+    Heft \currentissuenumber/\currentissueyear
     
     \fontsize{11}{16}\selectfont%
-    \ZChinRFrontVolume. Jahrgang, S. \ZChinRFrontPages%
+    \currentissuevolume. Jahrgang, S. \ZChinRFrontPages%
   }
   
   \drawcoffin[zchinrblue]{100mm,-297mm+140mm}{90mm}[l][t]{%
@@ -114,7 +111,7 @@
     ISSN: 1613-5768 \\ Online ISSN: 2366-7125%
   } 
   
-  \drawcoffin[zchinrblue]{20mm,-105mm}{170mm}[l][t]{%
+  \drawcoffin[zchinrblue]{20mm,-107.5mm}{170mm}[l][t]{%
     \sffamily\fontsize{70}{65}\selectfont%
     ZChinR \char"00B7{} GJCL%
   }
@@ -126,11 +123,13 @@
   }
   
   \drawcoffin[zchinrblue]{20mm,-297mm+115mm}{80mm}[l][t]{%
+    \sloppy%
     \zchinrsansfamily%
     \ZChinRBackColumnsLeft%
   }
   
   \drawcoffin[zchinrblue]{110mm,-297mm+115mm}{80mm}[l][t]{%
+    \sloppy%
     \zchinrsansfamily%
     \ZChinRBackColumnsRight%
   }

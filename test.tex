@@ -9,6 +9,7 @@
   },
   issue = {
     year   = 2025,
+    volume = 23,
     number = 1
   }
 }
@@ -18,8 +19,9 @@
 \zchinrsetup{
   article = {
     header style = {category},
-    title style  = {category},
+    title style  = {category, title},
     category     = {Inhalt},
+    title        = {ZChinR \currentissuenumber/\currentissueyear},
     pagination   = {roman}
   }
 }
@@ -27,6 +29,8 @@
 \printtitle
 
 \printissuetoc
+
+Pages: \currentissuefirstpage--\currentissuelastpage
 
 
 \zchinrsetup{
@@ -44,6 +48,7 @@
     title style  = {category, title, author, abstract, contents},
     category     = {Aufsätze},
     licence      = {\oasymbol{} CC BY 4.0},
+    first page   = {21},
     two columns
   }
 }
@@ -285,7 +290,8 @@ Als Gregor Samsa\footnote{\zhs{格里高尔·萨姆沙} (eine phonetische Übert
   article = {
     title style  = {category},
     header style = {category},
-    category     = {Impressum}
+    category     = {Impressum},
+    pagination   = {none}
   }
 }
 

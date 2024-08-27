@@ -53,8 +53,14 @@
 \str_new:N \l_zchinr_color_profile_path_str
 
 \tl_new:N \l_zchinr_issue_year_tl
+\tl_new:N \l_zchinr_issue_volume_tl
 \tl_new:N \l_zchinr_issue_number_tl
 \tl_new:N \l_zchinr_issue_issn_tl
+\tl_new:N \g_zchinr_issue_first_page_tl
+\tl_new:N \g_zchinr_issue_last_page_tl
+\tl_new:N \g__zchinr_issue_first_page_aux_tl
+\tl_new:N \g__zchinr_issue_last_page_aux_tl
+\bool_new:N \g__zchinr_issue_first_page_set_bool
 
 \tl_new:N \l_zchinr_default_licence_tl
 \tl_new:N \l_zchinr_default_licence_url_tl
@@ -127,6 +133,7 @@
   default / licence ~ url  .initial:n   = { https://creativecommons.org/licenses/by/4.0/ } ,
   issue                    .code:n      = { \keys_set:nn { zchinr / setup / issue } {#1} } ,
   issue / year             .tl_set:N    = \l_zchinr_issue_year_tl , 
+  issue / volume           .tl_set:N    = \l_zchinr_issue_volume_tl , 
   issue / number           .tl_set:N    = \l_zchinr_issue_number_tl , 
   issue / issn             .tl_set:N    = \l_zchinr_issue_issn_tl ,
   issue / issn             .initial:n   = { 1613-5768, ~ online ~ 2366-7125 } ,
@@ -341,7 +348,8 @@
       \msg_warning:nn { zchinr } { no-color-profile } 
     } {
       \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_str) ~ <<
-        /N ~ 4^^J/Alternate/DeviceCMYK
+        /N ~ 4 
+        /Alternate/DeviceCMYK
       >>}
     }
     \str_if_empty:NTF \l_zchinr_color_profile_path_str {
@@ -503,6 +511,26 @@
   \href{mailto:#1}{\protect\nolinkurl{#1}}
 }
 
+\NewDocumentCommand { \currentissueyear } { } {
+  \tl_use:N \l_zchinr_issue_year_tl
+}
+
+\NewDocumentCommand { \currentissuevolume } { } {
+  \tl_use:N \l_zchinr_issue_volume_tl
+}
+
+\NewDocumentCommand { \currentissuenumber } { } {
+  \tl_use:N \l_zchinr_issue_number_tl
+}
+
+\NewDocumentCommand { \currentissuefirstpage } { } {
+  \tl_use:N \g_zchinr_issue_first_page_tl
+}
+
+\NewDocumentCommand { \currentissuelastpage } { } {
+  \tl_use:N \g_zchinr_issue_last_page_tl
+}
+
 % Create documentation environment. 
 \NewDocumentEnvironment { documentation } { } {
   \tl_set:Nn \arraystretch { 1.25 }
@@ -629,6 +657,33 @@
   \item\relax
 } {
   \endlist
+}
+
+\AtBeginDocument{
+  \tl_gset:NV \g_zchinr_issue_first_page_tl \g__zchinr_issue_first_page_aux_tl
+  \tl_gset:NV \g_zchinr_issue_last_page_tl \g__zchinr_issue_last_page_aux_tl
+}
+
+\AddToHook{shipout/before}{
+  \str_if_eq:VnTF \l_zchinr_article_pagination_str { arabic } {
+    \bool_if:NF \g__zchinr_issue_first_page_set_bool {
+      \tl_gset:Ne \g_zchinr_issue_first_page_tl { \arabic{page} }
+      \bool_gset_true:N \g__zchinr_issue_first_page_set_bool
+    }
+    \tl_gset:Ne \g_zchinr_issue_last_page_tl { \arabic{page} }
+  }
+}
+
+\AtEndDocument{
+  \iow_now:cx { @auxout } {
+    \token_to_str:N \ExplSyntaxOn 
+    \iow_newline:
+    \tl_gset:Nn \token_to_str:N \g__zchinr_issue_first_page_aux_tl { \tl_use:N \g_zchinr_issue_first_page_tl } 
+    \iow_newline:
+    \tl_gset:Nn \token_to_str:N \g__zchinr_issue_last_page_aux_tl { \tl_use:N \g_zchinr_issue_last_page_tl } 
+    \iow_newline:
+    \token_to_str:N \ExplSyntaxOff
+  }
 }
 
 \NewDocumentCommand { \printtitle } { } {
