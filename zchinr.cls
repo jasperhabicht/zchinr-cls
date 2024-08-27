@@ -565,6 +565,11 @@
   \rule[-10pt]{0pt}{0pt}
 }
 
+\NewDocumentCommand { \documentationtocentry } { m m } {
+  \leftskip\dimexpr #1\l__zchinr_tabindent_dim 
+  \hskip\dimexpr -2\l__zchinr_tabindent_dim \relax #2
+}
+
 % Create addresses environment.
 \NewDocumentEnvironment { addresses } { } {
   \tl_set:Nn \arraystretch { 1.75 }
