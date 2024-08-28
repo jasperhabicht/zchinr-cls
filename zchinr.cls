@@ -790,15 +790,17 @@
         {\l_zchinr_article_category_tl}
     }
   }
-  \noindent{
+  \noindent
+  {
     \int_if_even:nTF { \value{page} } {
       \raggedright
     } {
       \raggedleft
     }
     \LARGE\scshape\bfseries \text_lowercase:n { \l_zchinr_article_category_tl }
-  } \__zchinr_halfquad: \__zchinr_hfillrule:
-  \par\vskip 7mm
+    \__zchinr_halfquad: \__zchinr_hfillrule: \par
+  }
+  \vskip 7mm
 }
 
 \cs_new:Npn \__zchinr_article_title_large: {
@@ -809,13 +811,14 @@
     }
   }
   \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
-    \raggedright{\huge\l_zchinr_article_title_tl}
+    \raggedright
+    {\huge\l_zchinr_article_title_tl\par}
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { author } {
-      \par\bigskip
-      {\fontsize{11}{13}\selectfont\itshape \__zchinr_article_author: }
+      \bigskip
+      {\fontsize{11}{13}\selectfont\itshape \__zchinr_article_author: \par}
     }
   }
-  \par\vskip 4mm\bigskip
+  \vskip 4mm\bigskip
 }
 
 \cs_new:Npn \__zchinr_article_title_small: {
@@ -825,15 +828,18 @@
       \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
     }
   }
-  \noindent{\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl}
-  \par\bigskip\nopagebreak
-  \noindent{\itshape \__zchinr_article_author: }
-  \par\bigskip\nopagebreak
+  \noindent
+  {\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl\par}
+  \bigskip\nopagebreak
+  \noindent
+  {\itshape \__zchinr_article_author: }\par
+  \bigskip\nopagebreak
 }
 
 \cs_new:Npn \__zchinr_article_abstract: {
-  \noindent{\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl}
-  \par\vskip 8pt
+  \noindent
+  {\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl\par}
+  \vskip 8pt
   \str_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
     \noindent\begin{abstract}
       \itshape\l_zchinr_article_abstract_tl
@@ -848,14 +854,16 @@
       \l_zchinr_article_abstract_alt_tl
     \end{abstract}
   } 
-  \par\vskip 12mm
+  \par
+  \vskip 12mm
 }
 
 \cs_new:Npn \__zchinr_article_subcontents: {
   \begin{subcontents}
     \printcontents[zchinrsub]{}{1}{}
   \end{subcontents}
-  \par\vskip 12mm
+  \par
+  \vskip 12mm
 }
 
 \cs_new:Npn \__zchinr_article_title: {
@@ -943,7 +951,7 @@
 \NewDocumentCommand { \drawcoffin } { o m m O{hc} O{vc} +m } { 
   \draw_scope_begin:
     \color_select:n { #1 }
-    \vcoffin_set:Nnn \l_tmpa_coffin { #3 } { #6 }
+    \vcoffin_set:Nnn \l_tmpa_coffin { #3 } { #6 \par }
     \draw_transform_shift:n { #2 }
     \draw_coffin_use:Nnn \l_tmpa_coffin { #4 } { #5 }
   \draw_scope_end:
