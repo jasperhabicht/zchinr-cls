@@ -761,7 +761,7 @@
       }
     }
   } {
-    \msg_warning:nn { zchinr } { toc-style-unknown }
+    \msg_warning:nnn { zchinr } { toc-style-unknown }
       { \l__zchinr_toc_entry_tl }
   }
 
