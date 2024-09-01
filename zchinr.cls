@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/08/14} {2.0} {Document class for ZChinR}
+  {2024/08/31} {2.1} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -35,17 +35,17 @@
 
 \msg_new:nnn { zchinr } { pagination-unknown } {
   \msg_warning_text:n { zhinr } \iow_newline:
-  Ignoring ~ unknown ~ pagination ~ setting.
+  Ignoring ~ unknown ~ pagination ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { header-style-unknown } {
   \msg_warning_text:n { zhinr } \iow_newline:
-  Ignoring ~ unknown ~ header ~ style ~ setting.
+  Ignoring ~ unknown ~ header ~ style ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { toc-style-unknown } {
   \msg_warning_text:n { zhinr } \iow_newline:
-  Ignoring ~ unknown ~ toc ~ style ~ setting.
+  Ignoring ~ unknown ~ toc ~ style ~ setting: ~ #1.
 }
 
 \tl_new:N \l_zchinr_color_profile_name_tl
@@ -108,11 +108,11 @@
 \dim_new:N \l__zchinr_tabindent_dim
 
 \keys_define:nn { zchinr / setup } { 
-  color ~ profile          .code:n     = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
-  color ~ profile / name   .tl_set:N   = \l_zchinr_color_profile_name_tl ,
-  color ~ profile / name   .default:n  = { Custom } ,
-  color ~ profile / info   .tl_set:N   = \l_zchinr_color_profile_info_tl ,
-  color ~ profile / info   .default:n  = { none } ,
+  color ~ profile          .code:n      = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
+  color ~ profile / name   .tl_set:N    = \l_zchinr_color_profile_name_tl ,
+  color ~ profile / name   .default:n   = { Custom } ,
+  color ~ profile / info   .tl_set:N    = \l_zchinr_color_profile_info_tl ,
+  color ~ profile / info   .default:n   = { none } ,
   color ~ profile / path   .str_set:N   = \l_zchinr_color_profile_path_str ,
   title ~ distance         .dim_set:N   = \l_zchinr_title_distance_dim ,
   title ~ distance         .initial:n   = { 35mm } ,
@@ -232,17 +232,20 @@
 
 \RequirePackage{fontspec}
 \setmainfont{TeX ~ Gyre ~ Pagella}
-\setsansfont{TeX ~ Gyre ~ Heros ~ Cn}
-\newfontfamily\zchinrsansfamily[Mapping=tex-text, LetterSpace=2]{TeX ~ Gyre ~ Heros}
+\setsansfont{TeX ~ Gyre ~ Heros}
+\newfontfamily\zchinrlatindisplay{TeX ~ Gyre ~ Heros ~ Cn}
 
 \RequirePackage{xeCJK} 
-\XeTeXlinebreaklocale "zh" 
-\XeTeXlinebreakskip = 0pt plus 1pt minus .5pt
+\normalspacedchars{„“}
 \setCJKmainfont{Noto ~ Serif ~ CJK ~ SC}
 \setCJKsansfont{Noto ~ Sans ~ CJK ~ SC}
 
 \RequirePackage{unicode-math}
 \setmathfont{TeX ~ Gyre ~ Pagella ~ Math}
+
+% prevent German quotation marks from being spaced
+\xeCJKDeclareCharClass{NormalSpace}{"201E, "201A, "002C}
+\xeCJKDeclareCharClass{NormalSpace}{"201C, "2018, "0060}
 
 \NewDocumentCommand{\zhs}{ m }{\textup{#1}}
 \NewDocumentCommand{\zht}{ m }{\textup{#1}}
@@ -709,7 +712,8 @@
       \tl_set:Nn \l__zchinr_header_mark_page_tl { \arabic{page} } 
     }
   } {
-    \msg_warning:nn { zchinr } { pagination-unknown } 
+    \msg_warning:nnn { zchinr } { pagination-unknown } 
+      { \l_zchinr_article_pagination_str } 
   }
 
   \str_case_e:nnF { \l_zchinr_article_header_style_str } {
@@ -729,7 +733,8 @@
       }
     }
   } {
-    \msg_warning:nn { zchinr } { header-style-unknown } 
+    \msg_warning:nnn { zchinr } { header-style-unknown } 
+      { \l_zchinr_article_header_style_str }
   }
 
   \tl_if_empty:NF \l_zchinr_article_doi_tl {
@@ -757,6 +762,7 @@
     }
   } {
     \msg_warning:nn { zchinr } { toc-style-unknown }
+      { \l__zchinr_toc_entry_tl }
   }
 
   \tl_set:Nn \thefootnote { \fnsymbol{footnote} }

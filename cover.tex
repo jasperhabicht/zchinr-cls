@@ -18,8 +18,6 @@
 
 %%%%%
 
-\newcommand{\ZChinRFrontPages}{\currentissuefirstpage--\currentissuelastpage}
-
 \newcommand{\ZChinRFrontContents}{%
   \emph{Franz Kafka,} Die Verwandlung%
 }
@@ -28,22 +26,27 @@
 
 \begin{drawabsolute}{10mm,-10mm}
 
+  % \drawrectangle[zchinrblue!10]{20mm,-20mm}{170mm,-257mm}
+
   \drawrectangle[zchinrblue!33]{-3mm,3mm}{216mm,-143mm}
   
   \drawcoffin[white]{105mm,-22.5mm}{170mm}[hc][t]{%
-    \sffamily\fontsize{200}{200}\selectfont%
+    \zchinrlatindisplay%
+    \fontsize{200}{200}\selectfont%
     \addfontfeature{LetterSpace=-6.75}%
     ZChinR%
   }
 
   \drawcoffin[zchinrblue]{105mm,-85mm}{170mm}[hc][t]{%
-    \sffamily\fontsize{70}{65}\selectfont%
+    \zchinrlatindisplay%
+    \fontsize{70}{65}\selectfont%
     \addfontfeature{LetterSpace=-2.5}%
     Zeitschrift für \par Chinesisches Recht%
   }
 
   \drawcoffin[zchinrblue]{20mm,-297mm+140mm}{80mm}[l][t]{%
-    \sffamily\fontsize{13}{15}\selectfont%
+    \zchinrlatindisplay%
+    \fontsize{13}{15}\selectfont%
     Herausgegeben von der \\
     Deutsch-Chinesischen \\
     Juristenvereinigung e.V.
@@ -63,11 +66,13 @@
 
   \drawinput[zchinrblue]{210mm-35mm,-297mm+35mm}{logo_dcjv.l3draw}%
   \drawcoffin[zchinrblue]{20mm,-297mm+30mm}{80mm}[l][t]{%
-    \sffamily\fontsize{20}{24}\selectfont\bfseries%
+    \zchinrlatindisplay%
+    \fontsize{20}{24}\selectfont\bfseries%
     Heft \currentissuenumber/\currentissueyear
     
     \fontsize{11}{16}\selectfont%
-    \currentissuevolume. Jahrgang, S. \ZChinRFrontPages%
+    \currentissuevolume. Jahrgang, 
+    S. \currentissuefirstpage--\currentissuelastpage%
   }
   
   \drawcoffin[zchinrblue]{100mm,-297mm+140mm}{90mm}[l][t]{%
@@ -79,58 +84,68 @@
 
 
 \newcommand{\ZChinRBackColumnsLeft}{%
-  \noindent Since 1994 the German--Chinese Jurists' Association and the Sino--German Institute for Legal Studies of the Universities of Göttingen and Nanjing are quarterly publishing the ``Zeitschrift für Chinesisches Recht (German Journal of Chinese Law)'', formerly known as the ``Newsletter of the German-Chinese Jurists' Association''. 
+  Since 1994 the German--Chinese Jurists' Association and the Sino--German Institute for Legal Studies of the Universities of Göttingen and Nanjing are quarterly publishing the ``Zeitschrift für Chinesisches Recht (German Journal of Chinese Law)'', formerly known as the ``Newsletter of the German-Chinese Jurists' Association''. 
   
   \bigskip
 
-  \noindent The journal is focusing on issues of contemporary Chinese law and modern Chinese legal history with a particular emphasis on legal aspects of Chinese economic development and international relations. It seeks to advance practical as well as theoretical analysis of Chinese law.%
+  The journal is focusing on issues of contemporary Chinese law and modern Chinese legal history with a particular emphasis on legal aspects of Chinese economic development and international relations. It seeks to advance practical as well as theoretical analysis of Chinese law.%
 }
 
 \newcommand{\ZChinRBackColumnsRight}{%
-  \noindent The journal invites submissions within its scope as set out above to be published in one of its next issues. To guarantee for intellectually stimulating and innovative contributions all submissions will be subject to a review procedure by the editors. Manuscripts (English or German) to be published in the journal's categories articles, short contributions, documentations and book reviews should be submitted in electronic form and should follow the rules of citation and guidelines for the submission of articles, which can be found at www.ZChinR.de. Previous issues of ZChinR can also be found at www.ZChinR.de. 
+  The journal invites submissions within its scope as set out above to be published in one of its next issues. To guarantee for intellectually stimulating and innovative contributions all submissions will be subject to a review procedure by the editors. Manuscripts (English or German) to be published in the journal's categories articles, short contributions, documentations and book reviews should be submitted in electronic form and should follow the rules of citation and guidelines for the submission of articles, which can be found at www.ZChinR.de. Previous issues of ZChinR can also be found at www.ZChinR.de. 
   
   \bigskip
 
-  \noindent Please address your manuscripts as well as any inquiries concerning subscription and advertising to: 
+  Please address your manuscripts as well as any inquiries concerning subscription and advertising to: 
   
   \bigskip
 
-  \noindent ZChinR, Sino--German Institute for Legal Studies \\
+  ZChinR, Sino--German Institute for Legal Studies \\
   Nanjing University \\
-  Mo. 22, Hankou Lu, 210093 Nanjing, PR China \\
+  No. 22, Hankou Lu \\ 
+  210093 Nanjing, PR China
+
+  \bigskip
+
   E-mail: zchinr@dcjv.org \\ 
   Phone\,/\,Fax: +86 25 8663 7892%
 }
 
 \begin{drawabsolute}{10mm,-10mm}
   
+  % \drawrectangle[zchinrblue!10]{20mm,-20mm}{170mm,-257mm}
+
   \drawrectangle[zchinrblue!33]{-3mm,3mm}{216mm,-143mm}
 
   \drawcoffin[zchinrblue]{210mm-20mm,-20mm}{100mm}[r][t]{%
-    \raggedleft\sffamily\Large\bfseries%
+    \raggedleft%
+    \zchinrlatindisplay%
+    \Large\bfseries%
     ISSN: 1613-5768 \\ Online ISSN: 2366-7125%
   } 
   
   \drawcoffin[zchinrblue]{20mm,-107.5mm}{170mm}[l][t]{%
-    \sffamily\fontsize{70}{65}\selectfont%
+    \zchinrlatindisplay%
+    \fontsize{70}{65}\selectfont%
     ZChinR \char"00B7{} GJCL%
   }
 
   \drawcoffin[zchinrblue]{20mm,-297mm+145mm}{170mm}[l][t]{%
-    \zchinrsansfamily\Huge%
+    \sffamily%
+    \Huge%
     Zeitschrift für Chinesisches Recht \\
     German Journal for Chinese Law% 
   }
   
   \drawcoffin[zchinrblue]{20mm,-297mm+115mm}{80mm}[l][t]{%
     \sloppy%
-    \zchinrsansfamily%
+    \sffamily%
     \ZChinRBackColumnsLeft%
   }
   
   \drawcoffin[zchinrblue]{110mm,-297mm+115mm}{80mm}[l][t]{%
     \sloppy%
-    \zchinrsansfamily%
+    \sffamily%
     \ZChinRBackColumnsRight%
   }
 
