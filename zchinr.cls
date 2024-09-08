@@ -52,6 +52,8 @@
 \tl_new:N \l_zchinr_color_profile_info_tl
 \str_new:N \l_zchinr_color_profile_path_str
 
+\int_new:N \l_zchinr_standalone_part_int
+
 \tl_new:N \l_zchinr_issue_year_tl
 \tl_new:N \l_zchinr_issue_volume_tl
 \tl_new:N \l_zchinr_issue_number_tl
@@ -114,6 +116,8 @@
   color ~ profile / info   .tl_set:N    = \l_zchinr_color_profile_info_tl ,
   color ~ profile / info   .default:n   = { none } ,
   color ~ profile / path   .str_set:N   = \l_zchinr_color_profile_path_str ,
+  standalone ~ part        .int_set:N   = \l_zchinr_standalone_part_int ,
+  standalone ~ part        .initial:n   = { 0 } ,
   title ~ distance         .dim_set:N   = \l_zchinr_title_distance_dim ,
   title ~ distance         .initial:n   = { 35mm } ,
   localization             .code:n      = { \keys_set:nn { zchinr / setup / localization } {#1} } ,
@@ -475,7 +479,7 @@
 \titlespacing*{\paragraph}{0pt}{5pt plus 1pt}{1em plus 5pt minus 10pt}
 \titlespacing*{\subparagraph}{0pt}{5pt plus 1pt}{1em plus 5pt minus 10pt}
 
-\titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}[\bigskip]
+\titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}
 \titlecontents{chapter}[15pt]{\vskip 5pt}{}{}{\hfill\contentspage}
 
 \titlecontents{section}[0pt]{}{\hspace*{-15pt}}{}
@@ -591,6 +595,7 @@
 \NewDocumentCommand { \addressessection } { m o } {
   \phantomsection
   \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
+  \vskip 10pt plus 5pt minus 2.5pt
   \noindent{\Large #1}\par
 }
 
@@ -667,11 +672,18 @@
   \endlist
 }
 
+% The following automatically set the "first page" and "last page" of the issue.
+% The "first page" is the first page with arabic page numbers.
+% The "last page" is the last page with arabic page numbers.
+
+% At \begin{document}, retrieve the "first page" and "last page" from the .aux file.
 \AtBeginDocument{
   \tl_gset:NV \g_zchinr_issue_first_page_tl \g__zchinr_issue_first_page_aux_tl
   \tl_gset:NV \g_zchinr_issue_last_page_tl \g__zchinr_issue_last_page_aux_tl
 }
 
+% Set the "first page" to the current page number if arabic, and set it only once.
+% After each page break, set the "last page" to the current page number if arabic.
 \AddToHook{shipout/before}{
   \str_if_eq:VnTF \l_zchinr_article_pagination_str { arabic } {
     \bool_if:NF \g__zchinr_issue_first_page_set_bool {
@@ -682,6 +694,7 @@
   }
 }
 
+% At \end{document}, write "first page" and "last page" to .aux file.
 \AtEndDocument{
   \iow_now:cx { @auxout } {
     \token_to_str:N \ExplSyntaxOn 
@@ -695,6 +708,7 @@
 }
 
 \NewDocumentCommand { \printtitle } { } {
+  % Using the page counter is save here, as the page title is typically placed at the beginning of the page.
   \tl_if_empty:NF \l_zchinr_article_first_page_tl {
     \setcounter{page}{ \l_zchinr_article_first_page_tl }
   }
@@ -798,6 +812,7 @@
   }
   \noindent
   {
+    % Using the page counter is save here, as the category is typically placed at the beginning of the page.
     \int_if_even:nTF { \value{page} } {
       \raggedright
     } {
@@ -813,7 +828,7 @@
   \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{chapter}{
-      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
+      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
     }
   }
   \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
@@ -831,7 +846,7 @@
   \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{chapter}{
-      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
+      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
     }
   }
   \noindent
@@ -845,7 +860,7 @@
 \cs_new:Npn \__zchinr_article_abstract: {
   \noindent
   {\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl\par}
-  \vskip 8pt
+  \vskip 10pt plus 5pt minus 2.5pt
   \str_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
     \noindent\begin{abstract}
       \itshape\l_zchinr_article_abstract_tl
@@ -898,7 +913,7 @@
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { phantom } {
       \phantomsection
       \addcontentsline{toc}{chapter}{
-        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_tl}
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
       }
     }
   }
@@ -920,12 +935,12 @@
   }
 }
 
-\NewDocumentCommand { \inputpart } { s m } {
-  \IfBooleanTF{#1}{
-    \bool_if:NF \l_zchnr_standalone_bool {
+\NewDocumentCommand { \inputpart } { O{0} m } {
+  \bool_if:NTF \l_zchinr_standalone_bool {
+    \int_compare:nNnT { \l_zchinr_standalone_part_int } = {#1} {
       \input{#2}
     }
-  }{
+  } {
     \input{#2}
   }
 }

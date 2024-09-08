@@ -1,87 +1,11 @@
-% !TeX program = xelatex
-\documentclass[]{zchinr}
+% BOD
 
 \zchinrsetup{
-  color profile = {
-    name = PSO Coated v3,
-    info = PSOcoated_v3,
-    path = PSOcoated_v3.icc
-  },
-  issue = {
-    year   = 2025,
-    volume = 23,
-    number = 1
+  reset,
+  article = {
+    pagination = {none}
   }
 }
-
-\begin{document}
-
-%%%%%
-
-\newcommand{\ZChinRFrontContents}{%
-  \emph{Franz Kafka,} Die Verwandlung%
-}
-
-%%%%%
-
-\begin{drawabsolute}{10mm,-10mm}
-
-  % \drawrectangle[zchinrblue!10]{20mm,-20mm}{170mm,-257mm}
-
-  \drawrectangle[zchinrblue!33]{-3mm,3mm}{216mm,-143mm}
-  
-  \drawcoffin[white]{105mm,-22.5mm}{170mm}[hc][t]{%
-    \zchinrlatindisplay%
-    \fontsize{200}{200}\selectfont%
-    \addfontfeature{LetterSpace=-6.75}%
-    ZChinR%
-  }
-
-  \drawcoffin[zchinrblue]{105mm,-85mm}{170mm}[hc][t]{%
-    \zchinrlatindisplay%
-    \fontsize{70}{65}\selectfont%
-    \addfontfeature{LetterSpace=-2.5}%
-    Zeitschrift für \par Chinesisches Recht%
-  }
-
-  \drawcoffin[zchinrblue]{20mm,-297mm+140mm}{80mm}[l][t]{%
-    \zchinrlatindisplay%
-    \fontsize{13}{15}\selectfont%
-    Herausgegeben von der \\
-    Deutsch-Chinesischen \\
-    Juristenvereinigung e.V.
-    
-    \bigskip
-
-    in Verbindung mit dem \\
-    Deutsch-Chinesischen Institut \\
-    für Rechtswissenschaft
-    
-    \bigskip
-    
-    und dem Max-Planck-Institut \\ 
-    für ausländisches und \\ 
-    internationales Privatrecht
-  }
-
-  \drawinput[zchinrblue]{210mm-35mm,-297mm+35mm}{logo_dcjv.l3draw}%
-  \drawcoffin[zchinrblue]{20mm,-297mm+30mm}{80mm}[l][t]{%
-    \zchinrlatindisplay%
-    \fontsize{20}{24}\selectfont\bfseries%
-    Heft \currentissuenumber/\currentissueyear
-    
-    \fontsize{11}{16}\selectfont%
-    \currentissuevolume. Jahrgang, 
-    S. \currentissuefirstpage--\currentissuelastpage%
-  }
-  
-  \drawcoffin[zchinrblue]{100mm,-297mm+140mm}{90mm}[l][t]{%
-    \fontsize{13}{15}\selectfont%
-    \ZChinRFrontContents%
-  }
-
-\end{drawabsolute}
-
 
 \newcommand{\ZChinRBackColumnsLeft}{%
   Since 1994 the German--Chinese Jurists' Association and the Sino--German Institute for Legal Studies of the Universities of Göttingen and Nanjing are quarterly publishing the ``Zeitschrift für Chinesisches Recht (German Journal of Chinese Law)'', formerly known as the ``Newsletter of the German-Chinese Jurists' Association''. 
@@ -151,4 +75,4 @@
 
 \end{drawabsolute}
 
-\end{document}
+% EOF
