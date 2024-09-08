@@ -963,25 +963,32 @@
 
 \NewDocumentCommand { \drawrectangle } { o m m } { 
   \draw_scope_begin:
-    \color_select:n { #1 }
-    \draw_path_rectangle:nn { #2 } { #3 }
+    \IfValueT{#1}{
+      \color_select:n {#1}
+    }
+    \draw_path_rectangle:nn {#2} {#3}
     \draw_path_use:n { fill }
   \draw_scope_end:
 }
 
+\coffin_new:N \l_zchinr_tmpa_coffin
 \NewDocumentCommand { \drawcoffin } { o m m O{hc} O{vc} +m } { 
   \draw_scope_begin:
-    \color_select:n { #1 }
-    \vcoffin_set:Nnn \l_tmpa_coffin { #3 } { #6 \par }
-    \draw_transform_shift:n { #2 }
-    \draw_coffin_use:Nnn \l_tmpa_coffin { #4 } { #5 }
+    \IfValueT{#1}{
+      \color_select:n {#1}
+    }
+    \vcoffin_set:Nnn \l_zchinr_tmpa_coffin {#3} { #6 \par }
+    \draw_transform_shift:n {#2}
+    \draw_coffin_use:Nnn \l_zchinr_tmpa_coffin {#4} {#5}
   \draw_scope_end:
 }
 
 \NewDocumentCommand { \drawinput } { o m m } { 
   \draw_scope_begin:
-    \color_select:n { #1 }
-    \draw_transform_shift:n { #2 }
+    \IfValueT{#1}{
+      \color_select:n {#1}
+    }
+    \draw_transform_shift:n {#2}
     \input{#3}
   \draw_scope_end:
 }
