@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/08/31} {2.1} {Document class for ZChinR}
+  {2024/09/10} {2.2} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -48,11 +48,19 @@
   Ignoring ~ unknown ~ toc ~ style ~ setting: ~ #1.
 }
 
+\msg_new:nnn { zchinr } { wrong-page-count } {
+  \msg_warning_text:n { zhinr } \iow_newline:
+  Page ~ count ~ not ~ divisible ~ by ~ \int_use:N \l_zchinr_page_div_int : ~ #1.
+}
+
 \tl_new:N \l_zchinr_color_profile_name_tl
 \tl_new:N \l_zchinr_color_profile_info_tl
 \str_new:N \l_zchinr_color_profile_path_str
 
 \int_new:N \l_zchinr_standalone_part_int
+
+\int_new:N \g_zchinr_page_count_int
+\int_new:N \l_zchinr_page_div_int
 
 \tl_new:N \l_zchinr_issue_year_tl
 \tl_new:N \l_zchinr_issue_volume_tl
@@ -120,6 +128,8 @@
   standalone ~ part        .initial:n   = { 0 } ,
   title ~ distance         .dim_set:N   = \l_zchinr_title_distance_dim ,
   title ~ distance         .initial:n   = { 35mm } ,
+  check ~ page ~ count     .int_set:N   = \l_zchinr_page_div_int , 
+  check ~ page ~ count     .initial:n   = { 4 } ,
   localization             .code:n      = { \keys_set:nn { zchinr / setup / localization } {#1} } ,
   localization / zchinr    .tl_set:N    = \l_zchinr_local_zchinr_tl ,
   localization / zchinr    .initial:n   = { ZChinR } ,
@@ -705,6 +715,20 @@
     \iow_newline:
     \token_to_str:N \ExplSyntaxOff
   }
+}
+
+\AddToHook{shipout/after}{
+  \int_gincr:N \g_zchinr_page_count_int
+}
+
+\AddToHook{enddocument/afterlastpage}{
+  \fp_compare:nNnF { 
+    \g_zchinr_page_count_int - \l_zchinr_page_div_int *
+    floor ( \g_zchinr_page_count_int / \l_zchinr_page_div_int )
+  } = { 0 } {
+    \msg_warning:nnV { zchinr } { wrong-page-count } 
+      \g_zchinr_page_count_int
+  } 
 }
 
 \NewDocumentCommand { \printtitle } { } {
