@@ -945,7 +945,7 @@
   }
 }
 
-\NewDocumentEnvironment { drawabsolute } { m +b } {
+\NewDocumentEnvironment { drawabsolute } { O{ 0cm , 0cm } +b } {
   \AddToHookNext{shipout/background}{
     \nullfont
     \draw_begin:
