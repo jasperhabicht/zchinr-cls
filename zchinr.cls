@@ -726,8 +726,10 @@
     \g_zchinr_page_count_int - \l_zchinr_page_div_int *
     floor ( \g_zchinr_page_count_int / \l_zchinr_page_div_int )
   } = { 0 } {
-    \msg_warning:nnV { zchinr } { wrong-page-count } 
-      \g_zchinr_page_count_int
+    \bool_if:NF \l_zchinr_standalone_bool {
+      \msg_warning:nnV { zchinr } { wrong-page-count } 
+        \g_zchinr_page_count_int
+    }
   } 
 }
 
