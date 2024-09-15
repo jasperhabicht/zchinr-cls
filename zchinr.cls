@@ -442,19 +442,11 @@
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-<<<<<<< HEAD
-=======
-  \RequirePackage{datetime}
->>>>>>> b3ae627580c06e91310bc1d478a24d5331b732cf
   \AtBeginDocument{
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
       pdfinfo={
-<<<<<<< HEAD
         ModDate={\pdfcreationdate},
-=======
-        ModDate={D:\pdfdate},
->>>>>>> b3ae627580c06e91310bc1d478a24d5331b732cf
         Trapped={False},      
       }
     }
