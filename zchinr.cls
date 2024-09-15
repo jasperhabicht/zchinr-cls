@@ -587,6 +587,14 @@
   \hskip\dimexpr -2\l__zchinr_tabindent_dim \relax #2
 }
 
+\NewDocumentCommand { \documentationbreakline } { } {
+  \linebreak\vspace*{-1\baselineskip}
+}
+
+\NewDocumentCommand { \documentationcontinueline } { } {
+  \hskip\dimexpr -1\l__zchinr_tabindent_dim \relax 
+}
+
 % Create addresses environment.
 \NewDocumentEnvironment { addresses } { } {
   \tl_set:Nn \arraystretch { 1.75 }
