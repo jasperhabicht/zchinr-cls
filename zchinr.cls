@@ -514,10 +514,6 @@
 \tl_set:Nn \footnoterule {}
 \setlength{\skip\footins}{15pt plus 5pt minus 5pt}
 
-% Create listing environment for references. 
-\newlist{references}{enumerate}{1}
-\setlist[references]{label*=[\arabic*]}
-
 % Style URLs.
 \urlstyle{same}
 \DeclareUrlCommand\Hurl{\def\UrlLeft{<\,}\def\UrlRight{\,>}}
@@ -669,9 +665,6 @@
   \startcontents
   \printcontents{}{-1}[0]{}
 }
-
-\newlist{toc}{itemize}{1}
-\setlist[toc]{leftmargin=15mm, label*={}}
 
 % Redefine abstract environment.
 \RenewDocumentEnvironment { abstract } { O{\textwidth} } {
