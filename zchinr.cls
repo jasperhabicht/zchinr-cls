@@ -425,9 +425,9 @@
 
 % Set up hyperreferences
 \PassOptionsToPackage{hyphens}{url}
+\RequirePackage{datetime2}
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
-  \RequirePackage{datetime}
   \AtBeginDocument{
     \NoHyper
     \hypersetup{
@@ -440,7 +440,6 @@
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \RequirePackage{datetime}
   \AtBeginDocument{
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
