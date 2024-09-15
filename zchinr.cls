@@ -440,6 +440,16 @@
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
+  \RequirePackage{datetime}
+  \AtBeginDocument{
+    \hypersetup{
+      pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
+      pdfinfo={
+        ModDate={D:\pdfdate},
+        Trapped={False},      
+      }
+    }
+  }
 }
 
 % Style header and footer. Header stays empty while footer will contain journal information and page number. 
