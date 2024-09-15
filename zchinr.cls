@@ -425,7 +425,9 @@
 
 % Set up hyperreferences
 \PassOptionsToPackage{hyphens}{url}
-\RequirePackage{datetime2}
+\cs_if_exist:NF \pdfcreationdate {
+  \cs_set_eq:NN \pdfcreationdate \creationdate
+}
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
   \AtBeginDocument{
@@ -433,7 +435,7 @@
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
       pdfinfo={
-        ModDate={D:\pdfdate},
+        ModDate={\pdfcreationdate},
         Trapped={False},      
       }
     }
@@ -444,7 +446,7 @@
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
       pdfinfo={
-        ModDate={D:\pdfdate},
+        ModDate={\pdfcreationdate},
         Trapped={False},      
       }
     }
