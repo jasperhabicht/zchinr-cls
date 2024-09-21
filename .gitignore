@@ -1,5 +1,6 @@
-/*.aux
-/*.log
-/*.out
-/*.ptc
-/*.synctex.gz
+*.aux
+*.log
+*.out
+*.ptc
+*.synctex.gz
+*.zip
