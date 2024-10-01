@@ -1135,9 +1135,9 @@
   \draw_end:
 }
 
-\NewDocumentCommand { \ccsymbol } { } { 
+\NewDocumentCommand { \ccsymbol } { O{1} } { 
   \draw_begin:
-    \draw_transform_scale:n { 0.1 }
+    \draw_transform_scale:n { 0.1 * #1 }
     \draw_baseline:n { -.375em }
     \draw_scope_begin:
       \draw_evenodd_rule:
@@ -1166,11 +1166,12 @@
   \draw_end:
 }
 
-\NewDocumentCommand { \ccbysymbol } { } { 
+\NewDocumentCommand { \ccbysymbol } { O{1} } { 
   \draw_begin:
-    \draw_transform_scale:n { 0.1 }
+    \draw_transform_scale:n { 0.1 * #1 }
     \draw_baseline:n { -.375em }
     \draw_scope_begin:
+      \draw_evenodd_rule:
       \draw_path_circle:nn { 0 , 0 } { 50 }
       \draw_path_circle:nn { 0 , 0 } { 40 }
       \draw_path_use:n { fill }
