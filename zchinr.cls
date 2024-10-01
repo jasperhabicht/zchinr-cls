@@ -1135,4 +1135,60 @@
   \draw_end:
 }
 
+\NewDocumentCommand { \ccsymbol } { } { 
+  \draw_begin:
+    \draw_transform_scale:n { 0.1 }
+    \draw_baseline:n { -.375em }
+    \draw_scope_begin:
+      \draw_evenodd_rule:
+      \draw_path_circle:nn { 0 , 0 } { 50 }
+      \draw_path_circle:nn { 0 , 0 } { 40 }
+      \draw_path_use_clear:n { fill }
+      \draw_scope_begin:
+        \draw_transform_shift:n { -15 , 0 }
+        \draw_path_moveto:n { \draw_point_polar:nnn { 7 } { 9 } { 30 } }
+        \draw_path_arc:nnnn { 30 } { 330 } { 7 } { 9 }
+        \draw_path_lineto:n { \draw_point_polar:nnn { 17 } { 18 } { 330 } }
+        \draw_path_arc:nnnn { 330 } { 30 } { 17 } { 18 }
+        \draw_path_close:
+        \draw_path_use_clear:n { fill }
+      \draw_scope_end:
+      \draw_scope_begin:
+        \draw_transform_shift:n { 17.5 , 0 }
+        \draw_path_moveto:n { \draw_point_polar:nnn { 7 } { 9 } { 30 } }
+        \draw_path_arc:nnnn { 30 } { 330 } { 7 } { 9 }
+        \draw_path_lineto:n { \draw_point_polar:nnn { 17 } { 18 } { 330 } }
+        \draw_path_arc:nnnn { 330 } { 30 } { 17 } { 18 }
+        \draw_path_close:
+        \draw_path_use_clear:n { fill }
+      \draw_scope_end:
+    \draw_scope_end:
+  \draw_end:
+}
+
+\NewDocumentCommand { \ccbysymbol } { } { 
+  \draw_begin:
+    \draw_transform_scale:n { 0.1 }
+    \draw_baseline:n { -.375em }
+    \draw_scope_begin:
+      \draw_path_circle:nn { 0 , 0 } { 50 }
+      \draw_path_circle:nn { 0 , 0 } { 40 }
+      \draw_path_use:n { fill }
+      \draw_path_moveto:n { -9 , -32.5 }
+      \draw_path_lineto:n { 9 , -32.5 }
+      \draw_path_lineto:n { 9 , -10 }
+      \draw_path_lineto:n { 15 , -10 }
+      \draw_path_lineto:n { 15 , 10 }
+      \draw_path_arc:nnn { 0 } { 90 } { 5 }
+      \draw_path_lineto:n { -10 , 15 }
+      \draw_path_arc:nnn { 90 } { 180 } { 5 }
+      \draw_path_lineto:n { -15 , -10 }
+      \draw_path_lineto:n { -9 , -10 }
+      \draw_path_close:
+      \draw_path_circle:nn { 0 , 25 } { 7.5 }
+      \draw_path_use_clear:n { fill }
+    \draw_scope_end:
+  \draw_end:
+}
+
 % EOF
