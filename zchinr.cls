@@ -498,7 +498,7 @@
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_tl \\ 
+      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
       \l_zchinr_local_licence_tl \c_colon_str{} ~ 
         \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
     }}}
