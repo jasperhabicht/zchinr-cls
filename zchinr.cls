@@ -999,7 +999,7 @@
   } 
   \par
   \vskip 8mm
-  \rule{\textwidth}{0.4pt}
+  \__zchinr_hfillrule:
   \par
   \vskip 8mm
 }
