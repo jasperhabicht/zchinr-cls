@@ -1063,6 +1063,9 @@
   }
 }
 
+\newlist{covertoc}{itemize}{1}
+\setlist[covertoc]{label={}, leftmargin=0pt, nosep, itemsep=10pt, before=\raggedright}
+
 \NewDocumentEnvironment { drawabsolute } { s O{ 0cm , 0cm } +b } {
   \AddToHookNext{shipout/background}{
     \nullfont
