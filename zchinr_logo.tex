@@ -1,0 +1,59 @@
+% !TeX program = xelatex
+\documentclass[]{zchinr}
+
+\zchinrsetup{
+  check page count = {1},
+}
+
+\geometry{
+  paperwidth=210mm, 
+  paperheight=140mm
+}
+
+\begin{document}
+
+\begin{drawabsolute}[10mm,-10mm]
+
+  \drawrectangle[zchinrblue!33]{-3mm,3mm}{216mm,-146mm}
+  
+  \drawcoffin[white]{105mm,-20mm}{175mm}[hc][t]{%
+    \zchinrlatindisplay%
+    \fontsize{200}{200}\selectfont%
+    \addfontfeature{LetterSpace=-6.75}%
+    ZChinR%
+  }
+
+  \drawcoffin[zchinrblue]{105mm,-80mm}{175mm}[hc][t]{%
+    \zchinrlatindisplay%
+    \fontsize{70}{65}\selectfont%
+    \addfontfeature{LetterSpace=-2.5}%
+    Zeitschrift für \par Chinesisches Recht%
+  }
+
+\end{drawabsolute}
+
+\eject 
+\pdfpagewidth 350mm
+\pdfpageheight 85mm
+
+\begin{drawabsolute}[10mm,-10mm]
+
+  \drawrectangle[zchinrblue!33]{-3mm,3mm}{426mm,-91mm}
+  
+  \drawcoffin[white]{105mm,-65mm}{175mm}[hc][H]{%
+    \zchinrlatindisplay%
+    \fontsize{160}{160}\selectfont%
+    \addfontfeature{LetterSpace=-6.75}%
+    ZChinR%
+  }
+
+  \drawcoffin[zchinrblue]{250mm,-65mm}{175mm}[hc][H]{%
+    \zchinrlatindisplay%
+    \fontsize{70}{65}\selectfont%
+    \addfontfeature{LetterSpace=-2.5}%
+    Zeitschrift für \par Chinesisches Recht%
+  }
+
+\end{drawabsolute}
+
+\end{document}
