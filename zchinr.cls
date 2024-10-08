@@ -29,32 +29,37 @@
 \LoadClass [ a4paper , twoside , 10pt ] { report }
 
 \msg_new:nnn { zchinr } { no-color-profile } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Color ~ profile ~ not ~ defined ~ in ~ preamble.
 }
 
 \msg_new:nnn { zchinr } { pagination-unknown } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ pagination ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { header-style-unknown } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ header ~ style ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { toc-style-unknown } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ toc ~ style ~ setting: ~ #1.
 }
 
+\msg_new:nnn { zchinr } { cover-toc-style-unknown } {
+  \msg_warning_text:n { zchinr } \iow_newline:
+  Ignoring ~ unknown ~ cover ~ toc ~ style ~ setting: ~ #1.
+}
+
 \msg_new:nnn { zchinr } { wrong-page-count } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Page ~ count ~ not ~ divisible ~ by ~ \int_use:N \l_zchinr_page_div_int : ~ #1.
 }
 
 \msg_new:nnn { zchinr } { reference-unknown } {
-  \msg_warning_text:n { zhinr } \iow_newline:
+  \msg_warning_text:n { zchinr } \iow_newline:
   Chapter ~ reference ~ not ~ found. ~ Please ~ rerun ~ compilation.
 }
 
@@ -101,6 +106,7 @@
 \tl_new:N \l_zchinr_article_category_tl
 \str_new:N \l_zchinr_article_pagination_str
 \str_new:N \l_zchinr_article_toc_style_str
+\str_new:N \l_zchinr_article_cover_toc_style_str
 \str_new:N \l_zchinr_article_header_style_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
 \bool_new:N \l_zchinr_article_small_title_bool
@@ -122,9 +128,16 @@
 \tl_new:N \l__zchinr_toc_entry_tl
 \int_new:N \g__zchinr_toc_chapter_index_aux_int
 
+\tl_new:N \g__zchinr_cover_toc_tl
+\tl_new:N \g__zchinr_cover_toc_aux_tl
+
 \tl_new:N \l__zchinr_fnmark_tl
 
 \dim_new:N \l__zchinr_tabindent_dim
+
+\tl_new:N \l_zchinr_tmpa_tl
+\tl_new:N \l_zchinr_tmpb_tl
+\coffin_new:N \l_zchinr_tmpa_coffin
 
 \cs_generate_variant:Nn \int_to_roman:n { e }
 \prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn , eNe } { T , F }
@@ -200,6 +213,7 @@
   article / title ~ short  .initial:n   = { \l_zchinr_article_title_tl } ,
   article / title ~ toc    .tl_set:N    = \l_zchinr_article_title_toc_tl , 
   article / title ~ toc    .initial:n   = { \l_zchinr_article_title_tl } ,
+  article / cover ~ toc    .code:n      = { \__zchinr_cover_toc_push:n {#1} } ,
   article / abstract       .tl_set:N    = \l_zchinr_article_abstract_tl , 
   article / abstract       .initial:n   = { } , 
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
@@ -218,6 +232,10 @@
   article / header ~ style .initial:n   = { author ~ title } , % author title , title , category
   article / toc ~ style    .str_set:N   = \l_zchinr_article_toc_style_str , 
   article / toc ~ style    .initial:n   = { author ~ first } , % author first , author last , no author
+  article / cover ~ toc ~ style
+                           .str_set:N   = \l_zchinr_article_cover_toc_style_str , 
+  article / cover ~ toc ~ style
+                           .initial:n   = { author ~ title } , % author title , title
   article / step ~ chapter .code:n      = { \__zchinr_step_chapter: } ,
   article / page ~ style   .code:n      = { \thispagestyle{zchinr #1} } ,
   reset                    .code:n      = {
@@ -644,21 +662,25 @@
   \bigskip
 }
 
-\NewDocumentCommand { \addressessection } { m o } {
-  \phantomsection
-  \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
+\NewDocumentCommand { \addressessection } { s m o } {
+  \IfBooleanT{#1}{
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
+  }
   \vskip 10pt plus 5pt minus 2.5pt
-  \noindent{\Large #1}\par
+  \noindent{\Large #2}\par
 }
 
-\NewDocumentCommand { \addressesheader } { m o o } {
+\NewDocumentCommand { \addressesheader } { s m o o } {
   \leavevmode
-  \IfNoValueF{#2}{
-    \phantomsection
-    \addcontentsline{toc}{#2}{\IfNoValueTF{#3}{#1}{#3}}
+  \IfBooleanT{#1}{
+    \IfNoValueF{#3}{
+      \phantomsection
+      \addcontentsline{toc}{#3}{\IfNoValueTF{#4}{#2}{#4}}
+   }
   }
   \rule{0pt}{\dimexpr\baselineskip+15pt}
-  \raggedright\bfseries\arraybackslash #1
+  \raggedright\bfseries\arraybackslash #2
 }
 
 \NewExpandableDocumentCommand { \addressesspan } { m } {
@@ -671,17 +693,17 @@
 
 % Create imprint environment.
 \NewDocumentEnvironment { imprint } { } {
-  \tl_set:Nn \arraystretch { 1.75 }
+  \tl_set:Nn \arraystretch { 1.5 }
   \noindent\begin{longtable}{
     @{} 
       >{\raggedright} 
       p{32.5mm}
     @{\hskip\columnsep} 
       >{\raggedright} 
-      p{\dimexpr\textwidth - 32.5mm - 37.5mm - 1.5\columnsep}
+      p{\dimexpr\textwidth - 32.5mm - 27.5mm - 1.5\columnsep}
     @{\hskip .5\columnsep} 
       >{\raggedleft\let\newline\\\arraybackslash} 
-      p{37.5mm}
+      p{27.5mm}
     @{}
   }
 } {
@@ -689,7 +711,13 @@
 }
 
 \NewExpandableDocumentCommand { \imprintspan } { m } {
-  \multicolumn{2}{@{}p{\dimexpr\textwidth - 32.5mm - \columnsep}@{}}{#1}
+  \multicolumn{2}{@{}p{\dimexpr\textwidth - 32.5mm - \columnsep}@{}}{\small #1}
+}
+
+\NewExpandableDocumentCommand { \imprintline } { } {
+  \multicolumn{2}{@{}p{\dimexpr\textwidth - 32.5mm - \columnsep}@{}}{
+    \__zchinr_hfillrule:
+  }
 }
 
 % Create commands for TOC. 
@@ -721,6 +749,34 @@
   \endlist
 }
 
+\cs_new:Npn \__zchinr_cover_toc_push:n #1 { 
+  \tl_set:Ne \l_zchinr_tmpa_tl { \l_zchinr_article_author_toc_tl }
+  \tl_set:Ne \l_zchinr_tmpb_tl { \l_zchinr_article_title_toc_tl }
+  \tl_replace_all:Nnn \l_zchinr_tmpa_tl { ~ } { \exp_not:N \c_space_token }
+  \tl_replace_all:Nnn \l_zchinr_tmpb_tl { ~ } { \exp_not:N \c_space_token }
+  \tl_if_blank:nTF {#1} {
+    \str_case_e:nnF { \l_zchinr_article_cover_toc_style_str } {
+      { title } {
+        \tl_gput_right:Ne \g__zchinr_cover_toc_tl { 
+          \exp_not:N \item{} \l_zchinr_tmpb_tl 
+        }
+      }
+      { author ~ title } {
+        \tl_gput_right:Ne \g__zchinr_cover_toc_tl { 
+          \exp_not:N \item{} \exp_not:N \emph{ \l_zchinr_tmpa_tl , } 
+            \exp_not:N \c_space_token
+            \l_zchinr_tmpb_tl 
+        }
+      }
+    } {
+      \msg_warning:nnn { zchinr } { cover-toc-style-unknown } 
+        { \l_zchinr_article_cover_toc_style_str } 
+    }
+  } {
+    \tl_gput_right:Ne \g__zchinr_cover_toc_tl { \exp_not:N \item{} #1 }
+  }
+}
+
 % The following automatically set the "first page" and "last page" of the issue.
 % The "first page" is the first page with arabic page numbers.
 % The "last page" is the last page with arabic page numbers.
@@ -746,6 +802,11 @@
 % At \end{document}, write "first page" and "last page" to .aux file.
 \AtEndDocument{
   \iow_now:cx { @auxout } {
+    \token_to_str:N \ExplSyntaxOn 
+    \iow_newline:
+    \tl_gset:Nn \token_to_str:N \g__zchinr_cover_toc_aux_tl 
+      { \exp_not:o { \g__zchinr_cover_toc_tl } }
+    \iow_newline:
     \token_to_str:N \ExplSyntaxOn 
     \iow_newline:
     \tl_gset:Nn \token_to_str:N \g__zchinr_issue_first_page_aux_tl 
@@ -1026,15 +1087,6 @@
 }
 
 \cs_new:Npn \__zchinr_article_title_block: {
-  \clist_if_in:NnF \l_zchinr_article_title_style_clist { title } {
-    \clist_if_in:NnT \l_zchinr_article_title_style_clist { phantom } {
-      \__zchinr_step_chapter:
-      \phantomsection
-      \addcontentsline{toc}{chapter}{
-        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
-      }
-    }
-  }
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \twocolumn[
       \__zchinr_article_title:
@@ -1051,6 +1103,13 @@
       \enlargethispage{-10mm}
     }
   }
+  \clist_if_in:NnT \l_zchinr_article_title_style_clist { phantom } {
+    \__zchinr_step_chapter:
+    \phantomsection
+    \addcontentsline{toc}{chapter}{
+      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+    }
+  }
 }
 
 \NewDocumentCommand { \inputpart } { O{0} m } {
@@ -1065,6 +1124,14 @@
 
 \newlist{covertoc}{itemize}{1}
 \setlist[covertoc]{label={}, leftmargin=0pt, nosep, itemsep=10pt, before=\raggedright}
+
+\NewDocumentCommand { \printcovertoc } { } { 
+  \tl_if_empty:NF \g__zchinr_cover_toc_aux_tl {
+    \begin{covertoc}
+      \tl_use:N \g__zchinr_cover_toc_aux_tl
+    \end{covertoc}
+  }
+}
 
 \NewDocumentEnvironment { drawabsolute } { s O{ 0cm , 0cm } +b } {
   \AddToHookNext{shipout/background}{
@@ -1094,7 +1161,6 @@
   \draw_scope_end:
 }
 
-\coffin_new:N \l_zchinr_tmpa_coffin
 \NewDocumentCommand { \drawcoffin } { o m m O{hc} O{vc} +m } { 
   \draw_scope_begin:
     \IfValueT{#1}{
