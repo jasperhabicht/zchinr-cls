@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/10/01} {2.3} {Document class for ZChinR}
+  {2024/10/08} {2.5} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -96,11 +96,12 @@
 \tl_new:N \l_zchinr_article_author_toc_tl
 \tl_new:N \l_zchinr_article_author_copy_tl
 \tl_new:N \l_zchinr_article_author_note_tl
-\tl_new:N \l_zchinr_article_title_tl
+\tl_new:N \g__zchinr_article_author_aux_tl
 \tl_new:N \l_zchinr_article_title_pdf_tl
 \tl_new:N \l_zchinr_article_title_alt_tl
 \tl_new:N \l_zchinr_article_title_short_tl
 \tl_new:N \l_zchinr_article_title_toc_tl
+\tl_new:N \g__zchinr_article_title_aux_tl
 \tl_new:N \l_zchinr_article_abstract_tl
 \tl_new:N \l_zchinr_article_abstract_alt_tl
 \tl_new:N \l_zchinr_article_category_tl
@@ -178,7 +179,10 @@
   issue / number           .tl_set:N    = \l_zchinr_issue_number_tl , 
   issue / issn             .tl_set:N    = \l_zchinr_issue_issn_tl ,
   issue / issn             .initial:n   = { 1613-5768, ~ eISSN: ~ 2366-7125 } ,
-  article                  .code:n      = { \keys_set:nn { zchinr / setup / article } {#1} } ,
+  article                  .code:n      = { 
+    \keys_set_exclude_groups:nnn { zchinr / setup / article } { execute } {#1} 
+    \keys_set_groups:nnn { zchinr / setup / article } { execute } {#1} 
+  } ,
   article / pagination     .str_set:N   = \l_zchinr_article_pagination_str ,
   article / pagination     .initial:n   = { arabic } , % arabic , roman , none
   article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl , 
@@ -213,7 +217,6 @@
   article / title ~ short  .initial:n   = { \l_zchinr_article_title_tl } ,
   article / title ~ toc    .tl_set:N    = \l_zchinr_article_title_toc_tl , 
   article / title ~ toc    .initial:n   = { \l_zchinr_article_title_tl } ,
-  article / cover ~ toc    .code:n      = { \__zchinr_cover_toc_push:n {#1} } ,
   article / abstract       .tl_set:N    = \l_zchinr_article_abstract_tl , 
   article / abstract       .initial:n   = { } , 
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
@@ -237,7 +240,11 @@
   article / cover ~ toc ~ style
                            .initial:n   = { author ~ title } , % author title , title
   article / step ~ chapter .code:n      = { \__zchinr_step_chapter: } ,
+  article / step ~ chapter .groups:n    = { execute } ,
+  article / cover ~ toc    .code:n      = { \__zchinr_cover_toc_push:n {#1} } ,
+  article / cover ~ toc    .groups:n    = { execute } ,
   article / page ~ style   .code:n      = { \thispagestyle{zchinr #1} } ,
+  article / page ~ style   .groups:n    = { execute } ,
   reset                    .code:n      = {
    \keys_set:nn { zchinr / setup / article } {
       pagination = { arabic } ,
@@ -270,7 +277,8 @@
   \IfBooleanF{#1}{
     \clearpage
   }
-  \keys_set:nn { zchinr / setup } {#2}
+  \keys_set_exclude_groups:nnn { zchinr / setup } {execute } {#2}
+  \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 
 \cs_new:Npn \__zchinr_halfquad: { 
@@ -472,20 +480,32 @@
   \RequirePackage[bookmarks=false]{hyperref}
   \AtBeginDocument{
     \NoHyper
+  }
+} {
+  \RequirePackage[hidelinks]{hyperref}
+  \RequirePackage{hyperxmp}
+  \AtBeginDocument{
     \hypersetup{
-      pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
+      pdfcopyright={Copyright ~ (c) ~ ZChinR ~ \l_zchinr_issue_year_tl},
+    }
+  }
+}
+\bool_if:NTF \l_zchinr_standalone_bool {
+  \AtBeginDocument{
+    \hypersetup{
       pdfinfo={
+        Title={\g__zchinr_article_title_aux_tl},
+        Author={\g__zchinr_article_author_aux_tl},
         ModDate={\pdfcreationdate},
         Trapped={False},      
       }
     }
   }
 } {
-  \RequirePackage[hidelinks]{hyperref}
   \AtBeginDocument{
     \hypersetup{
-      pdftitle={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl{}},
       pdfinfo={
+        Title={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl},
         ModDate={\pdfcreationdate},
         Trapped={False},      
       }
@@ -807,15 +827,43 @@
     \tl_gset:Nn \token_to_str:N \g__zchinr_cover_toc_aux_tl 
       { \exp_not:o { \g__zchinr_cover_toc_tl } }
     \iow_newline:
-    \token_to_str:N \ExplSyntaxOn 
-    \iow_newline:
     \tl_gset:Nn \token_to_str:N \g__zchinr_issue_first_page_aux_tl 
       { \tl_use:N \g_zchinr_issue_first_page_tl } 
     \iow_newline:
     \tl_gset:Nn \token_to_str:N \g__zchinr_issue_last_page_aux_tl 
       { \tl_use:N \g_zchinr_issue_last_page_tl } 
     \iow_newline:
+    \token_to_str:N \tl_if_exist:NF 
+      \token_to_str:c 
+        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } {
+      \iow_newline:
+      \tl_new:N \token_to_str:c 
+        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
+      \iow_newline:
+    }
+    \iow_newline: 
+    \tl_gset:Nn \token_to_str:c 
+      { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
+      { \int_eval:n { \thepage } }
+    \iow_newline:
     \token_to_str:N \ExplSyntaxOff
+  }
+  \bool_if:NT \l_zchinr_standalone_bool {
+    \tl_set:Ne \l_zchinr_tmpa_tl { \l_zchinr_article_author_tl }
+    \tl_set:Ne \l_zchinr_tmpb_tl { \l_zchinr_article_title_pdf_tl }
+    \tl_replace_all:Nnn \l_zchinr_tmpa_tl { ~ } { \exp_not:N \c_space_token }
+    \tl_replace_all:Nnn \l_zchinr_tmpb_tl { ~ } { \exp_not:N \c_space_token }  
+    \iow_now:cx { @auxout } {
+      \token_to_str:N \ExplSyntaxOn 
+      \iow_newline:
+      \tl_gset:Nn \token_to_str:N \g__zchinr_article_author_aux_tl 
+        { \exp_not:o { \l_zchinr_tmpa_tl } }
+      \iow_newline:
+      \tl_gset:Nn \token_to_str:N \g__zchinr_article_title_aux_tl 
+        { \exp_not:o { \l_zchinr_tmpb_tl } }
+      \iow_newline:
+      \token_to_str:N \ExplSyntaxOff
+    }  
   }
 }
 
