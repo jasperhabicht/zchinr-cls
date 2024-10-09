@@ -97,6 +97,7 @@
 \tl_new:N \l_zchinr_article_author_copy_tl
 \tl_new:N \l_zchinr_article_author_note_tl
 \tl_new:N \g__zchinr_article_author_aux_tl
+\tl_new:N \l_zchinr_article_title_tl
 \tl_new:N \l_zchinr_article_title_pdf_tl
 \tl_new:N \l_zchinr_article_title_alt_tl
 \tl_new:N \l_zchinr_article_title_short_tl
