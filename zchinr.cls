@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/10/08} {2.5} {Document class for ZChinR}
+  {2024/10/11} {2.6} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -515,7 +515,7 @@
 }
 
 % Style header and footer. Header stays empty while footer will contain journal information and page number. 
-\newpagestyle{zchinrdefault}{
+\cs_new:Npn \__zchinr_sethead_default: {
   \sethead
     [\l__zchinr_header_mark_page_tl]
     [\l__zchinr_header_mark_odd_tl]
@@ -523,51 +523,50 @@
     {\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl}
     {\l__zchinr_header_mark_even_tl}
     {\l__zchinr_header_mark_page_tl}
+}
+
+\cs_new:Npn \__zchinr_setfoot_default: {
+  \setfoot
+    {{\parbox[b]{0.4\textwidth}{\raggedright
+      ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
+      \l_zchinr_local_doi_tl \c_colon_str{} ~ 
+        \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
+    }}}
+    {}
+    {{\parbox[b]{0.4\textwidth}{\raggedleft
+      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
+      \l_zchinr_local_licence_tl \c_colon_str{} ~ 
+        \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
+    }}}
+}
+
+\cs_new:Npn \__zchinr_sethead_empty: {
+  \sethead{}{}{}
+}
+
+\cs_new:Npn \__zchinr_setfoot_empty: {
   \setfoot{}{}{}
+}
+
+\newpagestyle{zchinrdefault}{
+  \__zchinr_sethead_default:  
+  \__zchinr_setfoot_empty:
 }
 \pagestyle{zchinrdefault}
 
 \newpagestyle{zchinrtitle}{
-  \sethead
-    [\l__zchinr_header_mark_page_tl]
-    [\l__zchinr_header_mark_odd_tl]
-    [\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl]
-    {\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl}
-    {\l__zchinr_header_mark_even_tl}
-    {\l__zchinr_header_mark_page_tl}
-  \setfoot
-    {{\parbox[b]{0.4\textwidth}{\raggedright
-      ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
-      \l_zchinr_local_doi_tl \c_colon_str{} ~ 
-        \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
-    }}}
-    {}
-    {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
-      \l_zchinr_local_licence_tl \c_colon_str{} ~ 
-        \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
-    }}}
+  \__zchinr_sethead_default:  
+  \__zchinr_setfoot_default:
 }
 
 \newpagestyle{zchinrfirsttitle}{
-  \sethead{}{}{}
-  \setfoot
-    {{\parbox[b]{0.4\textwidth}{\raggedright
-      ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
-      \l_zchinr_local_doi_tl \c_colon_str{} ~ 
-        \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
-    }}}
-    {}
-    {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
-      \l_zchinr_local_licence_tl \c_colon_str{} ~ 
-        \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
-    }}}
+  \__zchinr_sethead_empty:  
+  \__zchinr_setfoot_default:
 }
 
 \newpagestyle{zchinrempty}{
-  \sethead{}{}{}
-  \setfoot{}{}{}
+  \__zchinr_sethead_empty:  
+  \__zchinr_setfoot_empty:
 }
 
 \newcounter{zchinrchapterindex}
