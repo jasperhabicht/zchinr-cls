@@ -528,6 +528,28 @@
 \pagestyle{zchinrdefault}
 
 \newpagestyle{zchinrtitle}{
+  \sethead
+    [\l__zchinr_header_mark_page_tl]
+    [\l__zchinr_header_mark_odd_tl]
+    [\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl]
+    {\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl}
+    {\l__zchinr_header_mark_even_tl}
+    {\l__zchinr_header_mark_page_tl}
+  \setfoot
+    {{\parbox[b]{0.4\textwidth}{\raggedright
+      ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
+      \l_zchinr_local_doi_tl \c_colon_str{} ~ 
+        \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
+    }}}
+    {}
+    {{\parbox[b]{0.4\textwidth}{\raggedleft
+      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
+      \l_zchinr_local_licence_tl \c_colon_str{} ~ 
+        \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
+    }}}
+}
+
+\newpagestyle{zchinrfirsttitle}{
   \sethead{}{}{}
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
@@ -955,7 +977,8 @@
   \str_case_e:nnF { \l_zchinr_article_header_style_str } {
     { category } {
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_category_tl
-      \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl      }
+      \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl
+    }
     { title } {
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_title_short_tl
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_title_short_tl
@@ -974,7 +997,11 @@
   }
 
   \tl_if_empty:NF \l_zchinr_article_doi_tl {
-    \thispagestyle{zchinrtitle}
+    \clist_if_in:NnTF \l_zchinr_article_title_style_clist { category } {
+      \thispagestyle{zchinrfirsttitle}
+    } {
+      \thispagestyle{zchinrtitle}
+    }
   }
   
   \tl_clear:N \l__zchinr_toc_entry_tl
