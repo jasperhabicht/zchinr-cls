@@ -525,7 +525,7 @@
     {\l__zchinr_header_mark_page_tl}
 }
 
-\cs_new:Npn \__zchinr_setfoot_default: {
+\cs_new:Npn \__zchinr_setfoot_title: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
       ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
@@ -554,14 +554,14 @@
 }
 \pagestyle{zchinrdefault}
 
-\newpagestyle{zchinrtitle}{
+\newpagestyle{zchinrdefaulttitle}{
   \__zchinr_sethead_default:  
-  \__zchinr_setfoot_default:
+  \__zchinr_setfoot_title:
 }
 
-\newpagestyle{zchinrfirsttitle}{
+\newpagestyle{zchinremptytitle}{
   \__zchinr_sethead_empty:  
-  \__zchinr_setfoot_default:
+  \__zchinr_setfoot_title:
 }
 
 \newpagestyle{zchinrempty}{
@@ -977,10 +977,22 @@
     { category } {
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_category_tl
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl
+      \clist_if_in:NnTF \l_zchinr_article_title_style_clist { category } {
+        \tl_if_empty:NF \l_zchinr_article_doi_tl {
+          \thispagestyle{zchinremptytitle}
+        }
+      } {
+        \tl_if_empty:NF \l_zchinr_article_doi_tl {
+          \thispagestyle{zchinrdefaulttitle}
+        }
+      }  
     }
     { title } {
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_title_short_tl
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_title_short_tl
+      \tl_if_empty:NF \l_zchinr_article_doi_tl {
+        \thispagestyle{zchinremptytitle}
+      }
     }
     { author ~ title } {
       \tl_set:Nn \l__zchinr_header_mark_even_tl {
@@ -989,20 +1001,18 @@
       \tl_set:Nn \l__zchinr_header_mark_odd_tl {
         { \itshape \l_zchinr_article_author_short_tl , } ~ \l_zchinr_article_title_short_tl
       }
+      \tl_if_empty:NF \l_zchinr_article_doi_tl {
+        \thispagestyle{zchinremptytitle}
+      }
     }
   } {
+    \tl_if_empty:NF \l_zchinr_article_doi_tl {
+      \thispagestyle{zchinrdefaulttitle}
+    }
     \msg_warning:nnn { zchinr } { header-style-unknown } 
       { \l_zchinr_article_header_style_str }
   }
 
-  \tl_if_empty:NF \l_zchinr_article_doi_tl {
-    \clist_if_in:NnTF \l_zchinr_article_title_style_clist { category } {
-      \thispagestyle{zchinrfirsttitle}
-    } {
-      \thispagestyle{zchinrtitle}
-    }
-  }
-  
   \tl_clear:N \l__zchinr_toc_entry_tl
   \str_case_e:nnF { \l_zchinr_article_toc_style_str } {
     { author ~ first } {
