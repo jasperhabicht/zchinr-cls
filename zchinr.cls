@@ -165,7 +165,7 @@
   localization / licence   .tl_set:N    = \l_zchinr_local_licence_tl ,
   localization / licence   .initial:n   = { Lizenz } ,
   localization / page      .tl_set:N    = \l_zchinr_local_page_tl ,
-  localization / page      .initial:n   = { Seite } ,
+  localization / page      .initial:n   = { S. } ,
   default / licence        .tl_set:N    = \l_zchinr_default_licence_tl ,
   default / licence        .initial:n   = { CC ~ BY ~ 4.0 } ,
   default / licence ~ url  .tl_set:N    = \l_zchinr_default_licence_url_tl ,
@@ -184,9 +184,9 @@
   article / first ~ page   .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
-    \thepage -- \currentchapterlastpage } ,
+    \zchinr_pages:nn { \thepage } { \currentchapterlastpage } } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
-  article / pages ~ toc    .initial:n   = { \thecontentspage --\chapterlastpage{\thezchinrchapterindex} } ,
+  article / pages ~ toc    .initial:n   = { \zchinr_pages:nn { \thecontentspage } { \chapterlastpage{\thezchinrchapterindex} } } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
   article / licence        .initial:n   = { \l_zchinr_default_licence_tl } ,
@@ -282,6 +282,14 @@
 
 \cs_new:Npn \__zchinr_hfillrule: {
   \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
+}
+
+\cs_new:Npn \zchinr_pages:nn #1#2 {
+  \int_compare:nNnTF {#1} = {#2} {
+    #1
+  } {
+    #1 -- #2
+  }
 }
 
 \RequirePackage[english, german]{babel}
