@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/10/11} {2.6} {Document class for ZChinR}
+  {2024/10/13} {2.7} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -183,10 +183,14 @@
   article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl , 
   article / first ~ page   .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
-  article / pages          .initial:n   = { \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
-    \zchinr_pages:nn { \thepage } { \currentchapterlastpage } } ,
+  article / pages          .initial:n   = { 
+    \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
+    \zchinr_pages:nn { \thepage } { \currentchapterlastpage } 
+  } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
-  article / pages ~ toc    .initial:n   = { \zchinr_pages:nn { \thecontentspage } { \chapterlastpage{\thezchinrchapterindex} } } ,
+  article / pages ~ toc    .initial:n   = { 
+    \zchinr_pages:nn { \thecontentspage } { \chapterlastpage{\thezchinrchapterindex} } 
+  } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
   article / licence        .initial:n   = { \l_zchinr_default_licence_tl } ,
@@ -276,11 +280,11 @@
   \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 
-\cs_new:Npn \__zchinr_halfquad: { 
+\cs_new:Npn \zchinr_halfquad: { 
   \hskip .5em \relax
 }
 
-\cs_new:Npn \__zchinr_hfillrule: {
+\cs_new:Npn \zchinr_hfillrule: {
   \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
 }
 
@@ -328,7 +332,7 @@
 \setlength{\columnsep}{7.5mm}
 
 \RequirePackage{l3draw}
-\cs_new:Npn \__zchinr_cropmark_nw: {
+\cs_new:Npn \zchinr_cropmark_nw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -340,7 +344,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \__zchinr_cropmark_ne: {
+\cs_new:Npn \zchinr_cropmark_ne: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -352,7 +356,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \__zchinr_cropmark_sw: {
+\cs_new:Npn \zchinr_cropmark_sw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -364,7 +368,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \__zchinr_cropmark_se: {
+\cs_new:Npn \zchinr_cropmark_se: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -393,10 +397,10 @@
   }
 
   \AddToHook{shipout/foreground}{
-    \__zchinr_cropmark_nw:
-    \__zchinr_cropmark_ne:
-    \__zchinr_cropmark_sw:
-    \__zchinr_cropmark_se:
+    \zchinr_cropmark_nw:
+    \zchinr_cropmark_ne:
+    \zchinr_cropmark_sw:
+    \zchinr_cropmark_se:
 
     \special{pdf:put ~ @thispage ~ <<
       /MediaBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
@@ -592,15 +596,15 @@
 }
 
 \titlecontents{section}[0pt]{}{\hspace*{-15pt}}{}
-  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
+  { \zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subsection}[15pt]{}{\hspace*{-15pt}}{}
-  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
+  { \zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subsubsection}[30pt]{}{\hspace*{-15pt}}{}
-  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
+  { \zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{paragraph}[45pt]{}{\hspace*{-15pt}}{}
-  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
+  { \zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 \titlecontents{subparagraph}[60pt]{}{\hspace*{-15pt}}{}
-  { \__zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
+  { \zchinr_halfquad: \titlerule*[5pt]{.}\contentspage}
 
 % Style footnotes.
 \tl_set:Nn \l__zchinr_fnmark_tl {
@@ -760,7 +764,7 @@
 
 \NewExpandableDocumentCommand { \imprintline } { } {
   \multicolumn{2}{@{}p{\dimexpr\textwidth - 32.5mm - \columnsep}@{}}{
-    \__zchinr_hfillrule:
+    \zchinr_hfillrule:
   }
 }
 
@@ -1079,7 +1083,7 @@
       \raggedleft
     }
     \LARGE\scshape\bfseries \text_lowercase:n { \l_zchinr_article_category_tl }
-    \__zchinr_halfquad: \__zchinr_hfillrule: \par
+    \zchinr_halfquad: \zchinr_hfillrule: \par
   }
   \vskip 7mm
 }
@@ -1147,7 +1151,7 @@
   } 
   \par
   \vskip 8mm
-  \__zchinr_hfillrule:
+  \zchinr_hfillrule:
   \par
   \vskip 8mm
 }
