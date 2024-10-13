@@ -75,7 +75,6 @@
 \tl_new:N \l_zchinr_issue_year_tl
 \tl_new:N \l_zchinr_issue_volume_tl
 \tl_new:N \l_zchinr_issue_number_tl
-\tl_new:N \l_zchinr_issue_issn_tl
 \tl_new:N \g_zchinr_issue_first_page_tl
 \tl_new:N \g_zchinr_issue_last_page_tl
 \tl_new:N \g__zchinr_issue_first_page_aux_tl
@@ -118,7 +117,6 @@
 
 \tl_new:N \l_zchinr_local_zchinr_tl
 \tl_new:N \l_zchinr_local_abstract_tl
-\tl_new:N \l_zchinr_local_issn_tl
 \tl_new:N \l_zchinr_local_doi_tl
 \tl_new:N \l_zchinr_local_licence_tl
 \tl_new:N \l_zchinr_local_page_tl
@@ -162,8 +160,6 @@
   localization / zchinr    .initial:n   = { ZChinR } ,
   localization / abstract  .tl_set:N    = \l_zchinr_local_abstract_tl ,
   localization / abstract  .initial:n   = { Abstract } ,
-  localization / issn      .tl_set:N    = \l_zchinr_local_issn_tl ,
-  localization / issn      .initial:n   = { ISSN } ,
   localization / doi       .tl_set:N    = \l_zchinr_local_doi_tl ,
   localization / doi       .initial:n   = { DOI } ,
   localization / licence   .tl_set:N    = \l_zchinr_local_licence_tl ,
@@ -178,8 +174,6 @@
   issue / year             .tl_set:N    = \l_zchinr_issue_year_tl , 
   issue / volume           .tl_set:N    = \l_zchinr_issue_volume_tl , 
   issue / number           .tl_set:N    = \l_zchinr_issue_number_tl , 
-  issue / issn             .tl_set:N    = \l_zchinr_issue_issn_tl ,
-  issue / issn             .initial:n   = { 1613-5768, ~ eISSN: ~ 2366-7125 } ,
   article                  .code:n      = { 
     \keys_set_exclude_groups:nnn { zchinr / setup / article } { execute } {#1} 
     \keys_set_groups:nnn { zchinr / setup / article } { execute } {#1} 
