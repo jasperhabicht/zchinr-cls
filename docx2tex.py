@@ -149,8 +149,8 @@ def process_tbl_nodes(data):
             cells = re.findall(r'(<w:tc(\s[^>]+)?>.*?<\/w:tc>)', tr[0])
             result += process_p_nodes(cells[0][0])
             for tc in cells[1:]:
-                result += '<x:cellsep/>' + process_p_nodes(tc[0])
-            result += '<x:rowsep/>'
+                result += '<zchinr:cellsep/>' + process_p_nodes(tc[0])
+            result += '<zchinr:rowsep/>'
         result += '\\end{documentation}\n\n'
     return result
 
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     file_data = reduce_textbf(file_data)
 
     # replace row and cell separators
-    file_data = re.sub(r'\s+<x:cellsep\/>', r' & \n', file_data)
-    file_data = re.sub(r'\s+<x:rowsep\/>', r' \\\\ \n\n', file_data)
+    file_data = re.sub(r'\s+<zchinr:cellsep\/>', r' & \n', file_data)
+    file_data = re.sub(r'\s+<zchinr:rowsep\/>', r' \\\\ \n\n', file_data)
 
     # process typography
     file_data = re.sub(r'\u00a0', '~', file_data)
