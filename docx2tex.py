@@ -179,6 +179,18 @@ def replace_endash(string):
     else:
         return re.sub(r'(\d)\-(\d)', r'\1--\2', string)
 
+def reduce_emph(string):
+    '''Join subsequent emph commands.'''
+    if re.search(r'\\emph\{.*?\}\s*\\emph\{.*?\}', string):
+        return reduce_emph(re.sub(r'\\emph\{(.*?)\}(\s*)\\emph\{(.*?)\}', r'\\emph{\1\2\3}', string))
+    return string
+
+def reduce_textbf(string):
+    '''Join subsequent textbf commands.'''
+    if re.search(r'\\textbf\{.*?\}\s*\\textbf\{.*?\}', string):
+        return reduce_textbf(re.sub(r'\\textbf\{(.*?)\}(\s*)\\textbf\{(.*?)\}', r'\\textbf{\1\2\3}', string))
+    return string
+
 if __name__ == '__main__':
     file_in = 'input.docx'
     if len(sys.argv) > 1:
@@ -221,9 +233,9 @@ if __name__ == '__main__':
     file_data = re.sub(r'\\(emph|textbf)\{\\footnote\{(.*?)\}\s*\}', r'\\footnote{\2}', file_data)
     file_data = re.sub(r'\\footnote\{(.*?)\s+\}', r'\\footnote{\1}', file_data)
     file_data = re.sub(r'\\footnote\{\s+(.*?)\}', r'\\footnote{\1}', file_data)
-    for r in range(3):
-        file_data = re.sub(r'(?<=\\emph{)(.*?)}(\s*)\\emph{(.*?)(?=})', r'\1\2\3', file_data)
-        file_data = re.sub(r'(?<=\\textbf{)(.*?)}(\s*)\\textbf{(.*?)(?=})', r'\1\2\3', file_data)
+
+    file_data = reduce_emph(file_data)
+    file_data = reduce_textbf(file_data)
 
     # replace row and cell separators
     file_data = re.sub(r'\s+<x:cellsep\/>', r' & \n', file_data)
@@ -263,5 +275,8 @@ if __name__ == '__main__':
     # itemize / enumerate : w:ilvl
 
     # write file
-    with open('output.tex', 'w', encoding='utf-8') as file_out:
-        file_out.write(file_data)
+    file_out = 'output.tex'
+    if len(sys.argv) > 2:
+        file_out = sys.argv[2]
+    with open(file_out, 'w', encoding='utf-8') as file:
+        file.write(file_data)
