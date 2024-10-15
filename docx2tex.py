@@ -40,7 +40,7 @@ def process_tbl_nodes(data):
     return result
 
 # process nodes
-def process_p_nodes(data, ignore_footnotes=False):
+def process_p_nodes(data, ignore_footnotes = False):
     '''Find all w:p nodes in a string and process them accordingly. Consider headers, bold and italic.'''
     result = ''
     paragraphs = re.findall(r'(<w:p(\s[^>]+)?>.*?<\/w:p>)', data)
@@ -68,7 +68,7 @@ def process_p_nodes(data, ignore_footnotes=False):
                 else:
                     append_before_p += '\\subparagraph\u007b'
                     append_after_p += '\u007d'
-            if p_style[2] in bold_styles and is_section == False:
+            if p_style[2] in bold_styles and is_section is False:
                 append_before_p += '\\textbf\u007b'
                 append_after_p += '\u007d'
             if p_style[2] in italic_styles:
@@ -94,7 +94,7 @@ def process_p_nodes(data, ignore_footnotes=False):
                 else:
                     append_before_p += '\\subparagraph\u007b'
                     append_after_p += '\u007d'
-            if re.search(r'<w:b\/>', p_properties[2]) and is_section == False:
+            if re.search(r'<w:b\/>', p_properties[2]) and is_section is False:
                 append_before_p += '\\textbf\u007b'
                 append_after_p += '\u007d'
             if re.search(r'<w:i\/>', p_properties[2]):
@@ -108,7 +108,7 @@ def process_p_nodes(data, ignore_footnotes=False):
             append_after_r = ''
             r_style = re.search(r'<w:r_style(\s[^>]+)?\sw:val="(.*?)"', r[0])
             if r_style:
-                if r_style[2] in bold_styles and is_section == False:
+                if r_style[2] in bold_styles and is_section is False:
                     append_before_r += '\\textbf\u007b'
                     append_after_r += '\u007d'
                 if r_style[2] in italic_styles:
@@ -116,7 +116,7 @@ def process_p_nodes(data, ignore_footnotes=False):
                     append_after_r += '\u007d'
             r_properties = re.search(r'<w:rPr(\s[^>]+)?>(.*?)<\/w:rPr>', r[0])
             if r_properties:
-                if re.search(r'<w:b\/>', r_properties[2]) and is_section == False:
+                if re.search(r'<w:b\/>', r_properties[2]) and is_section is False:
                     append_before_r += '\\textbf\u007b'
                     append_after_r += '\u007d'
                 if re.search(r'<w:i\/>', r_properties[2]):
@@ -132,15 +132,20 @@ def process_p_nodes(data, ignore_footnotes=False):
                 else:
                     run += t[0]
             paragraph += append_before_r + run + append_after_r
-        if result != '':
-            result += '\n\n'
-        result += append_before_p + paragraph + append_after_p
+        result += append_before_p + paragraph + append_after_p + '\n\n'
     return result
 
+def replace_endash(string):
+    '''Replace dashes between numbers, but only if there is only one.'''
+    if len(re.findall(r'\-', string)) > 1:
+        return string
+    else:
+        return re.sub(r'(\d)\-(\d)', r'\1--\2', string)
+
 if __name__ == '__main__':
-    if sys.argv[1]:
+    if len(sys.argv) > 1:
         filename = sys.argv[1]
-    else: 
+    else:
         filename = 'input.docx'
 
     # read file parts
@@ -180,23 +185,24 @@ if __name__ == '__main__':
     if footnote_nodes:
         filedata = re.sub(r'<w:footnoteReference(\s[^>]+)?\sw:id="(.*?)"(\s[^>]+)?\/>', lambda m: footnote_nodes.get(m.group(2)), filedata)
 
-    # remove space after opening brace
-    filedata = re.sub(r'\{\s', r'{', filedata)
-
     # add thin space to abbreviations
     filedata = re.sub(r'\b([a-zA-Z])\.([a-zA-Z])\.([a-zA-Z])\.', r'\1.\\,\2.\\,\3.', filedata)
     filedata = re.sub(r'\b([a-zA-Z])\.([a-zA-Z]{1,2})\.', r'\1.\\,\2.', filedata)
     filedata = re.sub(r'(\d)%', r'\1\\,%', filedata)
 
-    # add endash
-    filedata = re.sub(r'(\d+)(\-)(\d+\b[^\-])', r'\1--\3', filedata)
+    # replace endash
+    filedata = re.sub(r'[\d\-]+', lambda m: replace_endash(m.group()), filedata)
+    filedata = re.sub(r'\s-\s', ' -- ', filedata)
 
     # add non-breakable space
-    filedata = re.sub(r'(§§?|Art.|Abs.|S.|p.|Nr.|No.)\s(\d+)\s(ff?.)', r'\1~\2~\3', filedata)
-    filedata = re.sub(r'(§§?|Art.|Abs.|S.|p.|Nr.|No.)\s(\d+)', r'\1~\2', filedata)
+    filedata = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)\s(ff?.)', r'\1~\2~\3', filedata)
+    filedata = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)', r'\1~\2', filedata)
 
-    # escape ampersand, dollar and percent
-    filedata = re.sub(r'&amp;', r'&', filedata)
+    # escape ampersand, less than, greater than, number sigh, dollar and percent
+    filedata = re.sub(r'&amp;', '&', filedata)
+    filedata = re.sub(r'&lt;', '<', filedata)
+    filedata = re.sub(r'&gt;', '>', filedata)
+    filedata = re.sub(r'#', r'\\#', filedata)
     filedata = re.sub(r'&', r'\\&', filedata)
     filedata = re.sub(r'\$', r'\\$', filedata)
     filedata = re.sub(r'%', r'\\%', filedata)
@@ -204,10 +210,48 @@ if __name__ == '__main__':
     # urls
     filedata = re.sub(r'((www\.[-a-zA-Z\d]+\.[^\s]+\/|http:\/\/|https:\/\/)[^\s]+)', r'\\url{\1}', filedata)
 
+    # tidy up
+    filedata = re.sub(r'\\(emph|textbf)\{\s*\}', '', filedata)
+    filedata = re.sub(r'\\(emph|textbf)\{\s+(.*?)\}', r' \\\1{\2}', filedata)
+    filedata = re.sub(r'\\(emph|textbf)\{(.*?)\s+\}', r'\\\1{\2} ', filedata)
+    filedata = re.sub(r'\\(emph|textbf)\{\\footnote\{(.*?)\}\}', r'\\footnote{\2}', filedata)
+    filedata = re.sub(r'\\footnote\{\s+(.*?)\}', r'\\footnote{\1}', filedata)
+    filedata = re.sub(r'\\footnote\{(.*?)\s+\}', r'\\footnote{\1}', filedata)
+
     # replace cell separators
     filedata = re.sub(r'<x:cellsep\/>', r'&', filedata)
 
-    # chinese characters
+    # process typography
+    filedata = re.sub(r'\u00a0', '~', filedata)
+    filedata = re.sub(r'\u201c\u2018', '``{}`', filedata)
+    filedata = re.sub(r'\u2018\u201c', '`{}``', filedata)
+    filedata = re.sub(r'\u201d\u2019', "''{}'", filedata)
+    filedata = re.sub(r'\u2019\u201d', "'{}''", filedata)
+    filedata = re.sub(r'\u201e\u201a', ',,{},', filedata)
+    filedata = re.sub(r'\u201a\u201e', ',{},,', filedata)
+    filedata = re.sub(r'\u201c', '``', filedata)
+    filedata = re.sub(r'\u201d', "''", filedata)
+    filedata = re.sub(r'\u201e', ',,', filedata)
+    filedata = re.sub(r'\u2018', '`', filedata)
+    filedata = re.sub(r'\u2019', "'", filedata)
+    filedata = re.sub(r'\u201a', ',', filedata)
+    filedata = re.sub(r'\u2026', r'\\ldots{}', filedata)
+    filedata = re.sub(r'\.\.\.', r'\\ldots{}', filedata)
+    filedata = re.sub(r'\u2013', '--', filedata)
+    filedata = re.sub(r'\u2014', '---', filedata)
+
+    filedata = re.sub('!`', '!{}`', filedata)
+    filedata = re.sub('?`', '?{}`', filedata)
+
+    # process spaces
+    filedata = re.sub(r'~\n', '\n', filedata)
+    filedata = re.sub(r'\n{3,}', '\n\n', filedata)
+    filedata = re.sub(r'~[ \t\f]', '~', filedata)
+    filedata = re.sub(r'[ \t\f]~', '~', filedata)
+
+    # process chinese characters
+    # filedata = re.sub(r'([\p{Han}\x{3000}-\x{303F}\x{FF00}-\x{FFEF}]+)', r'\\zhs{\1}', filedata)
+
     # itemize / enumerate : w:ilvl
 
     # write file
