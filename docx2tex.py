@@ -48,8 +48,8 @@ def process_structure(file_name):
         result = re.sub(r'<w:footnoteReference(\s[^>]+)?\sw:id="(.*?)"(\s[^>]+)?\/>', lambda m: footnote_nodes.get(m.group(2)), result)
     return result
 
-def process_levels(level):
-    '''Process hierarchy levels of p nodes.'''
+def select_level(level):
+    '''Select hierarchy level of p nodes.'''
     if level == '0':
         append_before = '\\section{'
     elif level == '1':
@@ -78,7 +78,7 @@ def process_p_nodes(data, ignore_footnotes = False):
         if p_style:
             if p_style[2] in level_styles:
                 is_section = True
-                append_before_p = process_levels(level_styles[p_style[2]])
+                append_before_p = select_level(level_styles[p_style[2]])
                 append_after_p = '}'
             if p_style[2] in bold_styles and is_section is False:
                 append_before_p += '\\textbf{'
@@ -92,7 +92,7 @@ def process_p_nodes(data, ignore_footnotes = False):
             if re.search(r'<w:outlineLvl(>|\s)', p_properties[2]):
                 is_section = True
                 level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', p_properties[2])
-                append_before_p = process_levels(level)
+                append_before_p = select_level(level)
                 append_after_p = '}'
             if re.search(r'<w:b\/>', p_properties[2]) and is_section is False:
                 append_before_p += '\\textbf{'
