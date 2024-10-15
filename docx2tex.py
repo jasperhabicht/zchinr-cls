@@ -214,10 +214,10 @@ if __name__ == '__main__':
     file_data = re.sub(r'\$', r'\\$', file_data)
     file_data = re.sub(r'%', r'\\%', file_data)
 
-    # formal urls
+    # format urls
     file_data = re.sub(r'<?((www\.[-a-zA-Z\d]+\.[^\s]+\/|http:\/\/|https:\/\/)[^\s>]+)>?', r'\\url{\1}', file_data)
 
-    # tidy up
+    # tidy up empty, nested and subsequent macros
     file_data = re.sub(r'\\(emph|textbf)\{\s*\}', '', file_data)
     file_data = re.sub(r'\\(emph|textbf)\{(.*?)\s+\}', r'\\\1{\2} ', file_data)
     file_data = re.sub(r'\\(emph|textbf)\{\s+(.*?)\}', r' \\\1{\2}', file_data)
@@ -226,7 +226,6 @@ if __name__ == '__main__':
     file_data = re.sub(r'\\(emph|textbf)\{\\footnote\{(.*?)\}\s*\}', r'\\footnote{\2}', file_data)
     file_data = re.sub(r'\\footnote\{(.*?)\s+\}', r'\\footnote{\1}', file_data)
     file_data = re.sub(r'\\footnote\{\s+(.*?)\}', r'\\footnote{\1}', file_data)
-
     file_data = reduce_emph(file_data)
     file_data = reduce_textbf(file_data)
 
@@ -252,7 +251,6 @@ if __name__ == '__main__':
     file_data = re.sub(r'\.\.\.', r'\\ldots{}', file_data)
     file_data = re.sub(r'\u2013', '--', file_data)
     file_data = re.sub(r'\u2014', '---', file_data)
-
     file_data = re.sub(r'!`', '!{}`', file_data)
     file_data = re.sub(r'\?`', '?{}`', file_data)
 
