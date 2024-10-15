@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''Convert a .docx file with an ZChinR article to its semantical .tex equivalent. Version 1.1: 2024-10.15.'''
+'''Convert a .docx file with an ZChinR article to its semantical .tex equivalent. Version 1.2: 2024-10.15.'''
 import re
 import sys
 import zipfile
@@ -48,13 +48,29 @@ def process_structure(file_name):
         result = re.sub(r'<w:footnoteReference(\s[^>]+)?\sw:id="(.*?)"(\s[^>]+)?\/>', lambda m: footnote_nodes.get(m.group(2)), result)
     return result
 
+def process_levels(level):
+    '''Process hierarchy levels of p nodes.'''
+    if level == '0':
+        append_before = '\\section{'
+    elif level == '1':
+        append_before = '\\subsection{'
+    elif level == '2':
+        append_before = '\\subsubsection{'
+    elif level == '3':
+        append_before = '\\paragraph{'
+    else:
+        append_before = '\\subparagraph{'
+    return append_before
+
 # process nodes
 def process_p_nodes(data, ignore_footnotes = False):
     '''Find all w:p nodes in a string and process them accordingly. Consider headers, bold and italic.'''
     result = ''
+    # process w:p nodes
     paragraphs = re.findall(r'(<w:p(\s[^>]+)?>.*?<\/w:p>)', data)
     for p in paragraphs:
         paragraph = ''
+        # process node style
         append_before_p = ''
         append_after_p = ''
         p_style = re.search(r'<w:pStyle(\s[^>]+)?\sw:val="(.*?)"', p[0])
@@ -62,57 +78,33 @@ def process_p_nodes(data, ignore_footnotes = False):
         if p_style:
             if p_style[2] in level_styles:
                 is_section = True
-                if level_styles[p_style[2]] == '0':
-                    append_before_p += '\\section{'
-                    append_after_p += '}'
-                elif level_styles[p_style[2]] == '1':
-                    append_before_p += '\\subsection{'
-                    append_after_p += '}'
-                elif level_styles[p_style[2]] == '2':
-                    append_before_p += '\\subsubsection{'
-                    append_after_p += '}'
-                elif level_styles[p_style[2]] == '3':
-                    append_before_p += '\\paragraph{'
-                    append_after_p += '}'
-                else:
-                    append_before_p += '\\subparagraph{'
-                    append_after_p += '}'
+                append_before_p = process_levels(level_styles[p_style[2]])
+                append_after_p = '}'
             if p_style[2] in bold_styles and is_section is False:
                 append_before_p += '\\textbf{'
                 append_after_p += '}'
             if p_style[2] in italic_styles:
                 append_before_p += '\\emph{'
                 append_after_p += '}'
+        # process node properties
         p_properties = re.search(r'<w:pPr(\s[^>]+)?>(.*?)<\/w:pPr>', p[0])
         if p_properties:
             if re.search(r'<w:outlineLvl(>|\s)', p_properties[2]):
                 is_section = True
                 level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', p_properties[2])
-                if level == '0':
-                    append_before_p += '\\section{'
-                    append_after_p += '}'
-                elif level == '1':
-                    append_before_p += '\\subsection{'
-                    append_after_p += '}'
-                elif level == '2':
-                    append_before_p += '\\subsubsection{'
-                    append_after_p += '}'
-                elif level == '3':
-                    append_before_p += '\\paragraph{'
-                    append_after_p += '}'
-                else:
-                    append_before_p += '\\subparagraph{'
-                    append_after_p += '}'
+                append_before_p = process_levels(level)
+                append_after_p = '}'
             if re.search(r'<w:b\/>', p_properties[2]) and is_section is False:
                 append_before_p += '\\textbf{'
                 append_after_p += '}'
             if re.search(r'<w:i\/>', p_properties[2]):
                 append_before_p += '\\emph{'
                 append_after_p += '}'
-        # process runs
+        # process w:r nodes
         runs = re.findall(r'(<w:r(\s[^>]+)?>.*?<\/w:r>)', p[0])
         for r in runs:
             run = ''
+            # process node style
             append_before_r = ''
             append_after_r = ''
             r_style = re.search(r'<w:r_style(\s[^>]+)?\sw:val="(.*?)"', r[0])
@@ -123,6 +115,7 @@ def process_p_nodes(data, ignore_footnotes = False):
                 if r_style[2] in italic_styles:
                     append_before_r += '\\emph{'
                     append_after_r += '}'
+            # process node properties
             r_properties = re.search(r'<w:rPr(\s[^>]+)?>(.*?)<\/w:rPr>', r[0])
             if r_properties:
                 if re.search(r'<w:b\/>', r_properties[2]) and is_section is False:
@@ -131,6 +124,7 @@ def process_p_nodes(data, ignore_footnotes = False):
                 if re.search(r'<w:i\/>', r_properties[2]):
                     append_before_r += '\\emph{'
                     append_after_r += '}'
+            # process w:t nodes
             if ignore_footnotes:
                 texts = re.findall(r'(<w:t(\s[^>]+)?>(.*?)<\/w:t>)', r[0])
             else:
@@ -176,8 +170,7 @@ def replace_endash(string):
     '''Replace dashes between numbers, but only if there is only one.'''
     if len(re.findall(r'\-', string)) > 1:
         return string
-    else:
-        return re.sub(r'(\d)\-(\d)', r'\1--\2', string)
+    return re.sub(r'(\d)\-(\d)', r'\1--\2', string)
 
 def reduce_emph(string):
     '''Join subsequent emph commands.'''
