@@ -7,3 +7,5 @@ It simplifies typesetting by allowing for setting issue and article options via 
 The template allows for typesetting PDFs for online use as well as for printing either of full issues or single articles via document class options.
 
 Only open source fonts are used. Typesetting of Chinese is based on XeLaTeX and the `ctex` package.
+
+Additionally, this repo includes a python script for converting .docx files into a semantical .tex equivalent which can directly be used as article or documentation in the ZChinR journal.
