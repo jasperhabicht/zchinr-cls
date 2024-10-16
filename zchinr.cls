@@ -276,7 +276,7 @@
   \IfBooleanF{#1}{
     \clearpage
   }
-  \keys_set_exclude_groups:nnn { zchinr / setup } {execute } {#2}
+  \keys_set_exclude_groups:nnn { zchinr / setup } { execute } {#2}
   \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 

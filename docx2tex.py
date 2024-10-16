@@ -25,21 +25,21 @@ def process_structure(file_name):
     # collect styles
     style_ids = re.findall(r'<w:style(\s[^>]+)?\sw:styleId="(.*?)"', styles_data)
     # identify styles as bold, italic or level
-    for i in style_ids:
-        style = re.search(rf'<w:style(\s[^>]+)?\sw:styleId="{re.escape(i[1])}"(\s[^>]+)?>(.*?)<\/w:style>', styles_data)
-        if re.search(r'<w:b\/>', style[3]):
-            bold_styles.append(i[1])
-        if re.search(r'<w:1\/>', style[3]):
-            italic_styles.append(i[1])
-        if re.search(r'<w:outlineLvl(>|\s)', style[3]):
-            section_level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', style[3])
-            level_styles[i[1]] = section_level[2]
+    for style in style_ids:
+        style_properties = re.search(rf'<w:style(\s[^>]+)?\sw:styleId="{re.escape(style[1])}"(\s[^>]+)?>(.*?)<\/w:style>', styles_data)
+        if re.search(r'<w:b\/>', style_properties[3]):
+            bold_styles.append(style[1])
+        if re.search(r'<w:1\/>', style_properties[3]):
+            italic_styles.append(style[1])
+        if re.search(r'<w:outlineLvl(>|\s)', style_properties[3]):
+            section_level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', style_properties[3])
+            level_styles[style[1]] = section_level[2]
     # collect footnotes
     footnote_ids = re.findall(r'<w:footnote(\s[^>]+)?\sw:id="(.*?)"', footnotes_data)
     footnote_nodes = {}
-    for i in footnote_ids:
-        footnote_node = re.search(rf'<w:footnote(\s[^>]+)?\sw:id="{re.escape(i[1])}"(\s[^>]+)?>.*?<\/w:footnote>', footnotes_data)
-        footnote_nodes[i[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], True)}\u007d'
+    for footnote in footnote_ids:
+        footnote_node = re.search(rf'<w:footnote(\s[^>]+)?\sw:id="{re.escape(footnote[1])}"(\s[^>]+)?>.*?<\/w:footnote>', footnotes_data)
+        footnote_nodes[footnote[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], True)}\u007d'
     # filter body part
     result = re.search(r'<w:body(\s[^>]+)?>(.*?)<\/w:body>', document_data)[2]
     result = process_nodes(result)
