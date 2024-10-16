@@ -199,10 +199,10 @@ if __name__ == '__main__':
 
     # replace endash
     file_data = re.sub(r'[\d\-]+', lambda m: replace_endash(m.group()), file_data)
-    file_data = re.sub(r'\s-\s', ' -- ', file_data)
+    file_data = re.sub(r'\s\-\s', ' -- ', file_data)
 
     # add non-breakable space
-    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)\s(ff?.)', r'\1~\2~\3', file_data)
+    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)\s(ff?\.)', r'\1~\2~\3', file_data)
     file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)', r'\1~\2', file_data)
 
     # escape ampersand, less than, greater than, number sigh, dollar and percent
