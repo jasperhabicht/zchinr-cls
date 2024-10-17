@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
-'''Convert a .docx file with an ZChinR article to its semantical .tex equivalent. Version 1.2: 2024-10.15.'''
+
+# File: doc2tex.py
+# Version: 1.3 2024-10-17
+# Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+#
+# This work may be distributed and/or modified under the
+# conditions of the LaTeX Project Public License version 1.3c,
+# available at http://www.latex-project.org/lppl/.
+#
+# This file is part of the `zchinr' package (The Work in LPPL)
+# and all files in that bundle must be distributed together.
+#
+# This work has the LPPL maintenance status `maintained'.
+
+'''Convert a .docx file with an ZChinR article to its semantical .tex equivalent.'''
 import re
 import sys
 import zipfile
@@ -209,9 +223,9 @@ if __name__ == '__main__':
     file_data = re.sub(r'&amp;', '&', file_data)
     file_data = re.sub(r'&lt;', '<', file_data)
     file_data = re.sub(r'&gt;', '>', file_data)
+    file_data = re.sub(r'\$', r'\\$', file_data)
     file_data = re.sub(r'#', r'\\#', file_data)
     file_data = re.sub(r'&', r'\\&', file_data)
-    file_data = re.sub(r'\$', r'\\$', file_data)
     file_data = re.sub(r'%', r'\\%', file_data)
 
     # format urls
