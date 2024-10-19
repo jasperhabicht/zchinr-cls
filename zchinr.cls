@@ -85,6 +85,7 @@
 \tl_new:N \l_zchinr_default_licence_url_tl
 
 \tl_new:N \l_zchinr_article_first_page_tl
+\tl_new:N \l_zchinr_article_label_tl
 \tl_new:N \l_zchinr_article_pages_tl
 \tl_new:N \l_zchinr_article_pages_toc_tl
 \tl_new:N \l_zchinr_article_doi_tl
@@ -182,6 +183,8 @@
   article / pagination     .initial:n   = { arabic } , % arabic , roman , none
   article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl , 
   article / first ~ page   .initial:n   = { } ,
+  article / label          .tl_set:N    = \l_zchinr_article_label_tl , 
+  article / label          .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { 
     \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
@@ -1104,6 +1107,9 @@
       {\fontsize{11}{13}\selectfont\itshape \__zchinr_article_author: \par}
     }
   }
+  \tl_if_empty:NT \l_zchinr_article_label_tl {
+    \label { section: \l_zchinr_article_label_tl }
+  }
   \vskip 4mm\bigskip
 }
 
@@ -1117,6 +1123,9 @@
   }
   \noindent
   {\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl\par}
+  \tl_if_empty:NT \l_zchinr_article_label_tl {
+    \label { section: \l_zchinr_article_label_tl }
+  }
   \bigskip\nopagebreak
   \noindent
   {\itshape \__zchinr_article_author: }\par

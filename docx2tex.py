@@ -205,20 +205,7 @@ if __name__ == '__main__':
 
     # process file data
     file_data = process_structure(file_in)
-
-    # add thin space to abbreviations
-    file_data = re.sub(r'\b([a-zA-Z])\.([a-zA-Z])\.([a-zA-Z])\.', r'\1.\\,\2.\\,\3.', file_data)
-    file_data = re.sub(r'\b([a-zA-Z])\.([a-zA-Z]{1,2})\.', r'\1.\\,\2.', file_data)
-    file_data = re.sub(r'(\d)%', r'\1\\,%', file_data)
-
-    # replace endash
-    file_data = re.sub(r'[\d\-]+', lambda m: replace_endash(m.group()), file_data)
-    file_data = re.sub(r'\s\-\s', ' -- ', file_data)
-
-    # add non-breakable space
-    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)\s(ff?\.)', r'\1~\2~\3', file_data)
-    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)', r'\1~\2', file_data)
-
+    
     # escape ampersand, less than, greater than, number sigh, dollar and percent
     file_data = re.sub(r'&amp;', '&', file_data)
     file_data = re.sub(r'&lt;', '<', file_data)
@@ -242,6 +229,19 @@ if __name__ == '__main__':
     file_data = re.sub(r'\\footnote\{\s+(.*?)\}', r'\\footnote{\1}', file_data)
     file_data = reduce_emph(file_data)
     file_data = reduce_textbf(file_data)
+
+    # replace endash
+    file_data = re.sub(r'[\d\-]+', lambda m: replace_endash(m.group()), file_data)
+    file_data = re.sub(r'\s\-\s', ' -- ', file_data)
+
+    # add thin space to abbreviations
+    file_data = re.sub(r'\b([a-zA-Z])\.([a-zA-Z])\.([a-zA-Z])\.', r'\1.\\,\2.\\,\3.', file_data)
+    file_data = re.sub(r'\b([a-zA-Z])\.([a-zA-Z]{1,2})\.', r'\1.\\,\2.', file_data)
+    file_data = re.sub(r'(\d)%', r'\1\\,%', file_data)
+
+    # add non-breakable space
+    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)\s(ff?\.)', r'\1~\2~\3', file_data)
+    file_data = re.sub(r'(§§?|Artt?\.|Abs\.|Bd\.|Vol\.|S\.|pp?\.|Nr\.|No\.|Fn\.|Rn\.|Sec\.|sec\.|lit\.)\s(\d+)', r'\1~\2', file_data)
 
     # replace row and cell separators
     file_data = re.sub(r'\s+<zchinr:cellsep\/>', r' & \n', file_data)
@@ -278,6 +278,10 @@ if __name__ == '__main__':
     file_data = re.sub(r'([\u3000-\u303F\u4e00-\u9fff\uFF00-\uFFEF]+)', r'\\zhs{\1}', file_data)
 
     # itemize / enumerate : w:ilvl
+    # currently not supported
+
+    # footnote references
+    # currently not supported
 
     # write file
     file_out = 'output.tex'
