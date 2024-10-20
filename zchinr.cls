@@ -1108,7 +1108,7 @@
     }
   }
   \tl_if_empty:NT \l_zchinr_article_label_tl {
-    \label { section: \l_zchinr_article_label_tl }
+    \label { chapter: \l_zchinr_article_label_tl }
   }
   \vskip 4mm\bigskip
 }
@@ -1124,7 +1124,7 @@
   \noindent
   {\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl\par}
   \tl_if_empty:NT \l_zchinr_article_label_tl {
-    \label { section: \l_zchinr_article_label_tl }
+    \label { chapter: \l_zchinr_article_label_tl }
   }
   \bigskip\nopagebreak
   \noindent
