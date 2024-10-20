@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: doc2tex.py
-# Version: 1.3 2024-10-17
+# Version: 1.5 2024-10-20
 # Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
 #
 # This work may be distributed and/or modified under the
@@ -20,14 +20,17 @@ import zipfile
 
 bold_styles = []
 italic_styles = []
-level_styles = {}
+section_styles = {}
+list_styles = {}
 
 def get_xmlpart(parent, part):
     '''Extract XML parts from .docx file.'''
     with zipfile.ZipFile(parent, 'r') as archive:
-        with archive.open(f'word/{part}.xml', 'r') as part_file:
-            part_file_data = part_file.read()
-    return part_file_data.decode('utf-8')
+        if zipfile.Path(archive, f'word/{part}.xml').is_file():
+            with archive.open(f'word/{part}.xml', 'r') as part_file:
+                part_file_data = part_file.read()
+            return part_file_data.decode('utf-8')
+    return False
 
 # process structure
 def process_structure(file_name):
@@ -37,23 +40,28 @@ def process_structure(file_name):
     footnotes_data = get_xmlpart(file_name, 'footnotes')
     styles_data = get_xmlpart(file_name, 'styles')
     # collect styles
-    style_ids = re.findall(r'<w:style(\s[^>]+)?\sw:styleId="(.*?)"', styles_data)
-    # identify styles as bold, italic or level
-    for style in style_ids:
-        style_properties = re.search(rf'<w:style(\s[^>]+)?\sw:styleId="{re.escape(style[1])}"(\s[^>]+)?>(.*?)<\/w:style>', styles_data)
-        if re.search(r'<w:b\/>', style_properties[3]):
-            bold_styles.append(style[1])
-        if re.search(r'<w:1\/>', style_properties[3]):
-            italic_styles.append(style[1])
-        if re.search(r'<w:outlineLvl(>|\s)', style_properties[3]):
-            section_level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', style_properties[3])
-            level_styles[style[1]] = section_level[2]
+    if styles_data:
+        style_ids = re.findall(r'<w:style(\s[^>]+)?\sw:styleId="(.*?)"', styles_data)
+        # identify styles as bold, italic or level
+        for style in style_ids:
+            style_properties = re.search(rf'<w:style(\s[^>]+)?\sw:styleId="{re.escape(style[1])}"(\s[^>]+)?>(.*?)<\/w:style>', styles_data)
+            if re.search(r'<w:b\/>', style_properties[3]):
+                bold_styles.append(style[1])
+            if re.search(r'<w:1\/>', style_properties[3]):
+                italic_styles.append(style[1])
+            if re.search(r'<w:outlineLvl\s.*?\/>', style_properties[3]):
+                section_level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', style_properties[3])
+                section_styles[style[1]] = section_level[2]
+            if re.search(r'<w:ilvl\s.*?\/>', style_properties[3]):
+                list_level = re.search(r'<w:ilvl(\s[^>]+)?\sw:val="(.*?)"', style_properties[3])
+                list_styles[style[1]] = list_level[2]
     # collect footnotes
-    footnote_ids = re.findall(r'<w:footnote(\s[^>]+)?\sw:id="(.*?)"', footnotes_data)
     footnote_nodes = {}
-    for footnote in footnote_ids:
-        footnote_node = re.search(rf'<w:footnote(\s[^>]+)?\sw:id="{re.escape(footnote[1])}"(\s[^>]+)?>.*?<\/w:footnote>', footnotes_data)
-        footnote_nodes[footnote[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], True)}\u007d'
+    if footnotes_data:
+        footnote_ids = re.findall(r'<w:footnote(\s[^>]+)?\sw:id="(.*?)"', footnotes_data)
+        for footnote in footnote_ids:
+            footnote_node = re.search(rf'<w:footnote(\s[^>]+)?\sw:id="{re.escape(footnote[1])}"(\s[^>]+)?>.*?<\/w:footnote>', footnotes_data)
+            footnote_nodes[footnote[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], True)}\u007d'
     # filter body part
     result = re.search(r'<w:body(\s[^>]+)?>(.*?)<\/w:body>', document_data)[2]
     result = process_nodes(result)
@@ -90,9 +98,9 @@ def process_p_nodes(data, ignore_footnotes = False):
         p_style = re.search(r'<w:pStyle(\s[^>]+)?\sw:val="(.*?)"', p[0])
         is_section = False
         if p_style:
-            if p_style[2] in level_styles:
+            if p_style[2] in section_styles:
                 is_section = True
-                append_before_p = select_level(level_styles[p_style[2]])
+                append_before_p = select_level(section_styles[p_style[2]])
                 append_after_p = '}'
             if p_style[2] in bold_styles and is_section is False:
                 append_before_p += '\\textbf{'
@@ -100,10 +108,13 @@ def process_p_nodes(data, ignore_footnotes = False):
             if p_style[2] in italic_styles:
                 append_before_p += '\\emph{'
                 append_after_p += '}'
+            if p_style[2] in list_styles and is_section is False:
+                append_before_p = '<zchinr:item>' + append_before_p
+                append_after_p += '</zchinr:item>'
         # process node properties
         p_properties = re.search(r'<w:pPr(\s[^>]+)?>(.*?)<\/w:pPr>', p[0])
         if p_properties:
-            if re.search(r'<w:outlineLvl(>|\s)', p_properties[2]):
+            if re.search(r'<w:outlineLvl\s.*?\/>', p_properties[2]):
                 is_section = True
                 level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', p_properties[2])
                 append_before_p = select_level(level)
@@ -114,6 +125,9 @@ def process_p_nodes(data, ignore_footnotes = False):
             if re.search(r'<w:i\/>', p_properties[2]):
                 append_before_p += '\\emph{'
                 append_after_p += '}'
+            if re.search(r'<w:ilvl\s.*?\/>', p_properties[2]) and is_section is False:
+                append_before_p = '<zchinr:item>' + append_before_p
+                append_after_p += '</zchinr:item>'
         # process w:r nodes
         runs = re.findall(r'(<w:r(\s[^>]+)?>.*?<\/w:r>)', p[0])
         for r in runs:
@@ -188,14 +202,14 @@ def replace_endash(string):
 
 def reduce_emph(string):
     '''Join subsequent emph commands.'''
-    if re.search(r'\\emph\{.*?\}\s*\\emph\{.*?\}', string):
-        return reduce_emph(re.sub(r'\\emph\{(.*?)\}(\s*)\\emph\{(.*?)\}', r'\\emph{\1\2\3}', string))
+    if re.search(r'\\emph\{.*?\}[ \t\f]*\\emph\{.*?\}', string):
+        return reduce_emph(re.sub(r'\\emph\{(.*?)\}([ \t\f]*)\\emph\{(.*?)\}', r'\\emph{\1\2\3}', string))
     return string
 
 def reduce_textbf(string):
     '''Join subsequent textbf commands.'''
-    if re.search(r'\\textbf\{.*?\}\s*\\textbf\{.*?\}', string):
-        return reduce_textbf(re.sub(r'\\textbf\{(.*?)\}(\s*)\\textbf\{(.*?)\}', r'\\textbf{\1\2\3}', string))
+    if re.search(r'\\textbf\{.*?\}[ \t\f]*\\textbf\{.*?\}', string):
+        return reduce_textbf(re.sub(r'\\textbf\{(.*?)\}([ \t\f]*)\\textbf\{(.*?)\}', r'\\textbf{\1\2\3}', string))
     return string
 
 if __name__ == '__main__':
@@ -205,7 +219,7 @@ if __name__ == '__main__':
 
     # process file data
     file_data = process_structure(file_in)
-    
+
     # escape ampersand, less than, greater than, number sigh, dollar and percent
     file_data = re.sub(r'&amp;', '&', file_data)
     file_data = re.sub(r'&lt;', '<', file_data)
@@ -247,6 +261,10 @@ if __name__ == '__main__':
     file_data = re.sub(r'\s+<zchinr:cellsep\/>', r' & \n', file_data)
     file_data = re.sub(r'\s+<zchinr:rowsep\/>', r' \\\\ \n\n', file_data)
 
+    # replace lists with items
+    file_data = re.sub(r'((<zchinr:item>.*?<\/zchinr:item>\s*)+)', r'\\begin{itemize}\n\1\\end{itemize}\n\n', file_data)
+    file_data = re.sub(r'<zchinr:item>(.*?)<\/zchinr:item>\n*', r'\\item \1\n', file_data)
+
     # process typography
     file_data = re.sub(r'\u00a0', '~', file_data)
     file_data = re.sub(r'\u201c\u2018', '``{}`', file_data)
@@ -276,9 +294,6 @@ if __name__ == '__main__':
 
     # process chinese characters
     file_data = re.sub(r'([\u3000-\u303F\u4e00-\u9fff\uFF00-\uFFEF]+)', r'\\zhs{\1}', file_data)
-
-    # itemize / enumerate : w:ilvl
-    # currently not supported
 
     # footnote references
     # currently not supported
