@@ -251,6 +251,7 @@
    \keys_set:nn { zchinr / setup / article } {
       pagination = { arabic } ,
       first ~ page = { } ,
+      label = { } ,
       doi = { } ,
       licence = { \l_zchinr_default_licence_tl } ,
       licence ~ url = { \l_zchinr_default_licence_url_tl } ,
