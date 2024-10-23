@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # File: doc2tex.py
-# Version: 1.5 2024-10-20
+# Version: 1.6 2024-10-23
 # Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
 #
 # This work may be distributed and/or modified under the
@@ -39,6 +39,14 @@ def process_structure(file_name):
     document_data = get_xmlpart(file_name, 'document')
     footnotes_data = get_xmlpart(file_name, 'footnotes')
     styles_data = get_xmlpart(file_name, 'styles')
+    count = { 
+        'bold': 0,
+        'italic': 0,
+        'section': 0,
+        'list': 0,
+        'documentation': 0,
+        'documentation row': 0
+    }
     # collect styles
     if styles_data:
         style_ids = re.findall(r'<w:style(\s[^>]+)?\sw:styleId="(.*?)"', styles_data)
@@ -61,13 +69,20 @@ def process_structure(file_name):
         footnote_ids = re.findall(r'<w:footnote(\s[^>]+)?\sw:id="(.*?)"', footnotes_data)
         for footnote in footnote_ids:
             footnote_node = re.search(rf'<w:footnote(\s[^>]+)?\sw:id="{re.escape(footnote[1])}"(\s[^>]+)?>.*?<\/w:footnote>', footnotes_data)
-            footnote_nodes[footnote[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], True)}\u007d'
+            footnote_nodes[footnote[1]] = f'\\footnote\u007b{process_p_nodes(footnote_node[0], count, True)}\u007d'
+    print(f'{len(footnote_nodes)} footnotes found.')
     # filter body part
     result = re.search(r'<w:body(\s[^>]+)?>(.*?)<\/w:body>', document_data)[2]
-    result = process_nodes(result)
+    result = process_nodes(result, count)
     # replace footnotes inline
     if footnote_nodes:
         result = re.sub(r'<w:footnoteReference(\s[^>]+)?\sw:id="(.*?)"(\s[^>]+)?\/>', lambda m: footnote_nodes.get(m.group(2)), result)
+    print(f'{count['documentation']} documentations found.')
+    print(f'{count['documentation row']} documentation rows found.')
+    print(f'{count['bold']} bold found.')
+    print(f'{count['italic']} italic found.')
+    print(f'{count['section']} section found.')
+    print(f'{count['list']} list found.')
     return result
 
 def select_level(level):
@@ -85,7 +100,7 @@ def select_level(level):
     return append_before
 
 # process nodes
-def process_p_nodes(data, ignore_footnotes = False):
+def process_p_nodes(data, count, ignore_footnotes = False):
     '''Find all w:p nodes in a string and process them accordingly. Consider headers, bold and italic.'''
     result = ''
     # process w:p nodes
@@ -102,15 +117,19 @@ def process_p_nodes(data, ignore_footnotes = False):
                 is_section = True
                 append_before_p = select_level(section_styles[p_style[2]])
                 append_after_p = '}'
+                count['section'] += 1
             if p_style[2] in bold_styles and is_section is False:
                 append_before_p += '\\textbf{'
                 append_after_p += '}'
+                count['bold'] += 1
             if p_style[2] in italic_styles:
                 append_before_p += '\\emph{'
                 append_after_p += '}'
+                count['italic'] += 1
             if p_style[2] in list_styles and is_section is False:
                 append_before_p = '<zchinr:item>' + append_before_p
                 append_after_p += '</zchinr:item>'
+                count['list'] += 1
         # process node properties
         p_properties = re.search(r'<w:pPr(\s[^>]+)?>(.*?)<\/w:pPr>', p[0])
         if p_properties:
@@ -119,15 +138,19 @@ def process_p_nodes(data, ignore_footnotes = False):
                 level = re.search(r'<w:outlineLvl(\s[^>]+)?\sw:val="(.*?)"', p_properties[2])
                 append_before_p = select_level(level)
                 append_after_p = '}'
+                count['section'] += 1
             if re.search(r'<w:b\/>', p_properties[2]) and is_section is False:
                 append_before_p += '\\textbf{'
                 append_after_p += '}'
+                count['bold'] += 1
             if re.search(r'<w:i\/>', p_properties[2]):
                 append_before_p += '\\emph{'
                 append_after_p += '}'
+                count['italic'] += 1
             if re.search(r'<w:ilvl\s.*?\/>', p_properties[2]) and is_section is False:
                 append_before_p = '<zchinr:item>' + append_before_p
                 append_after_p += '</zchinr:item>'
+                count['list'] += 1
         # process w:r nodes
         runs = re.findall(r'(<w:r(\s[^>]+)?>.*?<\/w:r>)', p[0])
         for r in runs:
@@ -140,19 +163,23 @@ def process_p_nodes(data, ignore_footnotes = False):
                 if r_style[2] in bold_styles and is_section is False:
                     append_before_r += '\\textbf{'
                     append_after_r += '}'
+                    count['bold'] += 1
                 if r_style[2] in italic_styles:
                     append_before_r += '\\emph{'
                     append_after_r += '}'
+                    count['italic'] += 1
             # process node properties
             r_properties = re.search(r'<w:rPr(\s[^>]+)?>(.*?)<\/w:rPr>', r[0])
             if r_properties:
                 if re.search(r'<w:b\/>', r_properties[2]) and is_section is False:
                     append_before_r += '\\textbf{'
                     append_after_r += '}'
+                    count['bold'] += 1
                 if re.search(r'<w:i\/>', r_properties[2]):
                     append_before_r += '\\emph{'
                     append_after_r += '}'
-            # process w:t nodes
+                    count['italic'] += 1
+        # process w:t nodes
             if ignore_footnotes:
                 texts = re.findall(r'(<w:t(\s[^>]+)?>(.*?)<\/w:t>)', r[0])
             else:
@@ -166,7 +193,7 @@ def process_p_nodes(data, ignore_footnotes = False):
         result += append_before_p + paragraph + append_after_p + '\n\n'
     return result
 
-def process_tbl_nodes(data):
+def process_tbl_nodes(data, count):
     '''Find all w:tbl nodes in a string and process them accordingly. Output as documentation environment.'''
     result = ''
     tables = re.findall(r'(<w:tbl(\s[^>]+)?>.*?<\/w:tbl>)', data)
@@ -175,23 +202,25 @@ def process_tbl_nodes(data):
         rows = re.findall(r'(<w:tr(\s[^>]+)?>.*?<\/w:tr>)', tbl[0])
         for tr in rows:
             cells = re.findall(r'(<w:tc(\s[^>]+)?>.*?<\/w:tc>)', tr[0])
-            result += process_p_nodes(cells[0][0])
+            result += process_p_nodes(cells[0][0], count)
             for tc in cells[1:]:
-                result += '<zchinr:cellsep/>' + process_p_nodes(tc[0])
+                result += '<zchinr:cellsep/>' + process_p_nodes(tc[0], count)
             result += '<zchinr:rowsep/>'
+            count['documentation row'] += 1
         result += '\\end{documentation}\n\n'
+        count['documentation'] += 1
     return result
 
-def process_nodes(data):
+def process_nodes(data, count):
     '''Find all w:p and w:tbl nodes in a string and process them accordingly. Remove empty w:p nodes first.'''
+    result = ''
     data = re.sub(r'<w:p(\s[^>]+)?\/>', r'', data)
     nodes = re.findall(r'(<w:tbl(\s[^>]+)?>.*?<\/w:tbl>|<w:p(\s[^>]+)?>.*?<\/w:p>)', data)
-    result = ''
     for node in nodes:
         if re.search(r'<w:tbl(\s[^>]+)?>.*?<\/w:tbl>', node[0]):
-            result += process_tbl_nodes(node[0])
+            result += process_tbl_nodes(node[0], count)
         else:
-            result += process_p_nodes(node[0])
+            result += process_p_nodes(node[0], count)
     return result
 
 def replace_endash(string):
