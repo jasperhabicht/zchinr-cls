@@ -262,16 +262,16 @@ if __name__ == '__main__':
     file_data = re.sub(r'<?((www\.[-a-zA-Z\d]+\.[^\s]+\/|http:\/\/|https:\/\/)[^\s>]+)>?', r'\\url{\1}', file_data)
 
     # tidy up empty, nested and subsequent macros
+    file_data = re.sub(r'\\emph\{\\emph\{(.*?)\}(\s*)\}', r'\\emph{\1\2}', file_data)
+    file_data = re.sub(r'\\textbf\{\\textbf\{(.*?)\}(\s*)\}', r'\\textbf{\1\2}', file_data)
+    file_data = re.sub(r'\\(emph|textbf)\{\\footnote\{(.*?)\}(\s*)\}', r'\\footnote{\2}\3', file_data)
+    file_data = reduce_emph(file_data)
+    file_data = reduce_textbf(file_data)
     file_data = re.sub(r'\\(emph|textbf)\{\s*\}', '', file_data)
     file_data = re.sub(r'\\(emph|textbf)\{(.*?)\s+\}', r'\\\1{\2} ', file_data)
     file_data = re.sub(r'\\(emph|textbf)\{\s+(.*?)\}', r' \\\1{\2}', file_data)
-    file_data = re.sub(r'\\emph\{\\emph\{(.*?)\}\s*\}', r'\\emph{\1}', file_data)
-    file_data = re.sub(r'\\textbf\{\\textbf\{(.*?)\}\s*\}', r'\\textbf{\1}', file_data)
-    file_data = re.sub(r'\\(emph|textbf)\{\\footnote\{(.*?)\}\s*\}', r'\\footnote{\2}', file_data)
     file_data = re.sub(r'\\footnote\{(.*?)\s+\}', r'\\footnote{\1}', file_data)
     file_data = re.sub(r'\\footnote\{\s+(.*?)\}', r'\\footnote{\1}', file_data)
-    file_data = reduce_emph(file_data)
-    file_data = reduce_textbf(file_data)
 
     # replace endash
     file_data = re.sub(r'[\d\-]+', lambda m: replace_endash(m.group()), file_data)
