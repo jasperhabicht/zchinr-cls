@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/10/13} {2.7} {Document class for ZChinR}
+  {2024/11/05} {2.8} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -58,9 +58,9 @@
   Page ~ count ~ not ~ divisible ~ by ~ \int_use:N \l_zchinr_page_div_int : ~ #1.
 }
 
-\msg_new:nnn { zchinr } { reference-unknown } {
+\msg_new:nnn { zchinr } { missing-references } {
   \msg_warning_text:n { zchinr } \iow_newline:
-  Chapter ~ reference ~ not ~ found. ~ Please ~ rerun ~ compilation.
+  One ~ or ~ more ~ chapter ~ references ~ not ~ found. ~ Please ~ rerun ~ compilation.
 }
 
 \tl_new:N \l_zchinr_color_profile_name_tl
@@ -128,6 +128,7 @@
 
 \tl_new:N \l__zchinr_toc_entry_tl
 \int_new:N \g__zchinr_toc_chapter_index_aux_int
+\bool_new:N \g__zchinr_missing_refs_bool
 
 \tl_new:N \g__zchinr_cover_toc_tl
 \tl_new:N \g__zchinr_cover_toc_aux_tl
@@ -188,11 +189,11 @@
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { 
     \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
-    \zchinr_pages:nn { \thepage } { \currentchapterlastpage } 
+    \zchinr_pages:nn { \thepage } { \__zchinr_current_chapter_last_page: } 
   } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
   article / pages ~ toc    .initial:n   = { 
-    \zchinr_pages:nn { \thecontentspage } { \chapterlastpage{\thezchinrchapterindex} } 
+    \zchinr_pages:nn { \thecontentspage } { \__zchinr_chapter_last_page:n { \thezchinrchapterindex } } 
   } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
@@ -293,10 +294,20 @@
 }
 
 \cs_new:Npn \zchinr_pages:nn #1#2 {
-  \int_compare:nNnTF {#1} = {#2} {
-    #1
+  \tl_analysis_log:n {#1}
+  \tl_analysis_log:n {#2}
+  \tl_if_eq:eeTF {#1} {#2} {
+    \tl_if_eq:nnTF {#1} { -1 } {
+      \textbf{?}
+    } {#1}
   } {
-    #1 -- #2
+    \tl_if_eq:nnTF {#1} { -1 } {
+      \textbf{?}
+    } {#1}
+    -- 
+    \tl_if_eq:nnTF {#2} { -1 } {
+      \textbf{?}
+    } {#2}
   }
 }
 
@@ -307,18 +318,34 @@
 \setsansfont{TeX ~ Gyre ~ Heros}
 \newfontfamily\zchinrlatindisplay{TeX ~ Gyre ~ Heros ~ Cn}
 
-\RequirePackage{xeCJK} 
-\setCJKmainfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
-  {Noto ~ Serif ~ CJK ~ SC}
-\setCJKsansfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
-  {Noto ~ Sans ~ CJK ~ SC}
+\sys_if_engine_luatex:T {
+  \RequirePackage{luatexja-fontspec}
+  \setmainjfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+    {Noto ~ Serif ~ CJK ~ SC}
+  \setsansjfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+    {Noto ~ Sans ~ CJK ~ SC}
+
+  % prevent German quotation marks from being spaced
+  \ltjsetparameter{
+    alxspmode = {"201E, preonly},
+    alxspmode = {"201C, postonly}
+  }
+}
+
+\sys_if_engine_xetex:T {
+  \RequirePackage{xeCJK} 
+  \setCJKmainfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+    {Noto ~ Serif ~ CJK ~ SC}
+  \setCJKsansfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+    {Noto ~ Sans ~ CJK ~ SC}
+
+  % prevent German quotation marks from being spaced
+  \xeCJKDeclareCharClass{NormalSpace}{"201E, "201A, "002C}
+  \xeCJKDeclareCharClass{NormalSpace}{"201C, "2018, "0060}
+}
 
 \RequirePackage{unicode-math}
 \setmathfont{TeX ~ Gyre ~ Pagella ~ Math}
-
-% prevent German quotation marks from being spaced
-\xeCJKDeclareCharClass{NormalSpace}{"201E, "201A, "002C}
-\xeCJKDeclareCharClass{NormalSpace}{"201C, "2018, "0060}
 
 \NewDocumentCommand{\zhs}{ m }{\textup{#1}}
 \NewDocumentCommand{\zht}{ m }{\textup{#1}}
@@ -343,8 +370,8 @@
     \draw_transform_shift:n { 10mm , -10mm }
     \draw_path_moveto:n { -5pt , 0pt }
     \draw_path_lineto:n { -20pt , 0pt }
-    \draw_path_moveto:n { 0 , 5pt }
-    \draw_path_lineto:n { 0 , 20pt }
+    \draw_path_moveto:n { 0pt , 5pt }
+    \draw_path_lineto:n { 0pt , 20pt }
     \draw_path_use:n { stroke }
   \draw_end:
 }
@@ -355,8 +382,8 @@
     \draw_transform_shift:n { \paperwidth - 10mm , -10mm }
     \draw_path_moveto:n { 5pt , 0pt }
     \draw_path_lineto:n { 20pt , 0pt }
-    \draw_path_moveto:n { 0 , 5pt }
-    \draw_path_lineto:n { 0 , 20pt }
+    \draw_path_moveto:n { 0pt , 5pt }
+    \draw_path_lineto:n { 0pt , 20pt }
     \draw_path_use:n { stroke }
   \draw_end:
 }
@@ -367,8 +394,8 @@
     \draw_transform_shift:n { 10mm , 10mm - \paperheight }
     \draw_path_moveto:n { -5pt , 0pt }
     \draw_path_lineto:n { -20pt , 0pt }
-    \draw_path_moveto:n { 0 , -5pt }
-    \draw_path_lineto:n { 0 , -20pt }
+    \draw_path_moveto:n { 0pt , -5pt }
+    \draw_path_lineto:n { 0pt , -20pt }
     \draw_path_use:n { stroke }
   \draw_end:
 }
@@ -379,8 +406,8 @@
     \draw_transform_shift:n { \paperwidth - 10mm , 10mm - \paperheight }
     \draw_path_moveto:n { 5pt , 0pt }
     \draw_path_lineto:n { 20pt , 0pt }
-    \draw_path_moveto:n { 0 , -5pt }
-    \draw_path_lineto:n { 0 , -20pt }
+    \draw_path_moveto:n { 0pt , -5pt }
+    \draw_path_lineto:n { 0pt , -20pt }
     \draw_path_use:n { stroke }
   \draw_end:
 }
@@ -484,8 +511,24 @@
 
 % Set up hyperreferences
 \PassOptionsToPackage{hyphens}{url}
-\cs_if_exist:NF \pdfcreationdate {
-  \cs_set_eq:NN \pdfcreationdate \creationdate
+\tl_if_exist:NF \pdfcreationdate {
+  \tl_new:N \pdfcreationdate
+  \sys_if_engine_luatex:TF {
+    \tl_set:Nn \pdfcreationdate {
+      \directlua{
+        tex.print(os.date("D:
+          \c_percent_str Y
+          \c_percent_str m
+          \c_percent_str d
+          \c_percent_str H
+          \c_percent_str M
+          \c_percent_str S
+          Z"))
+      }
+    }
+  } {
+    \tl_set_eq:NN \pdfcreationdate \creationdate
+  }
 }
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
@@ -895,7 +938,10 @@
         { \exp_not:o { \l_zchinr_tmpb_tl } }
       \iow_newline:
       \token_to_str:N \ExplSyntaxOff
-    }  
+    }
+  }
+  \bool_if:NT \g__zchinr_missing_refs_bool {
+    \msg_warning:nn { zchinr } { missing-references }
   }
 }
 
@@ -940,22 +986,38 @@
   }
 }
 
-\NewDocumentCommand { \chapterlastpage } { m } {
+\cs_new:Npn \__zchinr_chapter_last_page:n #1 {
   \cs_if_exist:cTF { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl } {
     \tl_use:c { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl }
   } { 
-    \msg_warning:nn { zchinr } { reference-unknown }
-    \textbf{?} 
+    \bool_set_true:N \g__zchinr_missing_refs_bool
+    -1
+  }
+}
+
+\NewDocumentCommand { \chapterlastpage } { m } {
+  \tl_if_eq:eeTF { \__zchinr_chapter_last_page:n {#1} } { -1 } {
+    \textbf{?}
+  } { 
+    \__zchinr_chapter_last_page:n {#1}
+  }
+}
+
+\cs_new:Npn \__zchinr_current_chapter_last_page: {
+  \cs_if_exist:cTF { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } {
+    \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl }
+  } { 
+    \bool_set_true:N \g__zchinr_missing_refs_bool
+    -1
   }
 }
 
 \NewDocumentCommand { \currentchapterlastpage } { } {
-  \cs_if_exist:cTF { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } {
-    \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl }
+  \tl_if_eq:eeTF { \__zchinr_current_chapter_last_page: } { -1 } {
+    \textbf{?}
   } { 
-    \msg_warning:nn { zchinr } { reference-unknown }
-    \textbf{?} 
-  }  
+    \__zchinr_current_chapter_last_page:
+  }
 }
 
 \NewDocumentCommand { \printtitle } { } {
