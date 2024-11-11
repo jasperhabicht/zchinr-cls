@@ -1170,7 +1170,7 @@
       {\fontsize{11}{13}\selectfont\itshape \__zchinr_article_author: \par}
     }
   }
-  \tl_if_empty:NT \l_zchinr_article_label_tl {
+  \tl_if_empty:NF \l_zchinr_article_label_tl {
     \label { chapter: \l_zchinr_article_label_tl }
   }
   \vskip 4mm\bigskip
