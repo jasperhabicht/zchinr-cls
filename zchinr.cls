@@ -189,7 +189,7 @@
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { 
     \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
-    \zchinr_pages:nn { \thepage } { \__zchinr_current_chapter_last_page: } 
+    \zchinr_pages:nn { \value{page} } { \__zchinr_current_chapter_last_page: } 
   } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
   article / pages ~ toc    .initial:n   = { 
@@ -919,7 +919,7 @@
     \iow_newline: 
     \tl_gset:Nn \token_to_str:c 
       { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
-      { \int_eval:n { \thepage } }
+      { \int_eval:n { \value{page} } }
     \iow_newline:
     \token_to_str:N \ExplSyntaxOff
   }
@@ -979,7 +979,7 @@
       \iow_newline: 
       \tl_gset:Nn \token_to_str:c 
         { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } 
-        { \int_eval:n { \thepage - 1 } }
+        { \int_eval:n { \value{page} - 1 } }
       \iow_newline:
       \token_to_str:N \ExplSyntaxOff
     }
@@ -1023,7 +1023,7 @@
 \NewDocumentCommand { \printtitle } { } {
   % Using the page counter is save here, as the page title is typically placed at the beginning of the page.
   \tl_if_empty:NTF \l_zchinr_article_first_page_tl {
-    \tl_set:Ne \l_zchinr_article_first_page_tl { \thepage }
+    \tl_set:Ne \l_zchinr_article_first_page_tl { \value{page} }
   } {
     \setcounter{page}{ \l_zchinr_article_first_page_tl }
   }
