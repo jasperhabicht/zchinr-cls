@@ -2,7 +2,7 @@
 
 # File: doc2tex.py
 # Version: 1.6 2024-10-23
-# Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+# Copyright 2024-2025 Jasper Habicht (mail(at)jasperhabicht.de).
 #
 # This work may be distributed and/or modified under the
 # conditions of the LaTeX Project Public License version 1.3c,
@@ -39,7 +39,7 @@ def process_structure(file_name):
     document_data = get_xmlpart(file_name, 'document')
     footnotes_data = get_xmlpart(file_name, 'footnotes')
     styles_data = get_xmlpart(file_name, 'styles')
-    count = { 
+    count = {
         'bold': 0,
         'italic': 0,
         'section': 0,

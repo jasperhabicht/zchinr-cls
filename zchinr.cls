@@ -1,5 +1,5 @@
 % File: zchinr.cls 
-% Copyright 2024 Jasper Habicht (mail(at)jasperhabicht.de).
+% Copyright 2024-2025 Jasper Habicht (mail(at)jasperhabicht.de).
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License version 1.3c,
@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2024/11/05} {2.8} {Document class for ZChinR}
+  {2025/01/24} {2.9} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -142,7 +142,7 @@
 \coffin_new:N \l_zchinr_tmpa_coffin
 
 \cs_generate_variant:Nn \int_to_roman:n { e }
-\prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn , eNe } { T , F }
+\prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn , eNe } { T , F , TF }
 
 \keys_define:nn { zchinr / setup } { 
   color ~ profile          .code:n      = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
@@ -188,12 +188,18 @@
   article / label          .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { 
-    \c_colon_str{} ~ \l_zchinr_local_page_tl{} ~ 
-    \zchinr_pages:nn { \value{page} } { \__zchinr_current_chapter_last_page: } 
+    \c_colon_str \c_space_token \l_zchinr_local_page_tl \c_space_token
+    \zchinr_pages:nn { \arabic{page} } { \__zchinr_current_chapter_last_page: } 
+    \int_compare:eNnT { \__zchinr_current_chapter_last_page: } < { 0 } {
+      \bool_set_true:N \g__zchinr_missing_refs_bool
+    }
   } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
   article / pages ~ toc    .initial:n   = { 
-    \zchinr_pages:nn { \thecontentspage } { \__zchinr_chapter_last_page:n { \thezchinrchapterindex } } 
+    \zchinr_pages:nn { \thecontentspage } { \__zchinr_chapter_last_page:n { \arabic{zchinrchapterindex} } }
+    \int_compare:eNnT { \__zchinr_chapter_last_page:n { \arabic{zchinrchapterindex} } } < { 0 } {
+      \bool_set_true:N \g__zchinr_missing_refs_bool
+    }
   } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl , 
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
@@ -285,29 +291,21 @@
   \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 
-\cs_new:Npn \zchinr_halfquad: { 
+\cs_new_protected:Npn \zchinr_halfquad: { 
   \hskip .5em \relax
 }
 
-\cs_new:Npn \zchinr_hfillrule: {
+\cs_new_protected:Npn \zchinr_hfillrule: {
   \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
 }
 
 \cs_new:Npn \zchinr_pages:nn #1#2 {
-  \tl_analysis_log:n {#1}
-  \tl_analysis_log:n {#2}
-  \tl_if_eq:eeTF {#1} {#2} {
-    \tl_if_eq:nnTF {#1} { -1 } {
-      \textbf{?}
-    } {#1}
+  \int_compare:eNeTF {#1} = {#2} {
+    \int_compare:eNnTF {#1} < { 0 } { ? } {#1}
   } {
-    \tl_if_eq:nnTF {#1} { -1 } {
-      \textbf{?}
-    } {#1}
+    \int_compare:eNnTF {#1} < { 0 } { ? } {#1}
     -- 
-    \tl_if_eq:nnTF {#2} { -1 } {
-      \textbf{?}
-    } {#2}
+    \int_compare:eNnTF {#2} < { 0 } { ? } {#2}
   }
 }
 
@@ -363,7 +361,7 @@
 \setlength{\columnsep}{7.5mm}
 
 \RequirePackage{l3draw}
-\cs_new:Npn \zchinr_cropmark_nw: {
+\cs_new_protected:Npn \zchinr_cropmark_nw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -375,7 +373,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \zchinr_cropmark_ne: {
+\cs_new_protected:Npn \zchinr_cropmark_ne: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -387,7 +385,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \zchinr_cropmark_sw: {
+\cs_new_protected:Npn \zchinr_cropmark_sw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -399,7 +397,7 @@
     \draw_path_use:n { stroke }
   \draw_end:
 }
-\cs_new:Npn \zchinr_cropmark_se: {
+\cs_new_protected:Npn \zchinr_cropmark_se: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
     \draw_linewidth:n { .25pt }
@@ -559,7 +557,7 @@
   \AtBeginDocument{
     \hypersetup{
       pdfinfo={
-        Title={\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl},
+        Title={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
         ModDate={\pdfcreationdate},
         Trapped={False},      
       }
@@ -568,36 +566,38 @@
 }
 
 % Style header and footer. Header stays empty while footer will contain journal information and page number. 
-\cs_new:Npn \__zchinr_sethead_default: {
+\cs_new_protected:Npn \__zchinr_sethead_default: {
   \sethead
     [\l__zchinr_header_mark_page_tl]
     [\l__zchinr_header_mark_odd_tl]
-    [\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl]
-    {\l_zchinr_local_zchinr_tl{} ~ \l_zchinr_issue_year_tl}
+    [\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl]
+    {\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl}
     {\l__zchinr_header_mark_even_tl}
     {\l__zchinr_header_mark_page_tl}
 }
 
-\cs_new:Npn \__zchinr_setfoot_title: {
+\cs_new_protected:Npn \__zchinr_setfoot_title: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
-      ZChinR ~ \l_zchinr_issue_year_tl{} \l_zchinr_article_pages_tl \\
-      \l_zchinr_local_doi_tl \c_colon_str{} ~ 
+      ZChinR \c_space_token \l_zchinr_issue_year_tl \c_space_token 
+        \l_zchinr_article_pages_tl \\
+      \l_zchinr_local_doi_tl \c_colon_str \c_space_token 
         \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright{} ~ \l_zchinr_issue_year_tl{} ~ \l_zchinr_article_author_copy_tl \\ 
-      \l_zchinr_local_licence_tl \c_colon_str{} ~ 
+      \copyright \c_space_token \l_zchinr_issue_year_tl \c_space_token 
+        \l_zchinr_article_author_copy_tl \\ 
+      \l_zchinr_local_licence_tl \c_colon_str \c_space_token
         \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
     }}}
 }
 
-\cs_new:Npn \__zchinr_sethead_empty: {
+\cs_new_protected:Npn \__zchinr_sethead_empty: {
   \sethead{}{}{}
 }
 
-\cs_new:Npn \__zchinr_setfoot_empty: {
+\cs_new_protected:Npn \__zchinr_setfoot_empty: {
   \setfoot{}{}{}
 }
 
@@ -844,7 +844,7 @@
   \endlist
 }
 
-\cs_new:Npn \__zchinr_cover_toc_push:n #1 { 
+\cs_new_protected:Npn \__zchinr_cover_toc_push:n #1 { 
   \tl_set:Ne \l_zchinr_tmpa_tl { \l_zchinr_article_author_toc_tl }
   \tl_set:Ne \l_zchinr_tmpb_tl { \l_zchinr_article_title_toc_tl }
   \tl_replace_all:Nnn \l_zchinr_tmpa_tl { ~ } { \exp_not:N \c_space_token }
@@ -910,16 +910,16 @@
     \iow_newline:
     \token_to_str:N \tl_if_exist:NF 
       \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } {
+        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } {
       \iow_newline:
       \tl_new:N \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
+        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } 
       \iow_newline:
     }
     \iow_newline: 
     \tl_gset:Nn \token_to_str:c 
-      { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
-      { \int_eval:n { \value{page} } }
+      { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } 
+      { \int_eval:n { \arabic{page} } }
     \iow_newline:
     \token_to_str:N \ExplSyntaxOff
   }
@@ -961,25 +961,25 @@
   } 
 }
 
-\cs_new:Npn \__zchinr_step_chapter: {
+\cs_new_protected:Npn \__zchinr_step_chapter: {
   \stepcounter{chapter}
-  \int_compare:eNnT { \value{chapter} } > { 1 } {
-    \addtocontents{toc}{\protect\setcounter{zchinrchapterindex}{\thechapter}}
+  \int_compare:eNnT { \arabic{chapter} } > { 1 } {
+    \addtocontents{toc}{\protect\setcounter{zchinrchapterindex}{\arabic{chapter}}}
     \iow_now:cx { @auxout } {
       \token_to_str:N \ExplSyntaxOn 
       \iow_newline:
       \token_to_str:N \tl_if_exist:NF 
         \token_to_str:c 
-          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } {
+          { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } {
         \iow_newline:
         \tl_new:N \token_to_str:c 
-          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } 
+          { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } 
         \iow_newline:
       }
       \iow_newline: 
       \tl_gset:Nn \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } 
-        { \int_eval:n { \value{page} - 1 } }
+        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } 
+        { \int_eval:n { \arabic{page} - 1 } }
       \iow_newline:
       \token_to_str:N \ExplSyntaxOff
     }
@@ -990,13 +990,13 @@
   \cs_if_exist:cTF { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl } {
     \tl_use:c { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl }
   } { 
-    \bool_set_true:N \g__zchinr_missing_refs_bool
     -1
   }
 }
 
 \NewDocumentCommand { \chapterlastpage } { m } {
-  \tl_if_eq:eeTF { \__zchinr_chapter_last_page:n {#1} } { -1 } {
+  \int_compare:eNnTF { \__zchinr_chapter_last_page:n {#1} } < { 0 } {
+    \bool_set_true:N \g__zchinr_missing_refs_bool
     \textbf{?}
   } { 
     \__zchinr_chapter_last_page:n {#1}
@@ -1007,13 +1007,13 @@
   \cs_if_exist:cTF { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } {
     \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl }
   } { 
-    \bool_set_true:N \g__zchinr_missing_refs_bool
     -1
   }
 }
 
 \NewDocumentCommand { \currentchapterlastpage } { } {
-  \tl_if_eq:eeTF { \__zchinr_current_chapter_last_page: } { -1 } {
+  \int_compare:eNnTF { \__zchinr_current_chapter_last_page: } < { 0 } {
+    \bool_set_true:N \g__zchinr_missing_refs_bool
     \textbf{?}
   } { 
     \__zchinr_current_chapter_last_page:
@@ -1023,7 +1023,7 @@
 \NewDocumentCommand { \printtitle } { } {
   % Using the page counter is save here, as the page title is typically placed at the beginning of the page.
   \tl_if_empty:NTF \l_zchinr_article_first_page_tl {
-    \tl_set:Ne \l_zchinr_article_first_page_tl { \value{page} }
+    \tl_set:Ne \l_zchinr_article_first_page_tl { \arabic{page} }
   } {
     \setcounter{page}{ \l_zchinr_article_first_page_tl }
   }
@@ -1125,14 +1125,14 @@
   \@afterindentfalse\@afterheading
 }
 
-\cs_new:Npn \__zchinr_article_author: {
+\cs_new_protected:Npn \__zchinr_article_author: {
   \l_zchinr_article_author_tl
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \, \footnotemark
   }
 }
 
-\cs_new:Npn \__zchinr_article_category: {
+\cs_new_protected:Npn \__zchinr_article_category: {
   \bool_if:NF \l_zchinr_standalone_bool {
     \phantomsection
     \addcontentsline{toc}{part}{
@@ -1143,7 +1143,7 @@
   \noindent
   {
     % Using the page counter is save here, as the category is typically placed at the beginning of the page.
-    \int_if_even:nTF { \value{page} } {
+    \int_if_even:nTF { \arabic{page} } {
       \raggedright
     } {
       \raggedleft
@@ -1154,7 +1154,7 @@
   \vskip 7mm
 }
 
-\cs_new:Npn \__zchinr_article_title_large: {
+\cs_new_protected:Npn \__zchinr_article_title_large: {
   \bool_if:NF \l_zchinr_standalone_bool {
     \__zchinr_step_chapter:
     \phantomsection
@@ -1176,7 +1176,7 @@
   \vskip 4mm\bigskip
 }
 
-\cs_new:Npn \__zchinr_article_title_small: {
+\cs_new_protected:Npn \__zchinr_article_title_small: {
   \bool_if:NF \l_zchinr_standalone_bool {
     \__zchinr_step_chapter:
     \phantomsection
@@ -1195,7 +1195,7 @@
   \bigskip\nopagebreak
 }
 
-\cs_new:Npn \__zchinr_article_subcontents: {
+\cs_new_protected:Npn \__zchinr_article_subcontents: {
   \begin{subcontents}
     \printcontents[zchinrsub]{}{1}{}
   \end{subcontents}
@@ -1203,7 +1203,7 @@
   \vskip 12mm
 }
 
-\cs_new:Npn \__zchinr_article_abstract: {
+\cs_new_protected:Npn \__zchinr_article_abstract: {
   \noindent
   {\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl\par}
   \vskip 10pt plus 5pt minus 2.5pt
@@ -1228,7 +1228,7 @@
   \vskip 8mm
 }
 
-\cs_new:Npn \__zchinr_article_title: {
+\cs_new_protected:Npn \__zchinr_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
     \__zchinr_article_category:
   }
@@ -1249,7 +1249,7 @@
   } 
 }
 
-\cs_new:Npn \__zchinr_article_title_block: {
+\cs_new_protected:Npn \__zchinr_article_title_block: {
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \twocolumn[
       \__zchinr_article_title:
