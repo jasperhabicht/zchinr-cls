@@ -106,6 +106,8 @@
 \tl_new:N \l_zchinr_article_abstract_tl
 \tl_new:N \l_zchinr_article_abstract_alt_tl
 \tl_new:N \l_zchinr_article_category_tl
+\int_new:N \l__zchinr_pages_from_int
+\int_new:N \l__zchinr_pages_to_int
 \str_new:N \l_zchinr_article_pagination_str
 \str_new:N \l_zchinr_article_toc_style_str
 \str_new:N \l_zchinr_article_cover_toc_style_str
@@ -141,8 +143,9 @@
 \tl_new:N \l_zchinr_tmpb_tl
 \coffin_new:N \l_zchinr_tmpa_coffin
 
+\cs_generate_variant:Nn \int_set:Nn { Ne }
 \cs_generate_variant:Nn \int_to_roman:n { e }
-\prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn , eNe } { T , F , TF }
+\prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn } { T , TF }
 
 \keys_define:nn { zchinr / setup } { 
   color ~ profile          .code:n      = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
@@ -189,15 +192,15 @@
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
   article / pages          .initial:n   = { 
     \c_colon_str \c_space_token \l_zchinr_local_page_tl \c_space_token
-    \zchinr_pages:nn { \arabic{page} } { \__zchinr_current_chapter_last_page: } 
+    \zchinr_pages:nn { \value{page} } { \__zchinr_current_chapter_last_page: } 
     \int_compare:eNnT { \__zchinr_current_chapter_last_page: } < { 0 } {
       \bool_set_true:N \g__zchinr_missing_refs_bool
     }
   } ,
   article / pages ~ toc    .tl_set:N    = \l_zchinr_article_pages_toc_tl , 
   article / pages ~ toc    .initial:n   = { 
-    \zchinr_pages:nn { \thecontentspage } { \__zchinr_chapter_last_page:n { \arabic{zchinrchapterindex} } }
-    \int_compare:eNnT { \__zchinr_chapter_last_page:n { \arabic{zchinrchapterindex} } } < { 0 } {
+    \zchinr_pages:nn { \thecontentspage } { \__zchinr_chapter_last_page:n { \value{zchinrchapterindex} } }
+    \int_compare:eNnT { \__zchinr_chapter_last_page:n { \value{zchinrchapterindex} } } < { 0 } {
       \bool_set_true:N \g__zchinr_missing_refs_bool
     }
   } ,
@@ -299,13 +302,18 @@
   \leavevmode\leaders\hrule height .75pt\hfill\kern\z@
 }
 
-\cs_new:Npn \zchinr_pages:nn #1#2 {
-  \int_compare:eNeTF {#1} = {#2} {
-    \int_compare:eNnTF {#1} < { 0 } { ? } {#1}
+\cs_new_protected:Npn \zchinr_pages:nn #1#2 {
+  \int_set:Ne \l__zchinr_pages_from_int {#1}
+  \int_set:Ne \l__zchinr_pages_to_int {#2}
+  \int_compare:nNnTF { \l__zchinr_pages_from_int } = { \l__zchinr_pages_to_int } {
+    \int_compare:nNnTF { \l__zchinr_pages_from_int } < { 0 } 
+      { ? } { \int_use:N \l__zchinr_pages_from_int }
   } {
-    \int_compare:eNnTF {#1} < { 0 } { ? } {#1}
+    \int_compare:nNnTF { \l__zchinr_pages_from_int } < { 0 } 
+      { ? } { \int_use:N \l__zchinr_pages_from_int }
     -- 
-    \int_compare:eNnTF {#2} < { 0 } { ? } {#2}
+    \int_compare:nNnTF { \l__zchinr_pages_from_int } < { 0 } 
+      { ? } { \int_use:N \l__zchinr_pages_to_int }
   }
 }
 
@@ -887,10 +895,10 @@
 \AddToHook{shipout/before}{
   \str_if_eq:VnTF \l_zchinr_article_pagination_str { arabic } {
     \bool_if:NF \g__zchinr_issue_first_page_set_bool {
-      \tl_gset:Ne \g_zchinr_issue_first_page_tl { \arabic{page} }
+      \tl_gset:Ne \g_zchinr_issue_first_page_tl { \thepage }
       \bool_gset_true:N \g__zchinr_issue_first_page_set_bool
     }
-    \tl_gset:Ne \g_zchinr_issue_last_page_tl { \arabic{page} }
+    \tl_gset:Ne \g_zchinr_issue_last_page_tl { \thepage }
   }
 }
 
@@ -910,16 +918,16 @@
     \iow_newline:
     \token_to_str:N \tl_if_exist:NF 
       \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } {
+        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } {
       \iow_newline:
       \tl_new:N \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } 
+        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
       \iow_newline:
     }
     \iow_newline: 
     \tl_gset:Nn \token_to_str:c 
-      { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} } _last_page_aux_tl } 
-      { \int_eval:n { \arabic{page} } }
+      { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } 
+      { \int_eval:n { \value{page} } }
     \iow_newline:
     \token_to_str:N \ExplSyntaxOff
   }
@@ -963,23 +971,23 @@
 
 \cs_new_protected:Npn \__zchinr_step_chapter: {
   \stepcounter{chapter}
-  \int_compare:eNnT { \arabic{chapter} } > { 1 } {
-    \addtocontents{toc}{\protect\setcounter{zchinrchapterindex}{\arabic{chapter}}}
+  \int_compare:eNnT { \value{chapter} } > { 1 } {
+    \addtocontents{toc}{\protect\setcounter{zchinrchapterindex}{ \int_to_arabic:n { \value{chapter} } }}
     \iow_now:cx { @auxout } {
       \token_to_str:N \ExplSyntaxOn 
       \iow_newline:
       \token_to_str:N \tl_if_exist:NF 
         \token_to_str:c 
-          { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } {
+          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } {
         \iow_newline:
         \tl_new:N \token_to_str:c 
-          { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } 
+          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } 
         \iow_newline:
       }
       \iow_newline: 
       \tl_gset:Nn \token_to_str:c 
-        { g__zchinr_chapter_ \int_to_roman:e { \arabic{chapter} - 1 } _last_page_aux_tl } 
-        { \int_eval:n { \arabic{page} - 1 } }
+        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } 
+        { \int_eval:n { \value{page} - 1 } }
       \iow_newline:
       \token_to_str:N \ExplSyntaxOff
     }
@@ -987,8 +995,8 @@
 }
 
 \cs_new:Npn \__zchinr_chapter_last_page:n #1 {
-  \cs_if_exist:cTF { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl } {
-    \tl_use:c { g__zchinr_chapter_ \int_to_roman:n {#1} _last_page_aux_tl }
+  \cs_if_exist:cTF { g__zchinr_chapter_ \int_to_roman:e {#1} _last_page_aux_tl } {
+    \int_eval:n { \tl_use:c { g__zchinr_chapter_ \int_to_roman:e {#1} _last_page_aux_tl } }
   } { 
     -1
   }
@@ -1005,7 +1013,7 @@
 
 \cs_new:Npn \__zchinr_current_chapter_last_page: {
   \cs_if_exist:cTF { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } {
-    \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl }
+    \int_eval:n { \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } }
   } { 
     -1
   }
@@ -1023,7 +1031,7 @@
 \NewDocumentCommand { \printtitle } { } {
   % Using the page counter is save here, as the page title is typically placed at the beginning of the page.
   \tl_if_empty:NTF \l_zchinr_article_first_page_tl {
-    \tl_set:Ne \l_zchinr_article_first_page_tl { \arabic{page} }
+    \tl_set:Ne \l_zchinr_article_first_page_tl { \value{page} }
   } {
     \setcounter{page}{ \l_zchinr_article_first_page_tl }
   }
@@ -1143,7 +1151,7 @@
   \noindent
   {
     % Using the page counter is save here, as the category is typically placed at the beginning of the page.
-    \int_if_even:nTF { \arabic{page} } {
+    \int_if_even:nTF { \value{page} } {
       \raggedright
     } {
       \raggedleft
