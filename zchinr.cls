@@ -190,7 +190,7 @@
   article / label          .tl_set:N    = \l_zchinr_article_label_tl , 
   article / label          .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl , 
-  article / pages          .initial:n   = { 
+  article / pages          .initial:n   = {
     \c_colon_str \c_space_token \l_zchinr_local_page_tl \c_space_token
     \zchinr_pages:nn { \value{page} } { \__zchinr_current_chapter_last_page: } 
     \int_compare:eNnT { \__zchinr_current_chapter_last_page: } < { 0 } {
@@ -587,7 +587,7 @@
 \cs_new_protected:Npn \__zchinr_setfoot_title: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
-      ZChinR \c_space_token \l_zchinr_issue_year_tl \c_space_token 
+      ZChinR \c_space_token \l_zchinr_issue_year_tl  
         \l_zchinr_article_pages_tl \\
       \l_zchinr_local_doi_tl \c_colon_str \c_space_token 
         \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
