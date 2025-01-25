@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2025/01/24} {2.9} {Document class for ZChinR}
+  {2025/01/25} {3.0} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
