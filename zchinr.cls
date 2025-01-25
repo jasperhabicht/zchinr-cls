@@ -433,57 +433,109 @@
     layoutvoffset=10mm
   }
 
+  \sys_if_engine_luatex:TF {
+    \pdfvariable ~ pagesattr {
+      /MediaBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
+    }
+  } {
+    \special{pdf:put ~ @pages  ~ <<
+      /MediaBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
+    >>}
+  }
+
   \AddToHook{shipout/foreground}{
+    \sys_if_engine_luatex:TF {
+      \pdfvariable ~ pageattr {
+        /BleedBox ~ [19.8425 ~ 19.8425 ~ 632.1265 ~ 878.7405]
+        /TrimBox ~ [28.3465 ~ 28.3465 ~ 623.6225 ~ 870.2365]
+      }  
+    } {
+      \special{pdf:put ~ @thispage ~ <<
+        /BleedBox ~ [19.8425 ~ 19.8425 ~ 632.1265 ~ 878.7405]
+        /TrimBox ~ [28.3465 ~ 28.3465 ~ 623.6225 ~ 870.2365]
+      >>}
+    }
+    
     \zchinr_cropmark_nw:
     \zchinr_cropmark_ne:
     \zchinr_cropmark_sw:
     \zchinr_cropmark_se:
-
-    \special{pdf:put ~ @thispage ~ <<
-      /MediaBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
-      /CropBox ~ [0.0000 ~ 0.0000 ~ 651.9690 ~ 898.5830]
-      /BleedBox ~ [19.8425 ~ 19.8425 ~ 632.1265 ~ 878.7405]
-      /TrimBox ~ [28.3465 ~ 28.3465 ~ 623.6225 ~ 870.2365]
-    >>}
   }
 
   \AtBeginDocument{
-    \special{pdf:minorversion ~ 3}
-    \special{pdf:docinfo ~ <<
-      /GTS_PDFXVersion ~ (PDF/X-1:2001)
-      /GTS_PDFXConformance ~ (PDF/X-1a:2001)
-    >>}
-    \str_if_empty:NTF \l_zchinr_color_profile_path_str {
-      \msg_warning:nn { zchinr } { no-color-profile } 
+    \sys_if_engine_luatex:TF {
+      \directlua{
+        pdf.setminorversion(3)
+      }
+      \pdfextension ~ info {
+        /GTS_PDFXVersion ~ (PDF/X-1:2001)
+        /GTS_PDFXConformance ~ (PDF/X-1a:2001)  
+      }
     } {
-      \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_str) ~ <<
-        /N ~ 4 
-        /Alternate/DeviceCMYK
+      \special{pdf:minorversion ~ 3}
+      \special{pdf:docinfo ~ <<
+        /GTS_PDFXVersion ~ (PDF/X-1:2001)
+        /GTS_PDFXConformance ~ (PDF/X-1a:2001)
       >>}
     }
     \str_if_empty:NTF \l_zchinr_color_profile_path_str {
-      \special{pdf:put ~ @catalog ~<<
-        /PageMode ~ /UseNone
-        /OutputIntents ~ [<<
-          /Type ~ /OutputIntent
-          /S ~ /GTS_PDFX
-          /OutputConditionIdentifier ~ (Custom)
-          /Info ~ (none)
-          /RegistryName ~ (http://www.color.org/)
-        >>]
-      >>}
+      \msg_warning:nn { zchinr } { no-color-profile } 
+      \sys_if_engine_luatex:TF {
+        \pdfextension ~ catalog {
+          /PageMode ~ /UseNone
+          /OutputIntents ~ [<<
+            /Type ~ /OutputIntent
+            /S ~ /GTS_PDFX
+            /OutputConditionIdentifier ~ (Custom)
+            /Info ~ (none)
+            /RegistryName ~ (http://www.color.org/)
+          >>]
+        }
+      } {
+        \special{pdf:put ~ @catalog ~ <<
+          /PageMode ~ /UseNone
+          /OutputIntents ~ [<<
+            /Type ~ /OutputIntent
+            /S ~ /GTS_PDFX
+            /OutputConditionIdentifier ~ (Custom)
+            /Info ~ (none)
+            /RegistryName ~ (http://www.color.org/)
+          >>]
+        >>}
+      }
     } {
-      \special{pdf:put ~ @catalog ~ <<
-        /PageMode ~ /UseNone
-        /OutputIntents ~ [<<
-          /Type ~ /OutputIntent
-          /S ~ /GTS_PDFX
-          /DestOutputProfile ~ @cmykdata
-          /OutputConditionIdentifier ~ (\l_zchinr_color_profile_name_tl)
-          /Info ~ (\l_zchinr_color_profile_info_tl)
-          /RegistryName ~ (http://www.color.org/)
-        >>]
-      >>}
+      \sys_if_engine_luatex:TF {
+        \immediate \pdfextension obj ~ stream ~
+          attr{/N ~ 4 ^^J /Alternate/DeviceCMYK} ~
+          file{\l_zchinr_color_profile_path_str}
+        \pdfextension ~ catalog {
+          /PageMode ~ /UseNone
+          /OutputIntents ~ [<<
+            /Type ~ /OutputIntent
+            /S ~ /GTS_PDFX
+            /DestOutputProfile ~ \the\numexpr\pdffeedback ~ lastobj\relax\space 0 ~ R
+            /OutputConditionIdentifier ~ (\l_zchinr_color_profile_name_tl)
+            /Info ~ (\l_zchinr_color_profile_info_tl)
+            /RegistryName ~ (http://www.color.org/)
+          >>]
+        }
+      } {
+        \special{pdf:fstream ~ @cmykdata ~ (\l_zchinr_color_profile_path_str) ~ <<
+          /N ~ 4 
+          /Alternate/DeviceCMYK
+        >>}
+        \special{pdf:put ~ @catalog ~ <<
+          /PageMode ~ /UseNone
+          /OutputIntents ~ [<<
+            /Type ~ /OutputIntent
+            /S ~ /GTS_PDFX
+            /DestOutputProfile ~ @cmykdata
+            /OutputConditionIdentifier ~ (\l_zchinr_color_profile_name_tl)
+            /Info ~ (\l_zchinr_color_profile_info_tl)
+            /RegistryName ~ (http://www.color.org/)
+          >>]
+        >>}
+      }
     }
   }
 }
@@ -522,7 +574,7 @@
   \sys_if_engine_luatex:TF {
     \tl_set:Nn \pdfcreationdate {
       \directlua{
-        tex.print(os.date("D:
+        tex.sprint(os.date("D:
           \c_percent_str Y
           \c_percent_str m
           \c_percent_str d
@@ -543,32 +595,28 @@
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \RequirePackage{hyperxmp}
   \AtBeginDocument{
     \hypersetup{
-      pdfcopyright={Copyright ~ (c) ~ ZChinR ~ \l_zchinr_issue_year_tl},
+      pdfkeywords={Copyright \c_space_token (c) \c_space_token 
+        ZChinR \c_space_token \l_zchinr_issue_year_tl}
     }
   }
 }
 \bool_if:NTF \l_zchinr_standalone_bool {
   \AtBeginDocument{
     \hypersetup{
-      pdfinfo={
-        Title={\g__zchinr_article_title_aux_tl},
-        Author={\g__zchinr_article_author_aux_tl},
-        ModDate={\pdfcreationdate},
-        Trapped={False},      
-      }
+      pdftitle={\g__zchinr_article_title_aux_tl},
+      pdfauthor={\g__zchinr_article_author_aux_tl},
+      pdfmoddate={\pdfcreationdate},
+      pdftrapped={False}
     }
   }
 } {
   \AtBeginDocument{
     \hypersetup{
-      pdfinfo={
-        Title={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
-        ModDate={\pdfcreationdate},
-        Trapped={False},      
-      }
+      pdftitle={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
+      pdfmoddate={\pdfcreationdate},
+      pdftrapped={False}
     }
   }
 }
