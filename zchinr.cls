@@ -75,6 +75,7 @@
 \tl_new:N \l_zchinr_issue_year_tl
 \tl_new:N \l_zchinr_issue_volume_tl
 \tl_new:N \l_zchinr_issue_number_tl
+\tl_new:N \l_zchinr_issue_doi_tl
 \tl_new:N \g_zchinr_issue_first_page_tl
 \tl_new:N \g_zchinr_issue_last_page_tl
 \tl_new:N \g__zchinr_issue_first_page_aux_tl
@@ -183,6 +184,7 @@
     \keys_set_exclude_groups:nnn { zchinr / setup / article } { execute } {#1} 
     \keys_set_groups:nnn { zchinr / setup / article } { execute } {#1} 
   } ,
+  issue / doi              .tl_set:N    = \l_zchinr_issue_doi_tl , 
   article / pagination     .str_set:N   = \l_zchinr_article_pagination_str ,
   article / pagination     .initial:n   = { arabic } , % arabic , roman , none
   article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl , 
@@ -632,6 +634,19 @@
     {\l__zchinr_header_mark_page_tl}
 }
 
+\cs_new_protected:Npn \__zchinr_setfoot_contents: {
+  \setfoot
+    {{\parbox[b]{0.4\textwidth}{\raggedright
+      \l_zchinr_local_doi_tl \c_colon_str \c_space_token 
+        \href{https://doi.org/\l_zchinr_issue_doi_tl}{\l_zchinr_issue_doi_tl}
+    }}}
+    {}
+    {{\parbox[b]{0.4\textwidth}{\raggedleft
+      \copyright \c_space_token \l_zchinr_issue_year_tl \c_space_token
+        \l_zchinr_local_zchinr_tl \\ 
+    }}}
+}
+
 \cs_new_protected:Npn \__zchinr_setfoot_title: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
@@ -671,6 +686,11 @@
 \newpagestyle{zchinremptytitle}{
   \__zchinr_sethead_empty:  
   \__zchinr_setfoot_title:
+}
+
+\newpagestyle{zchinremptycontents}{
+  \__zchinr_sethead_empty:  
+  \__zchinr_setfoot_contents:
 }
 
 \newpagestyle{zchinrempty}{
