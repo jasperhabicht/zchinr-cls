@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ProvidesExplClass{zchinr}
-  {2025/01/25} {3.0} {Document class for ZChinR}
+  {2025/02/14} {3.1} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -296,6 +296,11 @@
   \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 
+\hook_new_pair:nn { zchinr / category / before } { zchinr / category / after }
+\hook_new_pair:nn { zchinr / title / before } { zchinr / title / after }
+\hook_new_pair:nn { zchinr / subcontents / before } { zchinr / subcontents / after }
+\hook_new_pair:nn { zchinr / abstract / before } { zchinr / abstract / after }
+
 \cs_new_protected:Npn \zchinr_halfquad: { 
   \hskip .5em \relax
 }
@@ -464,7 +469,7 @@
     \zchinr_cropmark_se:
   }
 
-  \AtBeginDocument{
+  \AddToHook{document/begin}{
     \sys_if_engine_luatex:TF {
       \directlua{
         pdf.setminorversion(3)
@@ -592,12 +597,12 @@
 }
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
-  \AtBeginDocument{
+  \AddToHook{document/begin}{
     \NoHyper
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \AtBeginDocument{
+  \AddToHook{document/begin}{
     \hypersetup{
       pdfkeywords={Copyright \c_space_token (c) \c_space_token 
         ZChinR \c_space_token \l_zchinr_issue_year_tl}
@@ -605,7 +610,7 @@
   }
 }
 \bool_if:NTF \l_zchinr_standalone_bool {
-  \AtBeginDocument{
+  \AddToHook{document/begin}{
     \hypersetup{
       pdftitle={\g__zchinr_article_title_aux_tl},
       pdfauthor={\g__zchinr_article_author_aux_tl},
@@ -614,7 +619,7 @@
     }
   }
 } {
-  \AtBeginDocument{
+  \AddToHook{document/begin}{
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
       pdfmoddate={\pdfcreationdate},
@@ -953,7 +958,7 @@
 % The "last page" is the last page with arabic page numbers.
 
 % At \begin{document}, retrieve the "first page" and "last page" from the .aux file.
-\AtBeginDocument{
+\AddToHook{document/begin}{
   \tl_gset:NV \g_zchinr_issue_first_page_tl \g__zchinr_issue_first_page_aux_tl
   \tl_gset:NV \g_zchinr_issue_last_page_tl \g__zchinr_issue_last_page_aux_tl
 }
@@ -1306,21 +1311,31 @@
 
 \cs_new_protected:Npn \__zchinr_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
+    \hook_use:n { zchinr / category/before }
     \__zchinr_article_category:
+    \hook_use:n { zchinr / category/before }
   }
   \bool_if:NTF \l_zchinr_article_small_title_bool {
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { title } {
+      \hook_use:n { zchinr / title / before }
       \__zchinr_article_title_small:
+      \hook_use:n { zchinr / title / after }
     }   
   } {
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { title } {
+      \hook_use:n { zchinr / title / before }
       \__zchinr_article_title_large:
+      \hook_use:n { zchinr / title / after }
     }   
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { contents } {
+      \hook_use:n { zchinr / subcontents / before }
       \__zchinr_article_subcontents:
+      \hook_use:n { zchinr / subcontents / after }
     } 
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { abstract } {
+      \hook_use:n { zchinr / abstract / before }
       \__zchinr_article_abstract:
+      \hook_use:n { zchinr / abstract / after }
     }
   } 
 }
