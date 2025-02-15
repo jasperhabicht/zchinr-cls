@@ -300,6 +300,7 @@
 \hook_new_pair:nn { zchinr / title / before } { zchinr / title / after }
 \hook_new_pair:nn { zchinr / subcontents / before } { zchinr / subcontents / after }
 \hook_new_pair:nn { zchinr / abstract / before } { zchinr / abstract / after }
+\hook_new:n { zchinr / article / begin }
 
 \cs_new_protected:Npn \zchinr_halfquad: { 
   \hskip .5em \relax
@@ -469,7 +470,7 @@
     \zchinr_cropmark_se:
   }
 
-  \AddToHook{document/begin}{
+  \AtBeginDocument{
     \sys_if_engine_luatex:TF {
       \directlua{
         pdf.setminorversion(3)
@@ -597,12 +598,12 @@
 }
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
-  \AddToHook{document/begin}{
+  \AtBeginDocument{
     \NoHyper
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \AddToHook{document/begin}{
+  \AtBeginDocument{
     \hypersetup{
       pdfkeywords={Copyright \c_space_token (c) \c_space_token 
         ZChinR \c_space_token \l_zchinr_issue_year_tl}
@@ -610,7 +611,7 @@
   }
 }
 \bool_if:NTF \l_zchinr_standalone_bool {
-  \AddToHook{document/begin}{
+  \AtBeginDocument{
     \hypersetup{
       pdftitle={\g__zchinr_article_title_aux_tl},
       pdfauthor={\g__zchinr_article_author_aux_tl},
@@ -619,7 +620,7 @@
     }
   }
 } {
-  \AddToHook{document/begin}{
+  \AtBeginDocument{
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
       pdfmoddate={\pdfcreationdate},
@@ -958,7 +959,7 @@
 % The "last page" is the last page with arabic page numbers.
 
 % At \begin{document}, retrieve the "first page" and "last page" from the .aux file.
-\AddToHook{document/begin}{
+\AtBeginDocument{
   \tl_gset:NV \g_zchinr_issue_first_page_tl \g__zchinr_issue_first_page_aux_tl
   \tl_gset:NV \g_zchinr_issue_last_page_tl \g__zchinr_issue_last_page_aux_tl
 }
@@ -1203,6 +1204,7 @@
   \tl_set:Nn \l__zchinr_fnmark_tl {
     \@thefnmark
   }
+  \hook_use:n { zchinr / article / begin }
   \@afterindentfalse\@afterheading
 }
 
@@ -1309,11 +1311,15 @@
   \vskip 8mm
 }
 
+\NewDocumentCommand { \printabstract } { } {
+  \__zchinr_article_abstract:
+}
+
 \cs_new_protected:Npn \__zchinr_article_title: {
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { category } {
-    \hook_use:n { zchinr / category/before }
+    \hook_use:n { zchinr / category / before }
     \__zchinr_article_category:
-    \hook_use:n { zchinr / category/before }
+    \hook_use:n { zchinr / category / after }
   }
   \bool_if:NTF \l_zchinr_article_small_title_bool {
     \clist_if_in:NnT \l_zchinr_article_title_style_clist { title } {
