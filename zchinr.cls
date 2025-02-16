@@ -296,11 +296,11 @@
   \keys_set_groups:nnn { zchinr / setup } { execute } {#2}
 }
 
+\hook_new_pair:nn { zchinr / titleblock / before } { zchinr / titleblock / after }
 \hook_new_pair:nn { zchinr / category / before } { zchinr / category / after }
 \hook_new_pair:nn { zchinr / title / before } { zchinr / title / after }
 \hook_new_pair:nn { zchinr / subcontents / before } { zchinr / subcontents / after }
 \hook_new_pair:nn { zchinr / abstract / before } { zchinr / abstract / after }
-\hook_new:n { zchinr / article / begin }
 
 \cs_new_protected:Npn \zchinr_halfquad: {
   \hskip .5em \relax
@@ -1193,6 +1193,7 @@
   \tl_set:Nn \l__zchinr_fnmark_tl {
     \textsuperscript{\@thefnmark}
   }
+  \hook_use:n { zchinr / titleblock / before }
   \__zchinr_article_title_block:
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
@@ -1202,7 +1203,7 @@
   \tl_set:Nn \l__zchinr_fnmark_tl {
     \@thefnmark
   }
-  \hook_use:n { zchinr / article / begin }
+  \hook_use:n { zchinr / titleblock / after }
   \@afterindentfalse\@afterheading
 }
 
