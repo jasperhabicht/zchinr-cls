@@ -260,6 +260,7 @@ if __name__ == '__main__':
 
     # format urls
     file_data = re.sub(r'<?((www\.[-a-zA-Z\d]+\.[^\s]+\/|http:\/\/|https:\/\/)[^\s>]+)>?', r'\\url{\1}', file_data)
+    file_data = re.sub(r'<([-a-zA-Z\d]+\.([a-z]{2}|com|org|net|info))>', r'\\url{\1}', file_data)
 
     # tidy up empty, nested and subsequent macros
     file_data = re.sub(r'\\emph\{\\emph\{(.*?)\}(\s*)\}', r'\\emph{\1\2}', file_data)
