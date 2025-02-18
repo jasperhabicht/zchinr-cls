@@ -78,8 +78,6 @@
 \tl_new:N \l_zchinr_issue_doi_tl
 \tl_new:N \g_zchinr_issue_first_page_tl
 \tl_new:N \g_zchinr_issue_last_page_tl
-\tl_new:N \g__zchinr_issue_first_page_aux_tl
-\tl_new:N \g__zchinr_issue_last_page_aux_tl
 \bool_new:N \g__zchinr_issue_first_page_set_bool
 
 \tl_new:N \l_zchinr_default_licence_tl
@@ -97,13 +95,11 @@
 \tl_new:N \l_zchinr_article_author_toc_tl
 \tl_new:N \l_zchinr_article_author_copy_tl
 \tl_new:N \l_zchinr_article_author_note_tl
-\tl_new:N \g__zchinr_article_author_aux_tl
 \tl_new:N \l_zchinr_article_title_tl
 \tl_new:N \l_zchinr_article_title_pdf_tl
 \tl_new:N \l_zchinr_article_title_alt_tl
 \tl_new:N \l_zchinr_article_title_short_tl
 \tl_new:N \l_zchinr_article_title_toc_tl
-\tl_new:N \g__zchinr_article_title_aux_tl
 \tl_new:N \l_zchinr_article_abstract_tl
 \tl_new:N \l_zchinr_article_abstract_alt_tl
 \tl_new:N \l_zchinr_article_category_tl
@@ -130,11 +126,9 @@
 \tl_new:N \l__zchinr_header_mark_page_tl
 
 \tl_new:N \l__zchinr_toc_entry_tl
-\int_new:N \g__zchinr_toc_chapter_index_aux_int
 \bool_new:N \g__zchinr_missing_refs_bool
 
 \tl_new:N \g__zchinr_cover_toc_tl
-\tl_new:N \g__zchinr_cover_toc_aux_tl
 
 \tl_new:N \l__zchinr_fnmark_tl
 
@@ -146,7 +140,10 @@
 
 \cs_generate_variant:Nn \int_set:Nn { Ne }
 \cs_generate_variant:Nn \int_to_roman:n { e }
+\cs_generate_variant:Nn \property_record:nn { en }
+\cs_generate_variant:Nn \property_ref:nn { en }
 \prg_generate_conditional_variant:Nnn \int_compare:nNn { eNn } { T , TF }
+\prg_generate_conditional_variant:Nnn \property_if_recorded:nn { en } { TF }
 
 \keys_define:nn { zchinr / setup } {
   color ~ profile          .code:n      = { \keys_set:nn { zchinr / setup / color ~ profile } {#1} } ,
@@ -610,10 +607,22 @@
   }
 }
 \bool_if:NTF \l_zchinr_standalone_bool {
+  \property_if_recorded:nnT { standalone } { zchinr / chapter-title } {
+    \AtBeginDocument{
+      \hypersetup{
+        pdftitle={\property_ref:nn { standalone } { zchinr / chapter-title }}
+      }
+    }
+  }
+  \property_if_recorded:nnT { standalone } { zchinr / chapter-author } {
+    \AtBeginDocument{
+      \hypersetup{
+        pdfauthor={\property_ref:nn { standalone } { zchinr / chapter-author }}
+      }
+    }
+  }
   \AtBeginDocument{
     \hypersetup{
-      pdftitle={\g__zchinr_article_title_aux_tl},
-      pdfauthor={\g__zchinr_article_author_aux_tl},
       pdfmoddate={\pdfcreationdate},
       pdftrapped={False}
     }
@@ -769,11 +778,19 @@
 }
 
 \NewDocumentCommand { \currentissuefirstpage } { } {
-  \tl_use:N \g_zchinr_issue_first_page_tl
+  \property_if_recorded:nnTF { issue } { zchinr / issue-first-page } {
+    \property_ref:nn { issue } { zchinr / issue-first-page }
+  } {
+    \tl_use:N \g_zchinr_issue_first_page_tl
+  }
 }
 
 \NewDocumentCommand { \currentissuelastpage } { } {
-  \tl_use:N \g_zchinr_issue_last_page_tl
+  \property_if_recorded:nnTF { issue } { zchinr / issue-last-page } {
+    \property_ref:nn { issue } { zchinr / issue-last-page }
+  } {
+    \tl_use:N \g_zchinr_issue_first_page_tl
+  }
 }
 
 % Create documentation environment.
@@ -927,20 +944,17 @@
 \cs_new_protected:Npn \__zchinr_cover_toc_push:n #1 {
   \tl_set:Ne \l_zchinr_tmpa_tl { \l_zchinr_article_author_toc_tl }
   \tl_set:Ne \l_zchinr_tmpb_tl { \l_zchinr_article_title_toc_tl }
-  \tl_replace_all:Nnn \l_zchinr_tmpa_tl { ~ } { \exp_not:N \c_space_token }
-  \tl_replace_all:Nnn \l_zchinr_tmpb_tl { ~ } { \exp_not:N \c_space_token }
   \tl_if_blank:nTF {#1} {
     \str_case_e:nnF { \l_zchinr_article_cover_toc_style_str } {
       { title } {
         \tl_gput_right:Ne \g__zchinr_cover_toc_tl {
-          \exp_not:N \item{} \l_zchinr_tmpb_tl
+          \exp_not:N \protect \exp_not:N \item{} \l_zchinr_tmpb_tl
         }
       }
       { author ~ title } {
         \tl_gput_right:Ne \g__zchinr_cover_toc_tl {
-          \exp_not:N \item{} \exp_not:N \emph{ \l_zchinr_tmpa_tl , }
-            \exp_not:N \c_space_token
-            \l_zchinr_tmpb_tl
+          \exp_not:N \protect \exp_not:N \item{} \exp_not:N \emph{ \l_zchinr_tmpa_tl , }
+          \  \l_zchinr_tmpb_tl
         }
       }
     } {
@@ -948,19 +962,20 @@
         { \l_zchinr_article_cover_toc_style_str }
     }
   } {
-    \tl_gput_right:Ne \g__zchinr_cover_toc_tl { \exp_not:N \item{} #1 }
+    \tl_gput_right:Ne \g__zchinr_cover_toc_tl { \exp_not:N \protect \exp_not:N \item{} #1 }
   }
 }
 
 % The following automatically set the "first page" and "last page" of the issue.
 % The "first page" is the first page with arabic page numbers.
 % The "last page" is the last page with arabic page numbers.
+\property_new:nnnn { zchinr / cover-toc } { shipout } { } { \exp_not:o { \g__zchinr_cover_toc_tl } }
+\property_new:nnnn { zchinr / issue-first-page } { now } { ? } { \tl_use:N \g_zchinr_issue_first_page_tl }
+\property_new:nnnn { zchinr / issue-last-page } { now } { ? } { \tl_use:N \g_zchinr_issue_last_page_tl }
 
-% At \begin{document}, retrieve the "first page" and "last page" from the .aux file.
-\AtBeginDocument{
-  \tl_gset:NV \g_zchinr_issue_first_page_tl \g__zchinr_issue_first_page_aux_tl
-  \tl_gset:NV \g_zchinr_issue_last_page_tl \g__zchinr_issue_last_page_aux_tl
-}
+\property_new:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} - 1 } }
+\property_new:nnnn { zchinr / chapter-author } { now } { } { \tl_use:N \l_zchinr_article_author_tl }
+\property_new:nnnn { zchinr / chapter-title } { now } { } { \tl_use:N \l_zchinr_article_title_pdf_tl }
 
 % Set the "first page" to the current page number if arabic, and set it only once.
 % After each page break, set the "last page" to the current page number if arabic.
@@ -974,62 +989,22 @@
   }
 }
 
-% At \end{document}, write "first page" and "last page" to .aux file.
-\AtEndDocument{
-  \iow_now:cx { @auxout } {
-    \token_to_str:N \ExplSyntaxOn
-    \iow_newline:
-    \tl_gset:Nn \token_to_str:N \g__zchinr_cover_toc_aux_tl
-      { \exp_not:o { \g__zchinr_cover_toc_tl } }
-    \iow_newline:
-    \tl_gset:Nn \token_to_str:N \g__zchinr_issue_first_page_aux_tl
-      { \tl_use:N \g_zchinr_issue_first_page_tl }
-    \iow_newline:
-    \tl_gset:Nn \token_to_str:N \g__zchinr_issue_last_page_aux_tl
-      { \tl_use:N \g_zchinr_issue_last_page_tl }
-    \iow_newline:
-    \token_to_str:N \tl_if_exist:NF
-      \token_to_str:c
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl } {
-      \iow_newline:
-      \tl_new:N \token_to_str:c
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl }
-      \iow_newline:
-    }
-    \iow_newline:
-    \tl_gset:Nn \token_to_str:c
-      { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} } _last_page_aux_tl }
-      { \int_eval:n { \value{page} } }
-    \iow_newline:
-    \token_to_str:N \ExplSyntaxOff
-  }
-  \bool_if:NT \l_zchinr_standalone_bool {
-    \tl_set:Ne \l_zchinr_tmpa_tl { \l_zchinr_article_author_tl }
-    \tl_set:Ne \l_zchinr_tmpb_tl { \l_zchinr_article_title_pdf_tl }
-    \tl_replace_all:Nnn \l_zchinr_tmpa_tl { ~ } { \exp_not:N \c_space_token }
-    \tl_replace_all:Nnn \l_zchinr_tmpb_tl { ~ } { \exp_not:N \c_space_token }
-    \iow_now:cx { @auxout } {
-      \token_to_str:N \ExplSyntaxOn
-      \iow_newline:
-      \tl_gset:Nn \token_to_str:N \g__zchinr_article_author_aux_tl
-        { \exp_not:o { \l_zchinr_tmpa_tl } }
-      \iow_newline:
-      \tl_gset:Nn \token_to_str:N \g__zchinr_article_title_aux_tl
-        { \exp_not:o { \l_zchinr_tmpb_tl } }
-      \iow_newline:
-      \token_to_str:N \ExplSyntaxOff
-    }
-  }
-  \bool_if:NT \g__zchinr_missing_refs_bool {
-    \msg_warning:nn { zchinr } { missing-references }
-  }
-}
-
 \AddToHook{shipout/after}{
   \int_gincr:N \g_zchinr_page_count_int
 }
 
-\AddToHook{enddocument/afterlastpage}{
+% At \end{document}, write "first page" and "last page" to .aux file.
+\AddToHook{shipout/lastpage}{
+  \property_record:nn { issue } 
+    { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
+  \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
+  \property_record:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
+  \bool_if:NT \l_zchinr_standalone_bool {
+    \property_record:nn { standalone } { zchinr / chapter-author , zchinr / chapter-title }
+  }
+  \bool_if:NT \g__zchinr_missing_refs_bool {
+    \msg_warning:nn { zchinr } { missing-references }
+  }
   \fp_compare:nNnF {
     \g_zchinr_page_count_int - \l_zchinr_page_div_int *
     floor ( \g_zchinr_page_count_int / \l_zchinr_page_div_int )
@@ -1045,30 +1020,13 @@
   \stepcounter{chapter}
   \int_compare:eNnT { \value{chapter} } > { 1 } {
     \addtocontents{toc}{\protect\setcounter{zchinrchapterindex}{ \int_to_arabic:n { \value{chapter} } }}
-    \iow_now:cx { @auxout } {
-      \token_to_str:N \ExplSyntaxOn
-      \iow_newline:
-      \token_to_str:N \tl_if_exist:NF
-        \token_to_str:c
-          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl } {
-        \iow_newline:
-        \tl_new:N \token_to_str:c
-          { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl }
-        \iow_newline:
-      }
-      \iow_newline:
-      \tl_gset:Nn \token_to_str:c
-        { g__zchinr_chapter_ \int_to_roman:e { \value{chapter} - 1 } _last_page_aux_tl }
-        { \int_eval:n { \value{page} - 1 } }
-      \iow_newline:
-      \token_to_str:N \ExplSyntaxOff
-    }
+    \property_record:en { chapter : \int_eval:n { \value{chapter} - 1 } } { zchinr / chapter-last-page }
   }
 }
 
 \cs_new:Npn \__zchinr_chapter_last_page:n #1 {
-  \cs_if_exist:cTF { g__zchinr_chapter_ \int_to_roman:e {#1} _last_page_aux_tl } {
-    \int_eval:n { \tl_use:c { g__zchinr_chapter_ \int_to_roman:e {#1} _last_page_aux_tl } }
+  \property_if_recorded:enTF { chapter : \int_eval:n {#1} } { zchinr / chapter-last-page } {
+    \property_ref:en { chapter : \int_eval:n {#1} } { zchinr / chapter-last-page }
   } {
     -1
   }
@@ -1084,8 +1042,8 @@
 }
 
 \cs_new:Npn \__zchinr_current_chapter_last_page: {
-  \cs_if_exist:cTF { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } {
-    \int_eval:n { \tl_use:c { g__zchinr_chapter_ \roman{chapter} _last_page_aux_tl } }
+  \property_if_recorded:enTF { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page } {
+    \property_ref:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
   } {
     -1
   }
@@ -1385,9 +1343,9 @@
 \setlist[covertoc]{label={}, leftmargin=0pt, nosep, itemsep=10pt, before=\raggedright}
 
 \NewDocumentCommand { \printcovertoc } { } {
-  \tl_if_empty:NF \g__zchinr_cover_toc_aux_tl {
+  \property_if_recorded:nnT { issue } { zchinr / cover-toc } {
     \begin{covertoc}
-      \tl_use:N \g__zchinr_cover_toc_aux_tl
+      \property_ref:nn { issue } { zchinr / cover-toc }
     \end{covertoc}
   }
 }
