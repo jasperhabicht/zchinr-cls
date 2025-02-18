@@ -466,7 +466,7 @@
     \zchinr_cropmark_se:
   }
 
-  \AtBeginDocument{
+  \AddToHook{begindocument}{
     \sys_if_engine_luatex:TF {
       \directlua{
         pdf.setminorversion(3)
@@ -594,12 +594,12 @@
 }
 \bool_if:NTF \l_zchinr_prepress_bool {
   \RequirePackage[bookmarks=false]{hyperref}
-  \AtBeginDocument{
+  \AddToHook{begindocument}{
     \NoHyper
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \AtBeginDocument{
+  \AddToHook{begindocument}{
     \hypersetup{
       pdfkeywords={Copyright \c_space_token (c) \c_space_token
         ZChinR \c_space_token \l_zchinr_issue_year_tl}
@@ -608,27 +608,27 @@
 }
 \bool_if:NTF \l_zchinr_standalone_bool {
   \property_if_recorded:nnT { standalone } { zchinr / chapter-title } {
-    \AtBeginDocument{
+    \AddToHook{begindocument}{
       \hypersetup{
         pdftitle={\property_ref:nn { standalone } { zchinr / chapter-title }}
       }
     }
   }
   \property_if_recorded:nnT { standalone } { zchinr / chapter-author } {
-    \AtBeginDocument{
+    \AddToHook{begindocument}{
       \hypersetup{
         pdfauthor={\property_ref:nn { standalone } { zchinr / chapter-author }}
       }
     }
   }
-  \AtBeginDocument{
+  \AddToHook{begindocument}{
     \hypersetup{
       pdfmoddate={\pdfcreationdate},
       pdftrapped={False}
     }
   }
 } {
-  \AtBeginDocument{
+  \AddToHook{begindocument}{
     \hypersetup{
       pdftitle={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
       pdfmoddate={\pdfcreationdate},
@@ -995,7 +995,7 @@
 
 % At \end{document}, write "first page" and "last page" to .aux file.
 \AddToHook{shipout/lastpage}{
-  \property_record:nn { issue } 
+  \property_record:nn { issue }
     { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
   \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
   \property_record:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
@@ -1005,6 +1005,9 @@
   \bool_if:NT \g__zchinr_missing_refs_bool {
     \msg_warning:nn { zchinr } { missing-references }
   }
+}
+
+\AddToHook{enddocument/afterlastpage}{
   \fp_compare:nNnF {
     \g_zchinr_page_count_int - \l_zchinr_page_div_int *
     floor ( \g_zchinr_page_count_int / \l_zchinr_page_div_int )
