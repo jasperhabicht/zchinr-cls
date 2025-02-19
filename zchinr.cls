@@ -993,7 +993,7 @@
 }
 
 % At \end{document}, write "first page" and "last page" to .aux file.
-\AddToHook{shipout/lastpage}{
+\AddToHook{enddocument/afterlastpage}{
   \property_record:nn { issue }
     { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
   \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
@@ -1004,9 +1004,6 @@
   \bool_if:NT \g__zchinr_missing_refs_bool {
     \msg_warning:nn { zchinr } { missing-references }
   }
-}
-
-\AddToHook{enddocument/afterlastpage}{
   \fp_compare:nNnF {
     \g_zchinr_page_count_int - \l_zchinr_page_div_int *
     floor ( \g_zchinr_page_count_int / \l_zchinr_page_div_int )
