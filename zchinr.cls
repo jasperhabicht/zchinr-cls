@@ -544,7 +544,6 @@
   }
 }
 
-\RequirePackage{afterpage}
 \RequirePackage{array}
 \RequirePackage{longtable}
 \RequirePackage{booktabs}
@@ -1306,6 +1305,16 @@
   }
 }
 
+\IfExplAtLeastTF { 2026-01-01 } { } {
+  \NewHook{build/column/before}
+  \let\orig@makecol\@makecol
+  
+  \def\@makecol{
+    \UseHook{build/column/before}
+    \orig@makecol
+  }
+}
+
 \cs_new_protected:Npn \__zchinr_article_title_block: {
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \twocolumn[
@@ -1314,7 +1323,7 @@
     \sloppy\flushbottom
     \tl_if_empty:NF \l_zchinr_article_doi_tl {
       \enlargethispage{-10mm}
-      \afterpage{\enlargethispage{-10mm}}
+      \AddToHookNext{build/column/before}{\enlargethispage{-10mm}}
     }
   } {
     \onecolumn
