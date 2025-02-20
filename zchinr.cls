@@ -138,6 +138,8 @@
 \tl_new:N \l_zchinr_tmpb_tl
 \coffin_new:N \l_zchinr_tmpa_coffin
 
+\iow_new:N \g__zchinr_xmp_iow
+
 \cs_generate_variant:Nn \int_set:Nn { Ne }
 \cs_generate_variant:Nn \int_to_roman:n { e }
 \cs_generate_variant:Nn \property_record:nn { en }
@@ -177,11 +179,11 @@
   issue / year             .tl_set:N    = \l_zchinr_issue_year_tl ,
   issue / volume           .tl_set:N    = \l_zchinr_issue_volume_tl ,
   issue / number           .tl_set:N    = \l_zchinr_issue_number_tl ,
+  issue / doi              .tl_set:N    = \l_zchinr_issue_doi_tl ,
   article                  .code:n      = {
     \keys_set_exclude_groups:nnn { zchinr / setup / article } { execute } {#1}
     \keys_set_groups:nnn { zchinr / setup / article } { execute } {#1}
   } ,
-  issue / doi              .tl_set:N    = \l_zchinr_issue_doi_tl ,
   article / pagination     .str_set:N   = \l_zchinr_article_pagination_str ,
   article / pagination     .initial:n   = { arabic } , % arabic , roman , none
   article / first ~ page   .tl_set:N    = \l_zchinr_article_first_page_tl ,
@@ -570,6 +572,31 @@
   labelsep=period,
 ]{caption}
 
+\cs_new:Npn \__zchinr_generate_xmp: {
+  \iow_open:Nn \g__zchinr_xmp_iow { \c_sys_jobname_str .xmp }
+  \iow_now:Ne \g__zchinr_xmp_iow {
+    <?xpacket ~ begin='' ~ id=''?> \iow_newline:
+    <x:xmpmeta ~ xmlns:x='adobe:ns:meta/'> \iow_newline:
+    <rdf:RDF ~ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns \c_hash_str "> \iow_newline:
+    <rdf:Description ~ rdf:about="" \iow_newline:
+      xmlns:dc="http://purl.org/dc/elements/1.1/" \iow_newline:
+      xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/"> \iow_newline:    <dc:rights> \iow_newline:
+    <rdf:Alt> \iow_newline:
+    <rdf:li ~ xml:lang="x-default">Copyright ~ (c) ~ ZChinR ~ \l_zchinr_issue_year_tl ; ~
+      \l_zchinr_local_licence_tl \c_colon_str ~ \l_zchinr_default_licence_tl </rdf:li> \iow_newline:
+    </rdf:Alt> \iow_newline:
+    </dc:rights> \iow_newline:
+    <xmpRights:Marked>True</xmpRights:Marked> \iow_newline:
+    <xmpRights:Certificate> \l_zchinr_default_licence_url_tl </xmpRights:Certificate> \iow_newline:
+    <xmpRights:WebStatement> \l_zchinr_default_licence_url_tl </xmpRights:WebStatement> \iow_newline:
+    </rdf:Description> \iow_newline:
+    </rdf:RDF> \iow_newline:
+    </x:xmpmeta> \iow_newline:
+    <?xpacket ~ end='r'?> 
+  }
+  \iow_close:N \g__zchinr_xmp_iow
+}
+
 % Set up hyperreferences
 \PassOptionsToPackage{hyphens}{url}
 \tl_if_exist:NF \pdfcreationdate {
@@ -598,10 +625,18 @@
   }
 } {
   \RequirePackage[hidelinks]{hyperref}
-  \AddToHook{begindocument}{
-    \hypersetup{
-      pdfkeywords={Copyright \c_space_token (c) \c_space_token
-        ZChinR \c_space_token \l_zchinr_issue_year_tl}
+  \sys_if_engine_luatex:T {
+    \AddToHook{begindocument}{
+      \__zchinr_generate_xmp:
+      \group_begin:
+        \pdfcompresslevel=0
+        \immediate \pdfobj stream ~ 
+          attr{/Type ~ /Metadata ~ /Subtype ~ /XML} ~ 
+          file{ \c_sys_jobname_str .xmp}
+        \pdfextension ~ catalog {
+          /Metadata ~ \the \pdflastobj \space 0 ~ R
+        }
+      \group_end:
     }
   }
 }
