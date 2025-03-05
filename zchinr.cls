@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/02/16} {3.2} {Document class for ZChinR}
+  {2025/03/03} {3.3} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -109,11 +109,13 @@
 \str_new:N \l_zchinr_article_toc_style_str
 \str_new:N \l_zchinr_article_cover_toc_style_str
 \str_new:N \l_zchinr_article_header_style_str
+\str_new:N \l_zchinr_article_page_style_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
 \bool_new:N \l_zchinr_article_small_title_bool
 \clist_new:N \l_zchinr_article_title_style_clist
 
 \dim_new:N \l_zchinr_title_distance_dim
+\clist_new:N \l__zchinr_page_style_enlarge_clist
 
 \tl_new:N \l_zchinr_local_zchinr_tl
 \tl_new:N \l_zchinr_local_abstract_tl
@@ -245,9 +247,9 @@
   article / title ~ style  .clist_set:N = \l_zchinr_article_title_style_clist ,
   article / title ~ style  .initial:n   = { title } , % category , title , author , abstract , phantom
   article / header ~ style .str_set:N   = \l_zchinr_article_header_style_str ,
-  article / header ~ style .initial:n   = { author ~ title } , % author title , title , category
+  article / header ~ style .initial:n   = { author ~ title } , % author title , title , category , contents
   article / toc ~ style    .str_set:N   = \l_zchinr_article_toc_style_str ,
-  article / toc ~ style    .initial:n   = { author ~ first } , % author first , author last , no author
+  article / toc ~ style    .initial:n   = { author ~ first } , % author first , author last , no author , none
   article / cover ~ toc ~ style
                            .str_set:N   = \l_zchinr_article_cover_toc_style_str ,
   article / cover ~ toc ~ style
@@ -256,7 +258,10 @@
   article / step ~ chapter .groups:n    = { execute } ,
   article / cover ~ toc    .code:n      = { \__zchinr_cover_toc_push:n {#1} } ,
   article / cover ~ toc    .groups:n    = { execute } ,
-  article / page ~ style   .code:n      = { \thispagestyle{zchinr #1} } ,
+  article / page ~ style   .code:n      = {
+    \str_set:Nn \l_zchinr_article_page_style_str {#1}
+    \thispagestyle{zchinr #1}
+  } ,
   article / page ~ style   .groups:n    = { execute } ,
   reset                    .code:n      = {
    \keys_set:nn { zchinr / setup / article } {
@@ -592,7 +597,7 @@
     </rdf:Description> \iow_newline:
     </rdf:RDF> \iow_newline:
     </x:xmpmeta> \iow_newline:
-    <?xpacket ~ end='r'?> 
+    <?xpacket ~ end='r'?>
   }
   \iow_close:N \g__zchinr_xmp_iow
 }
@@ -630,8 +635,8 @@
       \__zchinr_generate_xmp:
       \group_begin:
         \pdfcompresslevel=0
-        \immediate \pdfobj stream ~ 
-          attr{/Type ~ /Metadata ~ /Subtype ~ /XML} ~ 
+        \immediate \pdfobj stream ~
+          attr{/Type ~ /Metadata ~ /Subtype ~ /XML} ~
           file{ \c_sys_jobname_str .xmp}
         \pdfextension ~ catalog {
           /Metadata ~ \the \pdflastobj \space 0 ~ R
@@ -744,6 +749,12 @@
 \newpagestyle{zchinrempty}{
   \__zchinr_sethead_empty:
   \__zchinr_setfoot_empty:
+}
+
+\clist_map_inline:nn { defaulttitle , emptytitle , emptycontents } {
+  \clist_put_right:Ne \l__zchinr_page_style_enlarge_clist {
+    \tl_to_str:n {#1}
+  }
 }
 
 \newcounter{zchinrchapterindex}
@@ -1029,13 +1040,17 @@
 
 % At \end{document}, write "first page" and "last page" to .aux file.
 \AddToHook{enddocument/afterlastpage}{
-  \property_record:nn { issue }
-    { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
-  \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
-  \property_record:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
-  \bool_if:NT \l_zchinr_standalone_bool {
-    \property_record:nn { standalone } { zchinr / chapter-author , zchinr / chapter-title }
-  }
+  \group_begin:
+    \cs_set:Npn \write { \tex_immediate:D \tex_write:D }
+    \property_record:nn { issue }
+      { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
+    \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
+    \property_record:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
+    \bool_if:NT \l_zchinr_standalone_bool {
+      \property_record:nn { standalone } { zchinr / chapter-author , zchinr / chapter-title }
+    }
+  \group_end:
+
   \bool_if:NT \g__zchinr_missing_refs_bool {
     \msg_warning:nn { zchinr } { missing-references }
   }
@@ -1149,6 +1164,13 @@
         \thispagestyle{zchinremptytitle}
       }
     }
+    { contents } {
+      \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_category_tl
+      \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl
+      \tl_if_empty:NF \l_zchinr_issue_doi_tl {
+        \thispagestyle{zchinremptycontents}
+      }
+    }
   } {
     \tl_if_empty:NF \l_zchinr_article_doi_tl {
       \thispagestyle{zchinrdefaulttitle}
@@ -1176,6 +1198,7 @@
         \l_zchinr_article_title_toc_tl
       }
     }
+    { none } { }
   } {
     \msg_warning:nnn { zchinr } { toc-style-unknown }
       { \l__zchinr_toc_entry_tl }
@@ -1208,10 +1231,12 @@
 
 \cs_new_protected:Npn \__zchinr_article_category: {
   \bool_if:NF \l_zchinr_standalone_bool {
-    \phantomsection
-    \addcontentsline{toc}{part}{
-      \texorpdfstring{ \text_lowercase:n { \l_zchinr_article_category_tl } }
-        {\l_zchinr_article_category_tl}
+    \tl_if_empty:NF \l__zchinr_toc_entry_tl {
+      \phantomsection
+      \addcontentsline{toc}{part}{
+        \texorpdfstring{ \text_lowercase:n { \l_zchinr_article_category_tl } }
+          {\l_zchinr_article_category_tl}
+      }
     }
   }
   \noindent
@@ -1231,9 +1256,11 @@
 \cs_new_protected:Npn \__zchinr_article_title_large: {
   \bool_if:NF \l_zchinr_standalone_bool {
     \__zchinr_step_chapter:
-    \phantomsection
-    \addcontentsline{toc}{chapter}{
-      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+    \tl_if_empty:NF \l__zchinr_toc_entry_tl {
+      \phantomsection
+      \addcontentsline{toc}{chapter}{
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+      }
     }
   }
   \noindent\parbox[t][\l_zchinr_title_distance_dim][t]{\textwidth}{
@@ -1253,14 +1280,16 @@
 \cs_new_protected:Npn \__zchinr_article_title_small: {
   \bool_if:NF \l_zchinr_standalone_bool {
     \__zchinr_step_chapter:
-    \phantomsection
-    \addcontentsline{toc}{chapter}{
-      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+    \tl_if_empty:NF \l__zchinr_toc_entry_tl {
+      \phantomsection
+      \addcontentsline{toc}{chapter}{
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+      }
     }
   }
   \noindent
   {\fontsize{11}{13}\selectfont\bfseries\l_zchinr_article_title_tl\par}
-  \tl_if_empty:NT \l_zchinr_article_label_tl {
+  \tl_if_empty:NF \l_zchinr_article_label_tl {
     \label { chapter: \l_zchinr_article_label_tl }
   }
   \bigskip\nopagebreak
@@ -1340,7 +1369,6 @@
 \IfExplAtLeastTF { 2026-01-01 } { } {
   \NewHook{build/column/before}
   \let\orig@makecol\@makecol
-  
   \def\@makecol{
     \UseHook{build/column/before}
     \orig@makecol
@@ -1353,22 +1381,24 @@
       \__zchinr_article_title:
     ]
     \sloppy\flushbottom
-    \tl_if_empty:NF \l_zchinr_article_doi_tl {
+    \clist_if_in:NVT \l__zchinr_page_style_enlarge_clist \l_zchinr_article_page_style_str {
       \enlargethispage{-10mm}
       \AddToHookNext{build/column/before}{\enlargethispage{-10mm}}
     }
   } {
     \onecolumn
     \__zchinr_article_title:
-    \tl_if_empty:NF \l_zchinr_article_doi_tl {
+    \clist_if_in:NVT \l__zchinr_page_style_enlarge_clist \l_zchinr_article_page_style_str {
       \enlargethispage{-10mm}
     }
   }
   \clist_if_in:NnT \l_zchinr_article_title_style_clist { phantom } {
     \__zchinr_step_chapter:
-    \phantomsection
-    \addcontentsline{toc}{chapter}{
-      \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+    \tl_if_empty:NF \l__zchinr_toc_entry_tl {
+      \phantomsection
+      \addcontentsline{toc}{chapter}{
+        \texorpdfstring{\l__zchinr_toc_entry_tl}{\l_zchinr_article_title_pdf_tl}
+      }
     }
   }
 }
