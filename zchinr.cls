@@ -1138,10 +1138,12 @@
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl
       \clist_if_in:NnTF \l_zchinr_article_title_style_clist { category } {
         \tl_if_empty:NF \l_zchinr_article_doi_tl {
+          \str_set:Nn \l_zchinr_article_page_style_str { emptytitle }
           \thispagestyle{zchinremptytitle}
         }
       } {
         \tl_if_empty:NF \l_zchinr_article_doi_tl {
+          \str_set:Nn \l_zchinr_article_page_style_str { defaulttitle }
           \thispagestyle{zchinrdefaulttitle}
         }
       }
@@ -1150,6 +1152,7 @@
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_title_short_tl
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_title_short_tl
       \tl_if_empty:NF \l_zchinr_article_doi_tl {
+        \str_set:Nn \l_zchinr_article_page_style_str { emptytitle }
         \thispagestyle{zchinremptytitle}
       }
     }
@@ -1161,6 +1164,7 @@
         { \itshape \l_zchinr_article_author_short_tl , } ~ \l_zchinr_article_title_short_tl
       }
       \tl_if_empty:NF \l_zchinr_article_doi_tl {
+        \str_set:Nn \l_zchinr_article_page_style_str { emptytitle }
         \thispagestyle{zchinremptytitle}
       }
     }
@@ -1168,11 +1172,13 @@
       \tl_set_eq:NN \l__zchinr_header_mark_even_tl \l_zchinr_article_category_tl
       \tl_set_eq:NN \l__zchinr_header_mark_odd_tl \l_zchinr_article_category_tl
       \tl_if_empty:NF \l_zchinr_issue_doi_tl {
+        \str_set:Nn \l_zchinr_article_page_style_str { emptycontents }
         \thispagestyle{zchinremptycontents}
       }
     }
   } {
     \tl_if_empty:NF \l_zchinr_article_doi_tl {
+      \str_set:Nn \l_zchinr_article_page_style_str { defaulttitle }
       \thispagestyle{zchinrdefaulttitle}
     }
     \msg_warning:nnn { zchinr } { header-style-unknown }
@@ -1436,6 +1442,7 @@
     \draw_end:
   }
   \IfBooleanF {#1} {
+    \str_set:Nn \l_zchinr_article_page_style_str { empty }
     \thispagestyle{zchinrempty}
     \null
     \clearpage
