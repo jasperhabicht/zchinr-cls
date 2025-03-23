@@ -1044,7 +1044,7 @@
     \cs_set:Npn \write { \tex_immediate:D \tex_write:D }
     \property_record:nn { issue }
       { zchinr / cover-toc , zchinr / issue-first-page , zchinr / issue-last-page }
-    \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} } }
+    \property_gset:nnnn { zchinr / chapter-last-page } { now } { ? } { \int_eval:n { \value{page} - 1 } }
     \property_record:en { chapter : \int_eval:n { \value{chapter} } } { zchinr / chapter-last-page }
     \bool_if:NT \l_zchinr_standalone_bool {
       \property_record:nn { standalone } { zchinr / chapter-author , zchinr / chapter-title }
