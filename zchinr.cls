@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/03/03} {3.3} {Document class for ZChinR}
+  {2025/05/05} {3.5} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -329,7 +329,7 @@
   }
 }
 
-\RequirePackage[english, german]{babel}
+\RequirePackage[english, ngerman]{babel}
 
 \RequirePackage{fontspec}
 \setmainfont{TeX ~ Gyre ~ Pagella}
