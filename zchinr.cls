@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/05/05} {3.5} {Document class for ZChinR}
+  {2025/05/06} {3.5} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -112,7 +112,10 @@
 \str_new:N \l_zchinr_article_page_style_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
 \bool_new:N \l_zchinr_article_small_title_bool
+\bool_new:N \l_zchinr_article_abstract_split_bool
 \clist_new:N \l_zchinr_article_title_style_clist
+\seq_new:N \l__zchinr_article_abstract_split_seq
+\seq_new:N \l__zchinr_article_abstract_alt_split_seq
 
 \dim_new:N \l_zchinr_title_distance_dim
 \clist_new:N \l__zchinr_page_style_enlarge_clist
@@ -236,6 +239,12 @@
   article / abstract       .initial:n   = { } ,
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
   article / abstract ~ alt .initial:n   = { } ,
+  article / abstract ~ split
+                           .bool_set:N   = \l_zchinr_article_abstract_split_bool ,
+  article / abstract ~ split
+                           .default:n   = { true } ,
+  article / abstract ~ split
+                           .initial:n   = { false } ,
   article / category       .tl_set:N    = \l_zchinr_article_category_tl ,
   article / category       .initial:n   = { Aufsätze } ,
   article / two ~ columns  .bool_set:N  = \l_zchinr_article_twocolumn_bool ,
@@ -283,6 +292,7 @@
       title ~ toc = { \l_zchinr_article_title_tl } ,
       abstract = { } ,
       abstract ~ alt = { } ,
+      abstract ~ split = { false } ,
       two ~ columns = { false } ,
       small ~ title = { false } ,
       title ~ style = { title } ,
@@ -305,6 +315,7 @@
 \hook_new_pair:nn { zchinr / title / before } { zchinr / title / after }
 \hook_new_pair:nn { zchinr / subcontents / before } { zchinr / subcontents / after }
 \hook_new_pair:nn { zchinr / abstract / before } { zchinr / abstract / after }
+\hook_new:n { zchinr / abstract / split }
 
 \cs_new_protected:Npn \zchinr_halfquad: {
   \hskip .5em \relax
@@ -798,7 +809,7 @@
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
 \tl_set:Nn \footnoterule {}
-\setlength{\skip\footins}{15pt plus 5pt minus 5pt}
+\setlength{\skip\footins}{15pt plus 10pt minus 10pt}
 
 % Style URLs.
 \urlstyle{same}
@@ -1216,6 +1227,7 @@
   }
   \hook_use:n { zchinr / titleblock / before }
   \__zchinr_article_title_block:
+  \hook_use:n { zchinr / abstract / split }
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
     \addtocounter{footnote}{-1}
@@ -1312,29 +1324,107 @@
   \vskip 12mm
 }
 
+\NewDocumentCommand { \zchinrsplit } { } { \relax }
+
+\cs_generate_variant:Nn \seq_gset_split:Nnn { Nno }
+
+% todo: with abstract split, footnotes on first page are not aligned at bottom 
+
 \cs_new_protected:Npn \__zchinr_article_abstract: {
+  \bool_if:NT \l_zchinr_article_abstract_split_bool {
+    \seq_gset_split:Nno \g__zchinr_article_abstract_split_seq
+      { \zchinrsplit } { \l_zchinr_article_abstract_tl }
+    \tl_set:No \l_zchinr_article_abstract_tl {
+      \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
+    }
+    \seq_gset_split:Nno \g__zchinr_article_abstract_alt_split_seq
+      { \zchinrsplit } {
+        \l_zchinr_article_abstract_alt_tl \linebreak
+        \vspace*{-1\baselineskip}
+      }
+    \tl_set:No \l_zchinr_article_abstract_alt_tl {
+      \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 1 }
+    }
+  }
   \noindent
   {\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl\par}
   \vskip 10pt plus 5pt minus 2.5pt
-  \str_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
-    \noindent\begin{abstract}
-      \itshape\l_zchinr_article_abstract_tl
-    \end{abstract}
+  \bool_if:NTF \l_zchinr_article_abstract_split_bool {
+    \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
+      \noindent\begin{abstract}
+        \itshape
+        \l_zchinr_article_abstract_tl \linebreak
+        \vspace*{-1\baselineskip}
+      \end{abstract}
+      \clearpage
+      \AddToHookNext{zchinr/abstract/split}{
+        \twocolumn[{
+          \noindent\begin{abstract}
+            \itshape
+            \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
+          \end{abstract}
+          \par
+          \vskip 8mm
+          \zchinr_hfillrule:
+          \par
+          \vskip 8mm  
+        }]
+      }
+    } {
+      \noindent\begin{abstract}[\columnwidth]
+        \itshape
+        \l_zchinr_article_abstract_tl \linebreak
+        \vspace*{-1\baselineskip}
+      \end{abstract}
+      \hskip\columnsep
+      \begin{abstract}[\columnwidth]
+        \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
+        \l_zchinr_article_abstract_alt_tl \linebreak
+        \vspace*{-1\baselineskip}
+      \end{abstract}
+      \clearpage
+      \AddToHookNext{zchinr/abstract/split}{
+        \twocolumn[{
+          \noindent\begin{abstract}[\columnwidth]
+            \itshape
+            \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
+          \end{abstract}
+          \hskip\columnsep
+          \begin{abstract}[\columnwidth]
+            \itshape
+            \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 2 }
+          \end{abstract}
+          \par
+          \vskip 8mm
+          \zchinr_hfillrule:
+          \par
+          \vskip 8mm
+        }]
+      }
+    }
   } {
-    \noindent\begin{abstract}[\columnwidth]
-      \itshape\l_zchinr_article_abstract_tl
-    \end{abstract}
-    \hskip\columnsep
-    \begin{abstract}[\columnwidth]
-      \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
-      \l_zchinr_article_abstract_alt_tl
-    \end{abstract}
+    \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
+      \noindent\begin{abstract}
+        \itshape
+        \l_zchinr_article_abstract_tl
+      \end{abstract}
+    } {
+      \noindent\begin{abstract}[\columnwidth]
+        \itshape
+        \l_zchinr_article_abstract_tl
+      \end{abstract}
+      \hskip\columnsep
+      \begin{abstract}[\columnwidth]
+        \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
+        \l_zchinr_article_abstract_alt_tl
+      \end{abstract}
+    }
+    \par
+    \vskip 8mm
+    \zchinr_hfillrule:
+    \par
+    \vskip 8mm
   }
-  \par
-  \vskip 8mm
-  \zchinr_hfillrule:
-  \par
-  \vskip 8mm
 }
 
 \NewDocumentCommand { \printabstract } { } {
@@ -1372,7 +1462,7 @@
   }
 }
 
-\IfExplAtLeastTF { 2026-01-01 } { } {
+\IfExplAtLeastTF { 2025-06-01 } { } {
   \NewHook{build/column/before}
   \let\orig@makecol\@makecol
   \def\@makecol{
