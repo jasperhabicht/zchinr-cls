@@ -130,6 +130,7 @@
 \tl_new:N \l__zchinr_header_mark_odd_tl
 \tl_new:N \l__zchinr_header_mark_page_tl
 
+\tl_new:N \l__zchinr_documentation_header_tl
 \tl_new:N \l__zchinr_toc_entry_tl
 \bool_new:N \g__zchinr_missing_refs_bool
 
@@ -879,7 +880,7 @@
   \str_if_eq:nnT {#1} { l } { \raggedright }
   \str_if_eq:nnT {#1} { r } { \raggedleft }
   \str_if_eq:nnF {#2} { n } { \bfseries }
-  \arraybackslash #3
+  #3 \arraybackslash
   \rule[-10pt]{0pt}{0pt}
 }
 
