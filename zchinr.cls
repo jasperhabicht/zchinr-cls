@@ -992,7 +992,7 @@
 
 % Create subcontents environment.
 \NewDocumentEnvironment { subcontents } { } {
-  \list{}{\leftmargin=35mm \rightmargin=20mm}
+  \list{}{\leftmargin=27.5mm \rightmargin=27.5mm}
   \item\relax
 } {
   \endlist
