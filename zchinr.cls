@@ -992,7 +992,7 @@
 
 % Create subcontents environment.
 \NewDocumentEnvironment { subcontents } { } {
-  \list{}{\leftmargin=35mm \rightmargin=20mm}
+  \list{}{\leftmargin=27.5mm \rightmargin=27.5mm}
   \item\relax
 } {
   \endlist
@@ -1318,6 +1318,7 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_subcontents: {
+  \noindent
   \begin{subcontents}
     \printcontents[zchinrsub]{}{1}{}
   \end{subcontents}
@@ -1360,8 +1361,8 @@
         \noindent\begin{abstract}
           \itshape
           \l_zchinr_article_abstract_tl \linebreak
-          \vspace*{-1\baselineskip}
         \end{abstract}
+        \vspace*{-1\baselineskip}
         \clearpage
       }
       \AddToHookNext{zchinr/abstract/split}{
@@ -1390,14 +1391,13 @@
         \noindent\begin{abstract}[\columnwidth]
           \itshape
           \l_zchinr_article_abstract_tl \linebreak
-          \vspace*{-1\baselineskip}
         \end{abstract}
         \hskip\columnsep
         \begin{abstract}[\columnwidth]
           \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
           \l_zchinr_article_abstract_alt_tl \linebreak
-          \vspace*{-1\baselineskip}
         \end{abstract}
+        \vspace*{-1\baselineskip}
         \clearpage
       }
       \AddToHookNext{zchinr/abstract/split}{
