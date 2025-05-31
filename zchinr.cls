@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/05/18} {3.6} {Document class for ZChinR}
+  {2025/05/31} {3.7} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -117,6 +117,7 @@
 \seq_new:N \g__zchinr_article_abstract_split_seq
 \seq_new:N \g__zchinr_article_abstract_alt_split_seq
 
+\dim_new:N \l_zchinr_article_abstract_width_dim
 \dim_new:N \l_zchinr_title_distance_dim
 \clist_new:N \l__zchinr_page_style_enlarge_clist
 
@@ -983,6 +984,7 @@
 
 % Redefine abstract environment.
 \RenewDocumentEnvironment { abstract } { O{\textwidth} } {
+  \noindent
   \begin{minipage}[t]{#1}
   \setlength{\parindent}{15pt}
   \noindent
@@ -992,6 +994,7 @@
 
 % Create subcontents environment.
 \NewDocumentEnvironment { subcontents } { } {
+  \noindent
   \list{}{\leftmargin=27.5mm \rightmargin=27.5mm}
   \item\relax
 } {
@@ -1318,7 +1321,6 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_subcontents: {
-  \noindent
   \begin{subcontents}
     \printcontents[zchinrsub]{}{1}{}
   \end{subcontents}
@@ -1358,21 +1360,22 @@
         \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
       } {
         \__zchinr_article_abstract_title:
-        \noindent\begin{abstract}
+        \begin{abstract}
           \itshape
           \l_zchinr_article_abstract_tl \linebreak
         \end{abstract}
+        \par
         \vspace*{-1\baselineskip}
-        \clearpage
       }
       \AddToHookNext{zchinr/abstract/split}{
+        \clearpage
         \twocolumn[{
           \tl_if_empty:eT {
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
           } {
             \__zchinr_article_abstract_title:
           }
-          \noindent\begin{abstract}
+          \begin{abstract}
             \itshape
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
           \end{abstract}
@@ -1388,31 +1391,32 @@
         \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
       } {
         \__zchinr_article_abstract_title:
-        \noindent\begin{abstract}[\columnwidth]
+        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
           \itshape
           \l_zchinr_article_abstract_tl \linebreak
         \end{abstract}
         \hskip\columnsep
-        \begin{abstract}[\columnwidth]
+        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
           \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
           \l_zchinr_article_abstract_alt_tl \linebreak
         \end{abstract}
+        \par
         \vspace*{-1\baselineskip}
-        \clearpage
       }
       \AddToHookNext{zchinr/abstract/split}{
+        \clearpage
         \twocolumn[{
           \tl_if_empty:eT {
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
           } {
             \__zchinr_article_abstract_title:
           }
-          \noindent\begin{abstract}[\columnwidth]
+          \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
             \itshape
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
           \end{abstract}
           \hskip\columnsep
-          \begin{abstract}[\columnwidth]
+          \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
             \itshape
             \tl_if_empty:eT {
               \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
@@ -1432,17 +1436,17 @@
   } {
     \__zchinr_article_abstract_title:
     \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
-      \noindent\begin{abstract}
+      \begin{abstract}
         \itshape
         \l_zchinr_article_abstract_tl
       \end{abstract}
     } {
-      \noindent\begin{abstract}[\columnwidth]
+      \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
         \itshape
         \l_zchinr_article_abstract_tl
       \end{abstract}
       \hskip\columnsep
-      \begin{abstract}[\columnwidth]
+      \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
         \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
         \l_zchinr_article_abstract_alt_tl
       \end{abstract}
@@ -1501,6 +1505,23 @@
 
 \cs_new_protected:Npn \__zchinr_article_title_block: {
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
+    \dim_set:Nn \l_zchinr_article_abstract_width_dim {
+      ( \textwidth - \columnsep ) / 2
+    }
+  } {
+    \dim_set:Nn \l_zchinr_article_abstract_width_dim {
+      \textwidth
+    }
+  }
+  \bool_lazy_and:nnTF {
+    \bool_if_p:n { \l_zchinr_article_twocolumn_bool }
+  } {
+    \bool_not_p:n {
+      \tl_if_empty_p:e {
+        \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
+      }
+    }
+  } {
     \twocolumn[
       \__zchinr_article_title:
     ]
