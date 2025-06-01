@@ -112,7 +112,7 @@
 \str_new:N \l_zchinr_article_page_style_str
 \bool_new:N \l_zchinr_article_twocolumn_bool
 \bool_new:N \l_zchinr_article_small_title_bool
-\bool_new:N \l_zchinr_article_abstract_split_bool
+\bool_new:N \l_zchinr_article_title_split_bool
 \clist_new:N \l_zchinr_article_title_style_clist
 \seq_new:N \g__zchinr_article_abstract_split_seq
 \seq_new:N \g__zchinr_article_abstract_alt_split_seq
@@ -120,6 +120,9 @@
 \dim_new:N \l_zchinr_article_abstract_width_dim
 \dim_new:N \l_zchinr_title_distance_dim
 \clist_new:N \l__zchinr_page_style_enlarge_clist
+
+\box_new:N \l_zchinr_article_abstract_i_box
+\box_new:N \l_zchinr_article_abstract_ii_box
 
 \tl_new:N \l_zchinr_local_zchinr_tl
 \tl_new:N \l_zchinr_local_abstract_tl
@@ -241,17 +244,17 @@
   article / abstract       .initial:n   = { } ,
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
   article / abstract ~ alt .initial:n   = { } ,
-  article / abstract ~ split
-                           .bool_set:N   = \l_zchinr_article_abstract_split_bool ,
-  article / abstract ~ split
-                           .default:n   = { true } ,
-  article / abstract ~ split
-                           .initial:n   = { false } ,
   article / category       .tl_set:N    = \l_zchinr_article_category_tl ,
   article / category       .initial:n   = { Aufsätze } ,
   article / two ~ columns  .bool_set:N  = \l_zchinr_article_twocolumn_bool ,
   article / two ~ columns  .default:n   = { true } ,
   article / two ~ columns  .initial:n   = { false } ,
+  article / title ~ split
+                           .bool_set:N   = \l_zchinr_article_title_split_bool ,
+  article / title ~ split
+                           .default:n   = { true } ,
+  article / title ~ split
+                           .initial:n   = { false } ,
   article / small ~ title  .bool_set:N  = \l_zchinr_article_small_title_bool ,
   article / small ~ title  .default:n   = { true } ,
   article / small ~ title  .initial:n   = { false } ,
@@ -294,8 +297,8 @@
       title ~ toc = { \l_zchinr_article_title_tl } ,
       abstract = { } ,
       abstract ~ alt = { } ,
-      abstract ~ split = { false } ,
       two ~ columns = { false } ,
+      title ~ split = { false } ,
       small ~ title = { false } ,
       title ~ style = { title } ,
       header ~ style = { author ~ title } ,
@@ -1339,10 +1342,12 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_abstract: {
+  \box_clear:N \l_zchinr_article_abstract_i_box
+  \box_clear:N \l_zchinr_article_abstract_ii_box
   \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
-    \bool_set_true:N \l_zchinr_article_abstract_split_bool
+    \bool_set_true:N \l_zchinr_article_title_split_bool
   }
-  \bool_if:NT \l_zchinr_article_abstract_split_bool {
+  \bool_if:NT \l_zchinr_article_title_split_bool {
     \seq_gset_split:Nno \g__zchinr_article_abstract_split_seq
       { \zchinrsplit } { \l_zchinr_article_abstract_tl }
     \tl_set:No \l_zchinr_article_abstract_tl {
@@ -1354,24 +1359,26 @@
       \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 1 }
     }
   }
-  \bool_if:NTF \l_zchinr_article_abstract_split_bool {
-    \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
+  \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
+    \bool_if:NTF \l_zchinr_article_title_split_bool {
       \tl_if_empty:eF {
         \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
       } {
-        \__zchinr_article_abstract_title:
-        \begin{abstract}
-          \itshape
-          \l_zchinr_article_abstract_tl \linebreak
-        \end{abstract}
-        \par
-        \vspace*{-1\baselineskip}
+        \vbox_set:Nn \l_zchinr_article_abstract_i_box {
+          \__zchinr_article_abstract_title:
+          \begin{abstract}
+            \itshape
+            \l_zchinr_article_abstract_tl \linebreak
+          \end{abstract}
+          \vspace*{-1\baselineskip}
+        }
       }
-      \AddToHookNext{zchinr/abstract/split}{
-        \clearpage
-        \twocolumn[{
+      \tl_if_empty:eF {
+        \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
+      } {
+        \vbox_set:Nn \l_zchinr_article_abstract_ii_box {
           \tl_if_empty:eT {
-            \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
+            \l_zchinr_article_abstract_tl
           } {
             \__zchinr_article_abstract_title:
           }
@@ -1379,33 +1386,50 @@
             \itshape
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
           \end{abstract}
-          \par
-          \vskip 8mm
+          \vskip 6mm
+          \noindent
           \zchinr_hfillrule:
           \par
           \vskip 8mm
-        }]
+        }
       }
     } {
+      \vbox_set:Nn \l_zchinr_article_abstract_i_box {
+        \__zchinr_article_abstract_title:
+        \begin{abstract}
+          \itshape
+          \l_zchinr_article_abstract_tl
+        \end{abstract}
+        \vskip 6mm
+        \noindent
+        \zchinr_hfillrule:
+        \par
+        \vskip 8mm
+      }
+    }
+  } {
+    \bool_if:NTF \l_zchinr_article_title_split_bool {
       \tl_if_empty:eF {
         \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
       } {
-        \__zchinr_article_abstract_title:
-        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
-          \itshape
-          \l_zchinr_article_abstract_tl \linebreak
-        \end{abstract}
-        \hskip\columnsep
-        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
-          \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
-          \l_zchinr_article_abstract_alt_tl \linebreak
-        \end{abstract}
-        \par
-        \vspace*{-1\baselineskip}
+        \vbox_set:Nn \l_zchinr_article_abstract_i_box {
+          \__zchinr_article_abstract_title:
+          \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
+            \itshape
+            \l_zchinr_article_abstract_tl \linebreak
+          \end{abstract}
+          \hskip\columnsep
+          \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
+            \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
+            \l_zchinr_article_abstract_alt_tl \linebreak
+          \end{abstract}
+          \vspace*{-1\baselineskip}
+        }
       }
-      \AddToHookNext{zchinr/abstract/split}{
-        \clearpage
-        \twocolumn[{
+      \tl_if_empty:eF {
+        \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
+      } {
+        \vbox_set:Nn \l_zchinr_article_abstract_ii_box {
           \tl_if_empty:eT {
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
           } {
@@ -1425,37 +1449,57 @@
             }
             \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 2 }
           \end{abstract}
-          \par
-          \vskip 8mm
+          \vskip 6mm
+          \noindent
           \zchinr_hfillrule:
           \par
           \vskip 8mm
-        }]
+        }
+      }
+    } {
+      \vbox_set:Nn \l_zchinr_article_abstract_i_box {
+        \__zchinr_article_abstract_title:
+        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
+          \itshape
+          \l_zchinr_article_abstract_tl
+        \end{abstract}
+        \hskip\columnsep
+        \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
+          \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
+          \l_zchinr_article_abstract_alt_tl
+        \end{abstract}
+        \vskip 6mm
+        \noindent
+        \zchinr_hfillrule:
+        \par
+        \vskip 8mm
       }
     }
-  } {
-    \__zchinr_article_abstract_title:
-    \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
-      \begin{abstract}
-        \itshape
-        \l_zchinr_article_abstract_tl
-      \end{abstract}
+  }
+  \bool_if:NTF \l_zchinr_article_twocolumn_bool {
+    \bool_if:NTF \l_zchinr_article_title_split_bool {
+      \box_use:N \l_zchinr_article_abstract_i_box
+      \AddToHookNext{zchinr/abstract/split}{
+        \clearpage
+        \twocolumn[{
+          \box_use:N \l_zchinr_article_abstract_ii_box
+        }]
+      }
     } {
-      \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
-        \itshape
-        \l_zchinr_article_abstract_tl
-      \end{abstract}
-      \hskip\columnsep
-      \begin{abstract}[ \l_zchinr_article_abstract_width_dim ]
-        \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
-        \l_zchinr_article_abstract_alt_tl
-      \end{abstract}
+      \twocolumn[{
+        \box_use:N \l_zchinr_article_abstract_i_box
+      }]
     }
-    \par
-    \vskip 8mm
-    \zchinr_hfillrule:
-    \par
-    \vskip 8mm
+  } {
+    \bool_if:NTF \l_zchinr_article_title_split_bool {
+      \box_use:N \l_zchinr_article_abstract_i_box
+      \AddToHookNext{zchinr/abstract/split}{
+        \clearpage
+        \box_use:N \l_zchinr_article_abstract_ii_box
+      }
+    } {
+      \box_use:N \l_zchinr_article_abstract_i_box
+    }
   }
 }
 
