@@ -1484,11 +1484,13 @@
         \twocolumn[{
           \box_use:N \l_zchinr_article_abstract_ii_box
         }]
+        \sloppy\flushbottom
       }
     } {
       \twocolumn[{
         \box_use:N \l_zchinr_article_abstract_i_box
       }]
+      \sloppy\flushbottom
     }
   } {
     \bool_if:NTF \l_zchinr_article_title_split_bool {
