@@ -567,6 +567,7 @@
   }
 }
 
+\RequirePackage[bottom]{footmisc}
 \RequirePackage{array}
 \RequirePackage{longtable}
 \RequirePackage{booktabs}
@@ -580,7 +581,7 @@
 \doublehyphendemerits=5000000
 
 \setlength{\parindent}{15pt}
-\setlength{\parskip}{2pt plus 1pt minus 1pt}
+\setlength{\parskip}{2pt plus 2pt minus 1pt}
 
 \setlength{\arrayrulewidth}{.75pt}
 
@@ -779,14 +780,14 @@
 \titleformat{\section}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
 \titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
 \titleformat{\subsubsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
-\titlespacing*{\section}{0pt}{5pt plus 2pt}{5pt}
-\titlespacing*{\subsection}{0pt}{5pt plus 2pt}{5pt}
-\titlespacing*{\subsubsection}{0pt}{5pt plus 2pt}{5pt}
+\titlespacing*{\section}{0pt}{5pt plus 10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{5pt plus 10pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 10pt}{5pt}
 
 \titleformat{\paragraph}[runin]{\bfseries}{}{2em}{\noindent}
 \titleformat{\subparagraph}[runin]{\bfseries}{}{2em}{\noindent}
-\titlespacing*{\paragraph}{0pt}{5pt plus 2pt}{1em plus 5pt minus 10pt}
-\titlespacing*{\subparagraph}{0pt}{5pt plus 2pt}{1em plus 5pt minus 10pt}
+\titlespacing*{\paragraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
+\titlespacing*{\subparagraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
 
 \titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}
 \titlecontents{chapter}[15pt]{\vskip 5pt\contentsmargin{5em}}{}{}{
@@ -814,7 +815,8 @@
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
 \tl_set:Nn \footnoterule {}
-\setlength{\skip\footins}{15pt plus 25pt minus 5pt}
+\setlength{\skip\footins}{15pt plus 15pt minus 5pt}
+\FN@fixskiptrue
 
 % Style URLs.
 \urlstyle{same}
@@ -921,7 +923,7 @@
     \phantomsection
     \addcontentsline{toc}{chapter}{\IfNoValueTF{#2}{#1}{#2}}
   }
-  \vskip 10pt plus 5pt minus 2.5pt
+  \vskip 10pt plus 5pt minus 2.5pt\relax
   \noindent{\Large #2}\par
 }
 
@@ -1275,7 +1277,7 @@
     \LARGE\scshape\bfseries \text_lowercase:n { \l_zchinr_article_category_tl }
     \zchinr_halfquad: \zchinr_hfillrule: \par
   }
-  \vskip 7mm
+  \vskip 7mm\relax
 }
 
 \cs_new_protected:Npn \__zchinr_article_title_large: {
@@ -1299,7 +1301,8 @@
   \tl_if_empty:NF \l_zchinr_article_label_tl {
     \label { chapter: \l_zchinr_article_label_tl }
   }
-  \vskip 4mm\bigskip
+  \vskip 4mm\relax
+  \bigskip
 }
 
 \cs_new_protected:Npn \__zchinr_article_title_small: {
@@ -1328,7 +1331,7 @@
     \printcontents[zchinrsub]{}{1}{}
   \end{subcontents}
   \par
-  \vskip 12mm
+  \vskip 12mm\relax
 }
 
 \NewDocumentCommand { \zchinrsplit } { } { \relax }
@@ -1338,7 +1341,7 @@
 \cs_new_protected:Npn \__zchinr_article_abstract_title: {
   \noindent
   {\fontsize{11}{13}\selectfont\itshape\bfseries\l_zchinr_local_abstract_tl\par}
-  \vskip 10pt plus 5pt minus 2.5pt
+  \vskip 5pt plus 5pt\relax
 }
 
 \cs_new_protected:Npn \__zchinr_article_abstract: {
@@ -1385,11 +1388,11 @@
             \itshape
             \seq_item:Nn \g__zchinr_article_abstract_split_seq { 2 }
           \end{abstract}
-          \vskip 6mm
+          \vskip 6mm\relax
           \noindent
           \zchinr_hfillrule:
           \par
-          \vskip 8mm
+          \vskip 8mm minus 5pt\relax
         }
       }
     } {
@@ -1399,11 +1402,11 @@
           \itshape
           \l_zchinr_article_abstract_tl
         \end{abstract}
-        \vskip 6mm
+        \vskip 6mm\relax
         \noindent
         \zchinr_hfillrule:
         \par
-        \vskip 8mm
+        \vskip 8mm minus 5pt\relax
       }
     }
   } {
@@ -1448,11 +1451,11 @@
             }
             \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 2 }
           \end{abstract}
-          \vskip 6mm
+          \vskip 6mm\relax
           \noindent
           \zchinr_hfillrule:
           \par
-          \vskip 8mm
+          \vskip 8mm minus 5pt\relax
         }
       }
     } {
@@ -1467,11 +1470,11 @@
           \itshape{\bfseries\l_zchinr_article_title_alt_tl} ~ --- ~
           \l_zchinr_article_abstract_alt_tl
         \end{abstract}
-        \vskip 6mm
+        \vskip 6mm\relax
         \noindent
         \zchinr_hfillrule:
         \par
-        \vskip 8mm
+        \vskip 8mm minus 5pt\relax
       }
     }
   }
