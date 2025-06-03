@@ -814,7 +814,7 @@
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
 \tl_set:Nn \footnoterule {}
-\setlength{\skip\footins}{15pt plus 10pt minus 10pt}
+\setlength{\skip\footins}{15pt plus 25pt minus 5pt}
 
 % Style URLs.
 \urlstyle{same}
