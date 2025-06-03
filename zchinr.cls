@@ -1344,9 +1344,6 @@
 \cs_new_protected:Npn \__zchinr_article_abstract: {
   \box_clear:N \l_zchinr_article_abstract_i_box
   \box_clear:N \l_zchinr_article_abstract_ii_box
-  \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
-    \bool_set_true:N \l_zchinr_article_title_split_bool
-  }
   \bool_if:NT \l_zchinr_article_title_split_bool {
     \seq_gset_split:Nno \g__zchinr_article_abstract_split_seq
       { \zchinrsplit } { \l_zchinr_article_abstract_tl }
@@ -1550,6 +1547,9 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_title_block: {
+  \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
+    \bool_set_true:N \l_zchinr_article_title_split_bool
+  }
   \bool_if:NTF \l_zchinr_article_twocolumn_bool {
     \dim_set:Nn \l_zchinr_article_abstract_width_dim {
       ( \textwidth - \columnsep ) / 2
@@ -1560,12 +1560,10 @@
     }
   }
   \bool_lazy_and:nnTF {
-    \bool_if_p:n { \l_zchinr_article_twocolumn_bool }
+    \bool_if_p:N \l_zchinr_article_twocolumn_bool
   } {
-    \bool_not_p:n {
-      \tl_if_empty_p:e {
-        \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
-      }
+    \bool_if_p:n {
+      \bool_not:n { \l_zchinr_article_title_split_bool }
     }
   } {
     \twocolumn[
