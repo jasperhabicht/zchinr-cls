@@ -1350,10 +1350,12 @@
     \tl_set:No \l_zchinr_article_abstract_tl {
       \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
     }
-    \seq_gset_split:Nno \g__zchinr_article_abstract_alt_split_seq
-      { \zchinrsplit } { \l_zchinr_article_abstract_alt_tl }
-    \tl_set:No \l_zchinr_article_abstract_alt_tl {
-      \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 1 }
+    \tl_if_empty:NF \l_zchinr_article_abstract_alt_tl {
+      \seq_gset_split:Nno \g__zchinr_article_abstract_alt_split_seq
+        { \zchinrsplit } { \l_zchinr_article_abstract_alt_tl }
+      \tl_set:No \l_zchinr_article_abstract_alt_tl {
+        \seq_item:Nn \g__zchinr_article_abstract_alt_split_seq { 1 }
+      }
     }
   }
   \tl_if_empty:NTF \l_zchinr_article_abstract_alt_tl {
@@ -1550,20 +1552,14 @@
   \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
     \bool_set_true:N \l_zchinr_article_title_split_bool
   }
-  \bool_if:NTF \l_zchinr_article_twocolumn_bool {
-    \dim_set:Nn \l_zchinr_article_abstract_width_dim {
-      ( \textwidth - \columnsep ) / 2
-    }
-  } {
-    \dim_set:Nn \l_zchinr_article_abstract_width_dim {
-      \textwidth
-    }
+  \dim_set:Nn \l_zchinr_article_abstract_width_dim {
+    ( \textwidth - \columnsep ) / 2
   }
   \bool_lazy_and:nnTF {
     \bool_if_p:N \l_zchinr_article_twocolumn_bool
   } {
     \bool_if_p:n {
-      \bool_not:n { \l_zchinr_article_title_split_bool }
+      \bool_not_p:n { \l_zchinr_article_title_split_bool }
     }
   } {
     \twocolumn[
