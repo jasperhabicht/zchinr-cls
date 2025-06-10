@@ -83,7 +83,8 @@ def process_structure(file_name):
     print(f'{count['italic']} italic found.')
     print(f'{count['section']} section found.')
     print(f'{count['list']} list found.')
-    return result
+    result_dict = { 'result': result, 'documentation': count['documentation'] > 0 }
+    return result_dict
 
 def select_level(level):
     '''Select hierarchy level of p nodes.'''
@@ -243,11 +244,12 @@ def reduce_textbf(string):
 
 if __name__ == '__main__':
     file_in = 'input.docx'
-    if len(sys.argv) > 1:
+    if sys.argv[1:]:
         file_in = sys.argv[1]
 
     # process file data
-    file_data = process_structure(file_in)
+    file_return = process_structure(file_in)
+    file_data = file_return.get('result')
 
     # escape ampersand, less than, greater than, number sigh, dollar and percent
     file_data = re.sub(r'&amp;', '&', file_data)
@@ -328,9 +330,16 @@ if __name__ == '__main__':
     # footnote references
     # currently not supported
 
+    # format documentation
+    if file_return.get('documentation'):
+        print('Format documentation.')
+        file_data = re.sub(r'^\\textbf\{(.*?)\}', r'\1', file_data, flags=re.M)
+        file_data = re.sub(r'^\\zhs\{\u7b2c(.*)\u6761[\u3000\s]', r'\\zhs{\\textbf' + '{\u7b2c' + r'\1' + '\u6761}\u3000', file_data, flags=re.M)
+        file_data = re.sub(r'^§~(\d+)\s\[(.*?)\]\s', r'\\textbf{§~\1 [\2]} ', file_data, flags=re.M)
+
     # write file
     file_out = 'output.tex'
-    if len(sys.argv) > 2:
+    if sys.argv[2:]:
         file_out = sys.argv[2]
     with open(file_out, 'w', encoding='utf-8') as file:
         file.write(file_data)
