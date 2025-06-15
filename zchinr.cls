@@ -396,11 +396,23 @@
 ]{geometry}
 \setlength{\columnsep}{7.5mm}
 
+\cs_if_exist:NF \draw_set_linewidth:n {
+  \cs_set_eq:NN \draw_set_linewidth:n \draw_linewidth:n
+}
+
+\cs_if_exist:NF \draw_set_baseline:n {
+  \cs_set_eq:NN \draw_set_baseline:n \draw_baseline:n
+}
+
+\cs_if_exist:NF \draw_set_evenodd_rule: {
+  \cs_set_eq:NN \draw_set_evenodd_rule: \draw_evenodd_rule:
+}
+
 \RequirePackage{l3draw}
 \cs_new_protected:Npn \zchinr_cropmark_nw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
-    \draw_linewidth:n { .25pt }
+    \draw_set_linewidth:n { .25pt }
     \draw_transform_shift:n { 10mm , -10mm }
     \draw_path_moveto:n { -5pt , 0pt }
     \draw_path_lineto:n { -20pt , 0pt }
@@ -1662,9 +1674,9 @@
 
 \NewDocumentCommand { \oasymbol } { } {
   \draw_begin:
-    \draw_baseline:n { -.175em }
+    \draw_set_baseline:n { -.175em }
     \draw_scope_begin:
-      \draw_evenodd_rule:
+      \draw_set_evenodd_rule:
       \draw_path_circle:nn { 0 , 0 } { 1 }
       \draw_path_use_clear:n { fill }
       \draw_path_circle:nn { 0 , 0 } { 3 }
@@ -1685,9 +1697,9 @@
 \NewDocumentCommand { \ccsymbol } { O{1} } {
   \draw_begin:
     \draw_transform_scale:n { 0.1 * #1 }
-    \draw_baseline:n { -.375em }
+    \draw_set_baseline:n { -.375em }
     \draw_scope_begin:
-      \draw_evenodd_rule:
+      \draw_set_evenodd_rule:
       \draw_path_circle:nn { 0 , 0 } { 50 }
       \draw_path_circle:nn { 0 , 0 } { 40 }
       \draw_path_use_clear:n { fill }
@@ -1716,9 +1728,9 @@
 \NewDocumentCommand { \ccbysymbol } { O{1} } {
   \draw_begin:
     \draw_transform_scale:n { 0.1 * #1 }
-    \draw_baseline:n { -.375em }
+    \draw_set_baseline:n { -.375em }
     \draw_scope_begin:
-      \draw_evenodd_rule:
+      \draw_set_evenodd_rule:
       \draw_path_circle:nn { 0 , 0 } { 50 }
       \draw_path_circle:nn { 0 , 0 } { 40 }
       \draw_path_use:n { fill }

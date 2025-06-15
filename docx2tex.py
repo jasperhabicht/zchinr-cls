@@ -180,7 +180,7 @@ def process_p_nodes(data, count, ignore_footnotes = False):
                     append_before_r += '\\emph{'
                     append_after_r += '}'
                     count['italic'] += 1
-        # process w:t nodes
+            # process w:t nodes
             if ignore_footnotes:
                 texts = re.findall(r'(<w:t(\s[^>]+)?>(.*?)<\/w:t>)', r[0])
             else:

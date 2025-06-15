@@ -12,10 +12,13 @@
 % This work has the LPPL maintenance status `maintained'.
 % 
 \ExplSyntaxOn
+\cs_if_exist:NF \draw_set_evenodd_rule: {
+  \cs_set_eq:NN \draw_set_evenodd_rule: \draw_evenodd_rule:
+}
 \draw_scope_begin:
   \draw_transform_scale:n { .08 }
   \draw_transform_shift:n { -623.3400,-633.3520 }
-  \draw_evenodd_rule:
+  \draw_set_evenodd_rule:
   \draw_path_moveto:n { 1246.6800,633.3520 }
   \draw_path_curveto:nnn { 1246.6800,289.0900 } { 967.5780,9.9883 } { 623.3200,9.9883 } 
   \draw_path_curveto:nnn { 279.0590,9.9883 } { 0.0000,289.0900 } { 0.0000,633.3520 } 
