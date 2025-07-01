@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/05/31} {3.7} {Document class for ZChinR}
+  {2025/07/01} {3.8} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -1246,11 +1246,11 @@
   }
   \hook_use:n { zchinr / titleblock / before }
   \__zchinr_article_title_block:
-  \hook_use:n { zchinr / abstract / split }
   \tl_if_empty:NF \l_zchinr_article_author_note_tl {
     \footnotetext{\l_zchinr_article_author_note_tl}
     \addtocounter{footnote}{-1}
   }
+  \hook_use:n { zchinr / abstract / split }
   \tl_set:Nn \thefootnote { \arabic{footnote} }
   \tl_set:Nn \l__zchinr_fnmark_tl {
     \@thefnmark
