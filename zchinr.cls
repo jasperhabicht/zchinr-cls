@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/07/01} {3.8} {Document class for ZChinR}
+  {2025/07/07} {3.9} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -396,6 +396,8 @@
 ]{geometry}
 \setlength{\columnsep}{7.5mm}
 
+\RequirePackage{l3draw}
+
 \cs_if_exist:NF \draw_set_linewidth:n {
   \cs_set_eq:NN \draw_set_linewidth:n \draw_linewidth:n
 }
@@ -408,7 +410,6 @@
   \cs_set_eq:NN \draw_set_evenodd_rule: \draw_evenodd_rule:
 }
 
-\RequirePackage{l3draw}
 \cs_new_protected:Npn \zchinr_cropmark_nw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
@@ -592,8 +593,11 @@
 \widowpenalty=10000
 \doublehyphendemerits=5000000
 
+\raggedbottom
+\addtolength{\topskip}{0pt plus 10pt}
+
 \setlength{\parindent}{15pt}
-\setlength{\parskip}{2pt plus 2pt minus 1pt}
+\setlength{\parskip}{2pt plus 8pt minus 1pt}
 
 \setlength{\arrayrulewidth}{.75pt}
 
@@ -792,14 +796,14 @@
 \titleformat{\section}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
 \titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
 \titleformat{\subsubsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
-\titlespacing*{\section}{0pt}{5pt plus 10pt}{5pt}
-\titlespacing*{\subsection}{0pt}{5pt plus 10pt}{5pt}
-\titlespacing*{\subsubsection}{0pt}{5pt plus 10pt}{5pt}
+\titlespacing*{\section}{0pt}{5pt plus 15pt}{5pt}
+\titlespacing*{\subsection}{0pt}{5pt plus 15pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 15pt}{5pt}
 
 \titleformat{\paragraph}[runin]{\bfseries}{}{2em}{\noindent}
 \titleformat{\subparagraph}[runin]{\bfseries}{}{2em}{\noindent}
-\titlespacing*{\paragraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
-\titlespacing*{\subparagraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
+\titlespacing*{\paragraph}{0pt}{5pt plus 15pt}{1em plus 5pt minus 10pt}
+\titlespacing*{\subparagraph}{0pt}{5pt plus 15pt}{1em plus 5pt minus 10pt}
 
 \titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}
 \titlecontents{chapter}[15pt]{\vskip 5pt\contentsmargin{5em}}{}{}{
