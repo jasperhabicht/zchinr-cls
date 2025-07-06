@@ -793,17 +793,17 @@
 \newcounter{zchinrchapterindex}
 
 % Style section titles.
-\titleformat{\section}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
-\titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
-\titleformat{\subsubsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{}
-\titlespacing*{\section}{0pt}{5pt plus 15pt}{5pt}
-\titlespacing*{\subsection}{0pt}{5pt plus 15pt}{5pt}
-\titlespacing*{\subsubsection}{0pt}{5pt plus 15pt}{5pt}
+\titleformat{\section}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{\vspace{0pt plus 15pt}}
+\titleformat{\subsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{\vspace{0pt plus 15pt}}
+\titleformat{\subsubsection}{\fontsize{11}{13}\selectfont\bfseries}{}{0pt}{\vspace{0pt plus 15pt}}
+\titlespacing*{\section}{0pt}{5pt plus 10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{5pt plus 10pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 10pt}{5pt}
 
-\titleformat{\paragraph}[runin]{\bfseries}{}{2em}{\noindent}
-\titleformat{\subparagraph}[runin]{\bfseries}{}{2em}{\noindent}
-\titlespacing*{\paragraph}{0pt}{5pt plus 15pt}{1em plus 5pt minus 10pt}
-\titlespacing*{\subparagraph}{0pt}{5pt plus 15pt}{1em plus 5pt minus 10pt}
+\titleformat{\paragraph}[runin]{\bfseries}{}{2em}{\vspace{0pt plus 15pt}\noindent}
+\titleformat{\subparagraph}[runin]{\bfseries}{}{2em}{\vspace{0pt plus 15pt}\noindent}
+\titlespacing*{\paragraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
+\titlespacing*{\subparagraph}{0pt}{5pt plus 10pt}{1em plus 5pt minus 10pt}
 
 \titlecontents{part}[0pt]{\bigskip\Large\scshape\bfseries}{}{}{}
 \titlecontents{chapter}[15pt]{\vskip 5pt\contentsmargin{5em}}{}{}{
@@ -831,6 +831,7 @@
   \parbox[t]{\dimexpr\columnwidth-2em}{#1}
 }
 \tl_set:Nn \footnoterule {}
+\skip\footins 1em plus 5em minus 5pt
 
 % Style URLs.
 \urlstyle{same}
