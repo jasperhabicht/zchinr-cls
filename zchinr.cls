@@ -143,6 +143,7 @@
 \tl_new:N \l__zchinr_fnmark_tl
 
 \dim_new:N \l__zchinr_tabindent_dim
+\dim_set:Nn \l__zchinr_tabindent_dim { \parindent }
 
 \tl_new:N \l_zchinr_tmpa_tl
 \tl_new:N \l_zchinr_tmpb_tl
@@ -907,12 +908,13 @@
   \hskip\dimexpr -2\l__zchinr_tabindent_dim \relax #2
 }
 
-\NewDocumentCommand { \documentationbreakline } { } {
+\NewDocumentCommand { \zchinrbreakline } { } {
   \unskip\parfillskip 0pt\relax
 }
 
-\NewDocumentCommand { \documentationcontinueline } { } {
+\NewDocumentCommand { \zchinrcontinueline } { } {
   \hskip\dimexpr -1\l__zchinr_tabindent_dim \relax
+  \parfillskip 0pt plus 1fil\relax
 }
 
 % Create addresses environment.
