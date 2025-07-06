@@ -593,9 +593,6 @@
 \widowpenalty=10000
 \doublehyphendemerits=5000000
 
-\raggedbottom
-\addtolength{\topskip}{0pt plus 10pt}
-
 \setlength{\parindent}{15pt}
 \setlength{\parskip}{2pt plus 8pt minus 1pt}
 
