@@ -299,12 +299,12 @@ if __name__ == '__main__':
 
     # process typography
     file_data = re.sub(r'\u00a0', '~', file_data)
-    file_data = re.sub(r'\u201c\u2018', '``{}`', file_data)
-    file_data = re.sub(r'\u2018\u201c', '`{}``', file_data)
-    file_data = re.sub(r'\u201d\u2019', "''{}'", file_data)
-    file_data = re.sub(r'\u2019\u201d', "'{}''", file_data)
-    file_data = re.sub(r'\u201e\u201a', ',,{},', file_data)
-    file_data = re.sub(r'\u201a\u201e', ',{},,', file_data)
+    file_data = re.sub(r'\u201c\u2018', '``{\kern0pt}`', file_data)
+    file_data = re.sub(r'\u2018\u201c', '`{\kern0pt}``', file_data)
+    file_data = re.sub(r'\u201d\u2019', "''{\kern0pt}'", file_data)
+    file_data = re.sub(r'\u2019\u201d', "'{\kern0pt}''", file_data)
+    file_data = re.sub(r'\u201e\u201a', ',,{\kern0pt},', file_data)
+    file_data = re.sub(r'\u201a\u201e', ',{\kern0pt},,', file_data)
     file_data = re.sub(r'\u201c', '``', file_data)
     file_data = re.sub(r'\u201d', "''", file_data)
     file_data = re.sub(r'\u201e', ',,', file_data)
