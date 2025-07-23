@@ -426,7 +426,7 @@
 \cs_new_protected:Npn \zchinr_cropmark_ne: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
-    \draw_linewidth:n { .25pt }
+    \draw_set_linewidth:n { .25pt }
     \draw_transform_shift:n { \paperwidth - 10mm , -10mm }
     \draw_path_moveto:n { 5pt , 0pt }
     \draw_path_lineto:n { 20pt , 0pt }
@@ -438,7 +438,7 @@
 \cs_new_protected:Npn \zchinr_cropmark_sw: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
-    \draw_linewidth:n { .25pt }
+    \draw_set_linewidth:n { .25pt }
     \draw_transform_shift:n { 10mm , 10mm - \paperheight }
     \draw_path_moveto:n { -5pt , 0pt }
     \draw_path_lineto:n { -20pt , 0pt }
@@ -450,7 +450,7 @@
 \cs_new_protected:Npn \zchinr_cropmark_se: {
   \draw_begin:
     \bool_set_false:N \l_draw_bb_update_bool
-    \draw_linewidth:n { .25pt }
+    \draw_set_linewidth:n { .25pt }
     \draw_transform_shift:n { \paperwidth - 10mm , 10mm - \paperheight }
     \draw_path_moveto:n { 5pt , 0pt }
     \draw_path_lineto:n { 20pt , 0pt }
