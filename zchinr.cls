@@ -1367,7 +1367,7 @@
   \box_clear:N \l_zchinr_article_abstract_ii_box
   \bool_if:NT \l_zchinr_article_title_split_bool {
     \seq_gset_split:Nno \g__zchinr_article_abstract_split_seq
-      { \zchinrsplit } { \l_zchinr_article_abstract_tl }
+      { \zchinrsplit } { \l_zchinr_article_abstract_tl \null }
     \tl_set:No \l_zchinr_article_abstract_tl {
       \seq_item:Nn \g__zchinr_article_abstract_split_seq { 1 }
     }
@@ -1570,8 +1570,10 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_title_block: {
-  \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
+  \tl_if_in:NnTF \l_zchinr_article_abstract_tl { \zchinrsplit } {
     \bool_set_true:N \l_zchinr_article_title_split_bool
+  } {
+    \bool_set_false:N \l_zchinr_article_title_split_bool
   }
   \dim_set:Nn \l_zchinr_article_abstract_width_dim {
     ( \textwidth - \columnsep ) / 2
