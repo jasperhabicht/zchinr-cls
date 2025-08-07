@@ -919,6 +919,12 @@
   \parfillskip 0pt plus 1fil\relax
 }
 
+\NewDocumentCommand { \zchinrbreakpage } { } {
+  \zchinrbreakline
+  \pagebreak
+  \zchinrcontinueline
+}
+
 % Create addresses environment.
 \NewDocumentEnvironment { addresses } { } {
   \tl_set:Nn \arraystretch { 1.75 }
