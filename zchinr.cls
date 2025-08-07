@@ -28,6 +28,8 @@
 \ProcessKeyOptions [ zchinr / global ]
 \LoadClass [ a4paper , twoside , 10pt ] { report }
 
+\AssignSocketPlug{build/column/outputbox}{floats-space-footnotes}
+
 \msg_new:nnn { zchinr } { no-color-profile } {
   \msg_warning_text:n { zchinr } \iow_newline:
   Color ~ profile ~ not ~ defined ~ in ~ preamble.
