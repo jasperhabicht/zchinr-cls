@@ -825,9 +825,10 @@
   \@thefnmark
 }
 \cs_set:Npn \@makefntext #1 {
-  \hbox{}
-  \parbox[t]{2em}{ \l__zchinr_fnmark_tl }
-  \parbox[t]{\dimexpr\columnwidth-2em}{#1}
+	\dim_set:Nn \leftskip { 2em }
+	\skip_horizontal:n { -2em }
+	\hbox_to_wd:nn { 2em } { \l__zchinr_fnmark_tl }
+	#1
 }
 \tl_set:Nn \footnoterule {}
 \skip\footins 10pt plus 15pt minus 5pt
