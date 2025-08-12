@@ -583,7 +583,6 @@
   }
 }
 
-\RequirePackage[bottom]{footmisc}
 \RequirePackage{array}
 \RequirePackage{longtable}
 \RequirePackage{booktabs}
