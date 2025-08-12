@@ -832,6 +832,7 @@
 }
 \tl_set:Nn \footnoterule {}
 \skip\footins 10pt plus 15pt minus 5pt
+\interfootnotelinepenalty=1000
 
 % Style URLs.
 \urlstyle{same}
