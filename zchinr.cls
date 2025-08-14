@@ -1580,14 +1580,12 @@
 }
 
 \cs_new_protected:Npn \__zchinr_article_title_block: {
-  \tl_if_in:NnTF \l_zchinr_article_abstract_tl { \zchinrsplit } {
+  \bool_set_false:N \l_zchinr_article_title_split_bool
+  \tl_if_in:NnT \l_zchinr_article_abstract_tl { \zchinrsplit } {
     \bool_set_true:N \l_zchinr_article_title_split_bool
-  } {
-    \tl_if_in:NnTF \l_zchinr_article_abstract_alt_tl { \zchinrsplit } {
-      \bool_set_true:N \l_zchinr_article_title_split_bool
-    } {
-      \bool_set_false:N \l_zchinr_article_title_split_bool
-    }
+  }
+  \tl_if_in:NnT \l_zchinr_article_abstract_alt_tl { \zchinrsplit } {
+    \bool_set_true:N \l_zchinr_article_title_split_bool
   }
   \dim_set:Nn \l_zchinr_article_abstract_width_dim {
     ( \textwidth - \columnsep ) / 2
