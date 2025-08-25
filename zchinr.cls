@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/08/12} {3.10} {Document class for ZChinR}
+  {2025/08/25} {3.11} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -205,7 +205,7 @@
   article / label          .initial:n   = { } ,
   article / pages          .tl_set:N    = \l_zchinr_article_pages_tl ,
   article / pages          .initial:n   = {
-    \c_colon_str \c_space_token \l_zchinr_local_page_tl \c_space_token
+    \c_colon_str \c_space_tl \l_zchinr_local_page_tl \c_space_tl
     \zchinr_pages:nn { \value{page} } { \__zchinr_current_chapter_last_page: }
     \int_compare:eNnT { \__zchinr_current_chapter_last_page: } < { 0 } {
       \bool_set_true:N \g__zchinr_missing_refs_bool
@@ -701,7 +701,7 @@
 } {
   \AddToHook{begindocument}{
     \hypersetup{
-      pdftitle={\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl},
+      pdftitle={\l_zchinr_local_zchinr_tl \c_space_tl \l_zchinr_issue_year_tl},
       pdfmoddate={\pdfcreationdate},
       pdftrapped={False}
     }
@@ -713,8 +713,8 @@
   \sethead
     [\l__zchinr_header_mark_page_tl]
     [\l__zchinr_header_mark_odd_tl]
-    [\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl]
-    {\l_zchinr_local_zchinr_tl \c_space_token \l_zchinr_issue_year_tl}
+    [\l_zchinr_local_zchinr_tl \c_space_tl \l_zchinr_issue_year_tl]
+    {\l_zchinr_local_zchinr_tl \c_space_tl \l_zchinr_issue_year_tl}
     {\l__zchinr_header_mark_even_tl}
     {\l__zchinr_header_mark_page_tl}
 }
@@ -722,12 +722,12 @@
 \cs_new_protected:Npn \__zchinr_setfoot_contents: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
-      \l_zchinr_local_doi_tl \c_colon_str \c_space_token
+      \l_zchinr_local_doi_tl \c_colon_str \c_space_tl
         \href{https://doi.org/\l_zchinr_issue_doi_tl}{\l_zchinr_issue_doi_tl}
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright \c_space_token \l_zchinr_issue_year_tl \c_space_token
+      \copyright \c_space_tl \l_zchinr_issue_year_tl \c_space_tl
         \l_zchinr_local_zchinr_tl \\
     }}}
 }
@@ -735,16 +735,16 @@
 \cs_new_protected:Npn \__zchinr_setfoot_title: {
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
-      ZChinR \c_space_token \l_zchinr_issue_year_tl
+      ZChinR \c_space_tl \l_zchinr_issue_year_tl
         \l_zchinr_article_pages_tl \\
-      \l_zchinr_local_doi_tl \c_colon_str \c_space_token
+      \l_zchinr_local_doi_tl \c_colon_str \c_space_tl
         \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
-      \copyright \c_space_token \l_zchinr_issue_year_tl \c_space_token
+      \copyright \c_space_tl \l_zchinr_issue_year_tl \c_space_tl
         \l_zchinr_article_author_copy_tl \\
-      \l_zchinr_local_licence_tl \c_colon_str \c_space_token
+      \l_zchinr_local_licence_tl \c_colon_str \c_space_tl
         \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
     }}}
 }
