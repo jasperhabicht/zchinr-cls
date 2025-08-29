@@ -187,7 +187,7 @@
   default / licence        .tl_set:N    = \l_zchinr_default_licence_tl ,
   default / licence        .initial:n   = { CC ~ BY ~ 4.0 } ,
   default / licence ~ url  .tl_set:N    = \l_zchinr_default_licence_url_tl ,
-  default / licence ~ url  .initial:n   = { https://creativecommons.org/licenses/by/4.0/ } ,
+  default / licence ~ url  .initial:n   = { https \c_colon_str //creativecommons.org/licenses/by/4.0/ } ,
   issue                    .code:n      = { \keys_set:nn { zchinr / setup / issue } {#1} } ,
   issue / year             .tl_set:N    = \l_zchinr_issue_year_tl ,
   issue / volume           .tl_set:N    = \l_zchinr_issue_volume_tl ,
@@ -220,29 +220,29 @@
   } ,
   article / doi            .tl_set:N    = \l_zchinr_article_doi_tl ,
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
-  article / licence        .initial:n   = { \l_zchinr_default_licence_tl } ,
+  article / licence        .initial:V   = \l_zchinr_default_licence_tl ,
   article / licence ~ url  .tl_set:N    = \l_zchinr_article_licence_url_tl ,
-  article / licence ~ url  .initial:n   = { \l_zchinr_default_licence_url_tl } ,
+  article / licence ~ url  .initial:V   = \l_zchinr_default_licence_url_tl ,
   article / author         .tl_set:N    = \l_zchinr_article_author_tl ,
   article / author         .initial:n   = { } ,
   article / author ~ short .tl_set:N    = \l_zchinr_article_author_short_tl ,
-  article / author ~ short .initial:n   = { \l_zchinr_article_author_tl } ,
+  article / author ~ short .initial:V   = \l_zchinr_article_author_tl ,
   article / author ~ toc   .tl_set:N    = \l_zchinr_article_author_toc_tl ,
-  article / author ~ toc   .initial:n   = { \l_zchinr_article_author_tl } ,
+  article / author ~ toc   .initial:V   = \l_zchinr_article_author_tl ,
   article / author ~ copy  .tl_set:N    = \l_zchinr_article_author_copy_tl ,
-  article / author ~ copy  .initial:n   = { \l_zchinr_article_author_tl } ,
+  article / author ~ copy  .initial:V   = \l_zchinr_article_author_tl ,
   article / author ~ note  .tl_set:N    = \l_zchinr_article_author_note_tl ,
   article / author ~ note  .initial:n   = { } ,
   article / title          .tl_set:N    = \l_zchinr_article_title_tl ,
   article / title          .initial:n   = { } ,
   article / title ~ pdf    .tl_set:N    = \l_zchinr_article_title_pdf_tl ,
-  article / title ~ pdf    .initial:n   = { \l_zchinr_article_title_tl } ,
+  article / title ~ pdf    .initial:V   = \l_zchinr_article_title_tl ,
   article / title ~ alt    .tl_set:N    = \l_zchinr_article_title_alt_tl ,
   article / title ~ alt    .initial:n   = { } ,
   article / title ~ short  .tl_set:N    = \l_zchinr_article_title_short_tl ,
-  article / title ~ short  .initial:n   = { \l_zchinr_article_title_tl } ,
+  article / title ~ short  .initial:V   = \l_zchinr_article_title_tl ,
   article / title ~ toc    .tl_set:N    = \l_zchinr_article_title_toc_tl ,
-  article / title ~ toc    .initial:n   = { \l_zchinr_article_title_tl } ,
+  article / title ~ toc    .initial:V   = \l_zchinr_article_title_tl ,
   article / abstract       .tl_set:N    = \l_zchinr_article_abstract_tl ,
   article / abstract       .initial:n   = { } ,
   article / abstract ~ alt .tl_set:N    = \l_zchinr_article_abstract_alt_tl ,
@@ -723,7 +723,8 @@
   \setfoot
     {{\parbox[b]{0.4\textwidth}{\raggedright
       \l_zchinr_local_doi_tl \c_colon_str \c_space_tl
-        \href{https://doi.org/\l_zchinr_issue_doi_tl}{\l_zchinr_issue_doi_tl}
+        \href{ https \c_colon_str //doi.org/ \l_zchinr_issue_doi_tl }
+			{\l_zchinr_issue_doi_tl}
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
@@ -738,14 +739,16 @@
       ZChinR \c_space_tl \l_zchinr_issue_year_tl
         \l_zchinr_article_pages_tl \\
       \l_zchinr_local_doi_tl \c_colon_str \c_space_tl
-        \href{https://doi.org/\l_zchinr_article_doi_tl}{\l_zchinr_article_doi_tl}
+        \href { https \c_colon_str //doi.org/ \l_zchinr_article_doi_tl }
+			{ \l_zchinr_article_doi_tl }
     }}}
     {}
     {{\parbox[b]{0.4\textwidth}{\raggedleft
       \copyright \c_space_tl \l_zchinr_issue_year_tl \c_space_tl
         \l_zchinr_article_author_copy_tl \\
       \l_zchinr_local_licence_tl \c_colon_str \c_space_tl
-        \href{\l_zchinr_article_licence_url_tl}{\l_zchinr_article_licence_tl}
+        \href { \l_zchinr_article_licence_url_tl }
+			{ \l_zchinr_article_licence_tl }
     }}}
 }
 
