@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/08/25} {3.11} {Document class for ZChinR}
+  {2025/08/29} {3.12} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -222,7 +222,7 @@
   article / licence        .tl_set:N    = \l_zchinr_article_licence_tl ,
   article / licence        .initial:n   = { \l_zchinr_default_licence_tl } ,
   article / licence ~ url  .tl_set:N    = \l_zchinr_article_licence_url_tl ,
-  article / licence ~ url  .initial:n   = { l_zchinr_default_licence_url_tl } ,
+  article / licence ~ url  .initial:n   = { \l_zchinr_default_licence_url_tl } ,
   article / author         .tl_set:N    = \l_zchinr_article_author_tl ,
   article / author         .initial:n   = { } ,
   article / author ~ short .tl_set:N    = \l_zchinr_article_author_short_tl ,
