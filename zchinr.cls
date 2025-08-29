@@ -28,40 +28,33 @@
 \ProcessKeyOptions [ zchinr / global ]
 \LoadClass [ a4paper , twoside , 10pt ] { report }
 
-\AssignSocketPlug{build/column/outputbox}{floats-space-footnotes}
+\socket_assign_plug:nn { build / column / outputbox } { floats-space-footnotes }
 
 \msg_new:nnn { zchinr } { no-color-profile } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Color ~ profile ~ not ~ defined ~ in ~ preamble.
 }
 
 \msg_new:nnn { zchinr } { pagination-unknown } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ pagination ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { header-style-unknown } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ header ~ style ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { toc-style-unknown } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ toc ~ style ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { cover-toc-style-unknown } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Ignoring ~ unknown ~ cover ~ toc ~ style ~ setting: ~ #1.
 }
 
 \msg_new:nnn { zchinr } { wrong-page-count } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   Page ~ count ~ not ~ divisible ~ by ~ \int_use:N \l_zchinr_page_div_int : ~ #1.
 }
 
 \msg_new:nnn { zchinr } { missing-references } {
-  \msg_warning_text:n { zchinr } \iow_newline:
   One ~ or ~ more ~ chapter ~ references ~ not ~ found. ~ Please ~ rerun ~ compilation.
 }
 
