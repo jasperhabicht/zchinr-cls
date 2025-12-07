@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/08/29} {3.12} {Document class for ZChinR}
+  {2025/12/07} {3.13} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -1513,10 +1513,7 @@
         \sloppy\flushbottom
       }
     } {
-      \twocolumn[{
-        \box_use:N \l_zchinr_article_abstract_i_box
-      }]
-      \sloppy\flushbottom
+      \box_use:N \l_zchinr_article_abstract_i_box
     }
   } {
     \bool_if:NTF \l_zchinr_article_title_split_bool {
