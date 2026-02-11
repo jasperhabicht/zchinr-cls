@@ -366,7 +366,7 @@
   \RequirePackage{xeCJK}
   \setCJKmainfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
     {Noto ~ Serif ~ CJK ~ SC}
-  \setCJKsansfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+  \setCJKsansfont[ItalicFont={Noto ~ Sans ~ CJK ~ SC}]
     {Noto ~ Sans ~ CJK ~ SC}
 
   % prevent German quotation marks from being spaced
