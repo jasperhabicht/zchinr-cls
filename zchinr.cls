@@ -1,5 +1,5 @@
 % File: zchinr.cls
-% Copyright 2024-2025 Jasper Habicht (mail(at)jasperhabicht.de).
+% Copyright 2024-2026 Jasper Habicht (mail(at)jasperhabicht.de).
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License version 1.3c,
@@ -11,7 +11,7 @@
 % This work has the LPPL maintenance status `maintained'.
 %
 \ProvidesExplClass{zchinr}
-  {2025/12/07} {3.13} {Document class for ZChinR}
+  {2026/02/11} {3.14} {Document class for ZChinR}
 
 \bool_new:N \l_zchinr_prepress_bool
 \bool_new:N \l_zchinr_standalone_bool
@@ -352,7 +352,7 @@
   \RequirePackage{luatexja-fontspec}
   \setmainjfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
     {Noto ~ Serif ~ CJK ~ SC}
-  \setsansjfont[ItalicFont={Noto ~ Serif ~ CJK ~ SC}]
+  \setsansjfont[ItalicFont={Noto ~ Sans ~ CJK ~ SC}]
     {Noto ~ Sans ~ CJK ~ SC}
 
   % prevent German quotation marks from being spaced
