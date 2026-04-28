@@ -1699,9 +1699,9 @@
       \draw_path_use_clear:n { fill }
       \draw_path_moveto:n { 2.75 , 0 }
       \draw_path_lineto:n { 2.75 , 3.5 }
-      \draw_path_arc:nnn { 0 } { 180 } { 2.75 }
+      \draw_path_arc:nnn { 2.75 } { 0 } { 180 }
       \draw_path_lineto:n { -1.75 , 3.5 }
-      \draw_path_arc:nnn { 180 } { 0 } { 1.75 }
+      \draw_path_arc:nnn { 1.75 } { 180 } { 0 }
       \draw_path_lineto:n { 1.75 , 2 }
       \draw_path_close:
       \draw_path_use_clear:n { fill }
@@ -1721,18 +1721,18 @@
       \draw_scope_begin:
         \draw_transform_shift:n { -15 , 0 }
         \draw_path_moveto:n { \draw_point_polar:nnn { 7 } { 9 } { 30 } }
-        \draw_path_arc:nnnn { 30 } { 330 } { 7 } { 9 }
+        \draw_path_arc:nnnn { 7 } { 9 } { 30 } { 330 }
         \draw_path_lineto:n { \draw_point_polar:nnn { 17 } { 18 } { 330 } }
-        \draw_path_arc:nnnn { 330 } { 30 } { 17 } { 18 }
+        \draw_path_arc:nnnn { 17 } { 18 } { 330 } { 30 }
         \draw_path_close:
         \draw_path_use_clear:n { fill }
       \draw_scope_end:
       \draw_scope_begin:
         \draw_transform_shift:n { 17.5 , 0 }
         \draw_path_moveto:n { \draw_point_polar:nnn { 7 } { 9 } { 30 } }
-        \draw_path_arc:nnnn { 30 } { 330 } { 7 } { 9 }
+        \draw_path_arc:nnnn { 7 } { 9 } { 30 } { 330 }
         \draw_path_lineto:n { \draw_point_polar:nnn { 17 } { 18 } { 330 } }
-        \draw_path_arc:nnnn { 330 } { 30 } { 17 } { 18 }
+        \draw_path_arc:nnnn { 17 } { 18 } { 330 } { 30 }
         \draw_path_close:
         \draw_path_use_clear:n { fill }
       \draw_scope_end:
@@ -1754,9 +1754,9 @@
       \draw_path_lineto:n { 9 , -10 }
       \draw_path_lineto:n { 15 , -10 }
       \draw_path_lineto:n { 15 , 10 }
-      \draw_path_arc:nnn { 0 } { 90 } { 5 }
+      \draw_path_arc:nnn { 5 } { 0 } { 90 }
       \draw_path_lineto:n { -10 , 15 }
-      \draw_path_arc:nnn { 90 } { 180 } { 5 }
+      \draw_path_arc:nnn { 5 } { 90 } { 180 }
       \draw_path_lineto:n { -15 , -10 }
       \draw_path_lineto:n { -9 , -10 }
       \draw_path_close:
